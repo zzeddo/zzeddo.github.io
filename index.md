@@ -3,7 +3,7 @@
 
 「ØMQ 가이드」는 피터 힌트젠스가 2015년 12월에 zeroMQ 3.2 버전 기준으로 작성한「[ØMQ - The Guide](http://zguide.zeromq.org/)」의 한국어 번역입니다.
 
-[ØMQ - The Guide](http://zguide.zeromq.org/)」을 기반으로 한글로 번역을 진행하였으며, 깃허브 문서로 작성하기 위하여 [HAMANO Tsukasa](https://github.com/hamano)씨의 문서를 참조하였습니다.
+「[ØMQ - The Guide](http://zguide.zeromq.org/)」을 기반으로 한글로 번역을 진행하였으며, 깃허브 문서로 작성하기 위하여 [HAMANO Tsukasa](https://github.com/hamano)씨의 문서를 참조하였습니다.
 예제는 ØMQ v3.2 기준(2015년)이지만 v4.3.2(2019년)에서 및 원도우 및 리눅스(와 유닉스) 운영체제에서도 사용할 수 있도록 소스 일부 변경하였습니다.
 
 원서의 내용이 잘못되거나 모호한 부분에 대하여 고인이 된 저자에게 문의할 수 없어, 일부 내용 및 소스 수정이 가해진 부분이 있으며 [옮긴이]에 표시해 두었습니다.
