@@ -1,4 +1,4 @@
-ØMQ 가이드(OMQ - The Guide)
+ØMQ 가이드(ØMQ - The Guide)
 ================
 
 「ØMQ 가이드」는 피터 힌트젠스가 2015년 12월에 zeroMQ 3.2 버전 기준으로 작성한「[ØMQ - The Guide](http://zguide.zeromq.org/)」의 한국어 번역입니다.
