@@ -106,6 +106,7 @@ ROUTER 소켓은 다른 소켓과 달리 모든 연결을 추적하고 호출자
 지난 이야기지만, ØMQ v2.2 이전 버전의 식별자(ID)로 UUID를 사용하였으며, ØMQ 3.0 이후부터는 짧은 정수를 사용하고 있습니다.
 이런 변화는 네트워크 성능을 개선하는 영향을 주지만, 다중 프록시 홉(hops)을 사용하는 경우는 영향은 미미한 것입니다.
 주목할만한 영향은 libzmq에서 UUID 생성에 필요한 라이브러리에 의존성을 제거한 것입니다.
+
 > [옮긴이] UUID(universally unique identifier)은 네트워크 상에서 서로 모르는 개체들을 식별하고 구별하기 위해서는 각각의 고유한 식별자로 32개의 십육진수(4bit)인 128 bits의 수로 표현됩니다(예 : 550e8400-e29b-41d4-a716-446655440000).
 
 ;Identies are a difficult concept to understand, but it's essential if you want to become a ØMQ expert. The ROUTER socket invents a random identity for each connection with which it works. If there are three REQ sockets connected to a ROUTER socket, it will invent three random identities, one for each REQ socket.
@@ -152,11 +153,14 @@ ROUTER는 첫 번째 메시지 프레임을 읽고 ABC라는 ID에 해당하는 
 ;The REQ socket picks this message up, and checks that the first frame is the empty delimiter, which it is. The REQ socket discards that frame and passes "World" to the calling application, which prints it out to the amazement of the younger us looking at ØMQ for the first time.
 
 REQ 소켓은 전달된 메시지를 받아 첫 번째 프레임이 공백 구분자인지 확인하고 맞으면 REQ 소켓은 공백 구분자 프레임을 버리고 "World"를 호출한  응용프로그램에 전달합니다. 그러면 ØMQ를 시작했을 때의 놀라움으로 응용프로그램에서 "World"가 출력됩니다.
+
 > [옮긴이] 송/수신시에 프레임 구성
   - 송신 : APP-["Hello"]-REQ-[""+"Hello"]-ROUTER-[ID+""+"Hello"]-DEALER-[ID+""+"Hello"]-REP-["Hello"]-APP
   - 수신 : APP-["World"]-REP-[ID+""+"World"]-DEALER-[ID+""+"World"]-ROUTER-[""+"World"]-REQ-["World"]-APP
+
 > [옮긴이] 송/수신 시에 프레임 전달에 대한 테스트를 위하여 "test_frame.c"을 작성하였으며 czmq 라이브러리를 사용합니다.
-test_frame.c Hello World 예제 프로그램의 프레임 흐름
+- test_frame.c Hello World 예제 프로그램의 프레임 흐름
+
 ```cpp
 //  Multithreaded Hello World server
 #include "czmq.h"
@@ -259,6 +263,7 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 S D:\git_store\zguide-kr\examples\C> cl -EHsc test_frame.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> ./test_frame
@@ -378,8 +383,11 @@ DEALER를 사용하여 REP 소켓과 통신할 때, REQ 소켓이 보낸 봉투(
 REQ를 DEALER로 대체하는 것과 같이 REP를 ROUTER로 대체할 수 있습니다. 여러 REQ 클라이언트와 동시에 통신할 수 있는 비동기 서버를 제공합니다. ROUTER를 사용하여 "Hello World" 서버를 다시 작성하면 여러 "Hello" 요청을 병렬로 처리할 수 있습니다. 이것을 "2장-소켓 및 패턴"에서 mtserver 예제를 보았습니다.
 
 > [옮긴이] mtserver 예제는 여러 개(예 : 10개)의 hwclient 요청을 ROUTER 소켓(asynchronous server)에서 받아 프록시(zmq_proxy())로 DEALER 소켓으로 전달하면 5개의 worker 스레드들이 받아 응답하는 형태입니다.
+
 > [옮긴이] mtserver 예제에서는 worker에 대하여서만 스레드 구성하였으나, 다음 예제에서는 client도 스레드로 구성하여 테스트하였습니다.
-mtserver_client.c : 다중 서버와 클라이언트 스레드를 통한 테스트
+
+- mtserver_client.c : 다중 서버와 클라이언트 스레드를 통한 테스트
+
 ```cpp
 //  Multithreaded Hello World server
 
@@ -459,6 +467,7 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc mtserver_client.c libzmq.lib pthreadVC2.lib
 
@@ -563,12 +572,13 @@ ROUTER 소켓을 사용하여 특정 상대와 통신하는 응용프로그램�
 ;* The ROUTER also expects the logical address as the prefix identity frame for any outgoing messages.
 
 * ROUTER에 바인딩 혹은 연결하려는 상대 응용프로그램 소켓(DEALER 또는 REQ)에서 대한 옵션 ZMQ_IDENTITY 옵션을 설정합니다.
-> [옮긴이] `zmq_setsockopt (client, ZMQ_IDENTITY, "PEER1", 5);`
 * 일반적으로 상대는 이미 바인딩된 ROUTER 소켓에 연결합니다. 그러나 ROUTER도 상대에 연결할 수도 있습니다.
 * 연결 수행 시, 상대 소켓(REQ 혹은 DEALER)은 ROUTER 소켓에 "연결에 대한 식별자(ID)로 사용하십시오"라고 알려줍니다.
 * 상대 소켓(REQ 혹은 DEALER)이 그렇게 하지 않으면, ROUTER는 연결에 대해 일반적인 임의의 식별자(ID)를 생성합니다.
 * 이제 ROUTER 소켓은 해당 상대에서 들어오는 모든 메시지에 대하여 접두사 식별자 프레임으로 논리 주소를 응용프로그램에 제공합니다.
 * ROUTER는 모든 보내는 메시지에 대하여서도 접두사 식별자 프레임을 논리 주소로 사용됩니다.
+
+> [옮긴이] `zmq_setsockopt (client, ZMQ_IDENTITY, "PEER1", 5);`
 
 ;Here is a simple example of two peers that connect to a ROUTER socket, one that imposes a logical address "PEER2":
 
@@ -619,7 +629,9 @@ int main (void)
 [000]
 [038] ROUTER uses REQ's socket identity
 ~~~
+
 > [옮긴이] `s_dump()`는 `zhelpers.h`에 정의된 함수로 전달된 소켓에서 수신된 메시지의 내용을 멀티파트 메시지로 모두 출력하는 함수입니다.
+
 ```cpp
 //  Receives all message parts from socket, prints neatly
 //
@@ -666,6 +678,7 @@ s_dump (void *socket)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc identity.c libzmq.lib
 
@@ -853,6 +866,7 @@ Completed: 19 tasks
 ![RRouting Envelope for REQ](images/fig31.svg)
 
 > [옮긴이] rtreq에 대하여 REQ 작업자에게 스레드 식별자(ID)를 출력하도록 수정하면 다음과 같습니다.
+
 ```cpp
 // 2015-01-16T09:56+08:00
 //  ROUTER-to-REQ example
@@ -942,7 +956,9 @@ int main(void)
     return 0;
 }
 ```
+
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc rtreq.c libzmq.lib pthreadVC2.lib
 
@@ -1076,7 +1092,9 @@ int main(void)
 }
 //  .until
 ```
+
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc rtdealer.c libzmq.lib pthreadVC2.lib
 PS D:\git_store\zguide-kr\examples\C> ./rtdealer
@@ -1349,7 +1367,9 @@ int main(void)
     return 0;
 }
 ```
+
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc lbbroker.c libzmq.lib pthreadVC2.lib
 
@@ -1375,17 +1395,22 @@ Client: OK
 Client: OK
 Client: OK
 ~~~
+
 > [옮긴이] 송/수신 시 구조
   - 송신 : APP(client)->REQ->ROUTER(frontend)->ROUTER(backend)->REQ->APP(worker)
   - 수신 : APP(worker)->REQ->ROUTER(backend)->ROUTER(frontend)->REQ->APP(client)
+
 > [옮긴이] 송/수신 시에 멀티파트 메시지 구성
   - 송신 : CLIENT-["HELLO"]->REQ-[""+"HELLO"]->ROUTER(frontend)-[CID+""+"HELLO"]->ROUTER(backend)-[WID+""+CID+""+"HELLO"]->REQ-[CID+""+"HELLO"]->WORKER
   - 수신 : WORKER-[CID+""+"OK"]->REQ-[WID+""+CID+""+"OK"]->ROUTER(backend)->[CID+""+"OK"]->ROUTER(frontend)-[""+"OK"]->REQ-["OK"]-CLIENT
+
 > [옮긴이] dequeue 매크로에서 사용된 memmove() 함수는 source가 가리키는 곳부터 num 바이트만큼을 destination이 가리키는 곳으로 옮기는 역할을 수행하며, 큐(queue)의 q(0)에 q(1)부터 정해진 크기(sizeof(q)-sizeof(q[0]))의 데이터가 복사됩니다.
+
 ```cpp
 #include <string.h>  // C++ 에서는 <cstring>
 void* memmove(void* destination, const void* source, size_t num);
 ```
+
 > [옮긴이] 클라이언트와 작업자 스레드에서 식별자(ID)를 지정하지 않을 경우, ØMQ에서 ROUTER에서 자체 생성하고 바이너리 ID 형태로 `s_send()`, `s_recv()`에서 처리할 수 없습니다.
 
 ;The difficult part of this program is (a) the envelopes that each socket reads and writes, and (b) the load balancing algorithm. We'll take these in turn, starting with the message envelope formats.
@@ -1774,6 +1799,7 @@ if (zmq_poll (items, 2, 1000 * 1000) == -1)
     break; // Interrupted
 ```
 > [옮긴이] lbbroker2에서의 `zmq_poll()` 인터럽트 처리는 다음과 같습니다.
+
 ```cpp
 		//  Poll frontend only if we have available workers
 		int rc = zmq_poll(items, zlist_size(workers) ? 2 : 1, -1);
@@ -1980,6 +2006,7 @@ int main (void)
 }
 ```
 > [옮긴이] 위의 코드에서는 ipc(프로세스 간) 소켓을 사용하였지만 원도우 환경에서는 사용 불가하여 TCP 변경하고 `sleep()`함수도 `czmq.h`의 `zclock_sleep()`을 사용하도록 변경하였습니다.
+
 ```cpp
 //  Load-balancing broker
 //  Demonstrates use of the CZMQ API and reactor style
@@ -2141,6 +2168,7 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc lbbroker3.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> ./lbbroker3
@@ -2324,6 +2352,7 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc asyncsrv.c libzmq.lib czmq.lib
 
@@ -2332,6 +2361,7 @@ PS D:\git_store\zguide-kr\examples\C>
 ~~~
 > [옮긴이] 원도우 환경에서 테스트 수행 시 화면상에 아무것도 찍히지 않고 5초 후에 종료됩니다.
 원인은 `main()`에서 클라이언트 스레드 호출 시 동시에 호출하였기 때문입니다.
+
 ```cpp
 int main (void)
 {
@@ -2398,7 +2428,9 @@ D: 20-08-12 14:37:24 BEC0-E8C8[010] request #3
 D: 20-08-12 14:37:24 87DC-EB6A[010] request #3
 D: 20-08-12 14:37:24 B95C-EDAE[010] request #3
 ~~~
+
 > [옮긴이] 수정된 전체 aysncsrv.c 전체 코드는 다음과 같습니다.
+
 ```cpp
 //  Asynchronous client-to-server (DEALER to ROUTER)
 //
@@ -2732,6 +2764,7 @@ int main (void)
 ;This would give us simple logic in both brokers and a reasonably good mechanism: when there are no clients, tell the other broker "ready", and accept one job from it. The problem is also that it is too simple for this problem. A federated broker would be able to handle only one task at a time. If the broker emulates a lock-step client and worker, it is by definition also going to be lock-step, and if it has lots of available workers they won't be used. Our brokers need to be connected in a fully asynchronous fashion.
 
 연합은 브로커들과 타당하고 좋은 처리 방식을 가진 단순한 로직을 제공합니다. 클라이언트들이 없을 때 다른 브로커에게 "준비(READY)"라고 알리고 하나의 작업을 받아들입니다. 유일한 문제는 이것이 너무 단순하다는 것입니다. 연합된 브로커는 한 번에 하나의 작업만 처리할 수 있습니다. 브로커가 잠금 단계 클라이언트와 작업자로 하게 되면 정의상 잠금 단계가 되며, 비록 많은 작업자들이 있어도 동시에 사용할 수 없습니다. 우리의 브로커들은 완전히 비동기적으로 연결되어야 합니다.
+
 > [옮긴이] 잠근 단계 통신규약(lock-step protocol)은 동기식 요청-응답과 같이 클라이언트가 하나의 요청을 하면, 작업자가 요청을 받아 처리하고 응답할 때까지 대기하는 방식입니다. 특정 작업자들에 대하여 응답이 지연되는 현상이 발생하면 시스템의 자원 활용도 및 성능은 저하됩니다. 해결 방법으로는 요청에 대한 응답 지연 시 제한시간을 두거나, 비동기 요청-응답 처리가 있습니다.
 
 ;The federation model is perfect for other kinds of routing, especially service-oriented architectures (SOAs), which route by service name and proximity rather than load balancing or round robin. So don't dismiss it as useless, it's just not right for all use cases.
@@ -2924,6 +2957,7 @@ peering1 DC3 DC1 DC2  #  Start DC3 and connect to DC1 and DC2
 peering1의 경우 여러 개의 프로세스들을 실행하여 프로세스 간 통신(ipc)하도록 설계되어 있어 프로세스 내(inproc)로 변경할 경우 각 스레드들 간에 컨텍스트가 공유될 수 있도록 수정 필요합니다.
  - 프로세스 간 통신이 가능하도록 tcp로 변경하여 테스트를 수행합니다.
 tcp 소켓을 사용하도록 변경된 `peering1_tcp.c`입니다.
+
 ```cpp
 //  Broker peering simulation (part 1)
 //  Prototypes the state flow
@@ -2988,7 +3022,9 @@ int main (int argc, char *argv [])
     return EXIT_SUCCESS;
 }
 ```
+
 > [옮긴이] 빌드 및 실행 결과
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering1_tcp.c libzmq.lib czmq.lib
 
@@ -3021,8 +3057,10 @@ I: connecting to state backend at '5555'
 5556 - 7 workers free
 5555 - 7 workers free
 ~~~
+
 [옮긴이] inproc를 사용하여 스레드간 통신이 가능하도록 변경하여 테스트를 수행합니다.
 inproc 소켓을 사용하도록 변경된 `peering1_inproc.c`입니다.
+
 ```cpp
 //  Broker peering simulation (part 1)
 //  Prototypes the state flow
@@ -3111,7 +3149,9 @@ int main (int argc, char *argv [])
     return EXIT_SUCCESS;
 }
 ```
+
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering1_inproc.c libzmq.lib czmq.lib
 
@@ -3154,6 +3194,7 @@ cat - 3 workers free
 ;This was the technique we used in the load balancing broker, and it worked nicely. We only read from the two frontends when there is somewhere to send the requests. We can always read from the backends, as they give us replies to route back. As long as the backends aren't talking to us, there's no point in even looking at the frontends.
 
 이것이 우리가 부하 분산 브로커(lbbroker)에서 사용한 기술이며 멋지게 동작했습니다. 요청을 보낼 곳(작업자들 혹은 상대 브로커들)이 있을 때만 2개의 프론트엔드들에서 읽습니다. 백엔드에서 요청에 대한 응답을 반환하므로 항상 백엔드 소켓을 읽을 수 있습니다. 백엔드가 우리와 통신하지 않는 한 프론트엔드를 감시할 필요가 없습니다.
+
 > [옮긴이] 백엔드에서 처리 가능한 경우 프론트엔드로부터 요청을 받아 전달하며, 이전 예제(lbbroker)에서 처럼 작업자 대기열의 대기 상태를 보고 요청 처리할 수 있습니다.
 
 ;So our main loop becomes:
@@ -3443,6 +3484,7 @@ peering2 you me
 다른 브로커가 클라우드에 요청을 보내고 클라이언트들은 하나씩 응답이 되돌아올 때까지 기다립니다.
 
 > [옮긴이] 위의 프로그램을 TCP에서 구동할 수 있게 변경하였습니다.
+
 ```cpp
     static void *
     client_task (void *args){
@@ -3744,7 +3786,8 @@ int main (int argc, char *argv [])
 }
 ```
 > [옮긴이] 빌드 및 테스트
-수행시 각 포트 번호 간의 간격을 주고 실행합니다.
+- 수행시 각 포트 번호 간의 간격을 주고 실행합니다.
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering2_tcp.c libzmq.lib czmq.lib
 
@@ -3801,7 +3844,8 @@ Client: OK
 ~~~
 
 > [옮긴이] inproc 전송 방식으로 수정된 peering2_inproc.c 코드는 아래와 같습니다.
-peering2_inproc.c : inproc로 스레드간 통신으로 변경된 로컬 및 클라우드 작업 분배
+peering2_inproc.c : inproc로 스레드간 통신으로 변경된 로컬 및 클라우드 작업 분배합니다.
+
 ```cpp
 //  Broker peering simulation (part 2)
 //  Prototypes the request-reply flow
@@ -4052,6 +4096,7 @@ int main (int argc, char *argv [])
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering2_inproc.c libzmq.lib czmq.lib
 
@@ -4452,7 +4497,8 @@ int main (int argc, char *argv [])
 * monitor : atoi(self)+2
 * statefe : atoi(peer)+2
 * statebe : atoi(self)+4
-변경된 코드(peering3_tcp.c)는 다음과 같습니다.
+- 변경된 코드(peering3_tcp.c)는 다음과 같습니다.
+
 ```cpp
 //  Broker peering simulation (part 3)
 //  Prototypes the full flow of status and tasks
@@ -4768,6 +4814,7 @@ int main (int argc, char *argv [])
 ```
 
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS C:\Users\zzedd>  cd D:\git_store\zguide-kr\examples\C
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering3_tcp.c libzmq.lib czmq.lib
@@ -4824,6 +4871,7 @@ CLIENT recived reply : 317C
 ~~~
 
 > [옮긴이] Inproc를 사용할 수 있도록 변경된 코드(peering3_tcp.c)는 다음과 같습니다.
+
 ```cpp
 //  Broker peering simulation (part 3)
 //  Prototypes the full flow of status and tasks
@@ -5149,6 +5197,7 @@ int main (int argc, char *argv [])
 ```
 
 > [옮긴이] 빌드 및 테스트(peering3_inproc.c)
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./peering3_inproc dog cat fox
 I: preparing broker at dog...

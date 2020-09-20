@@ -219,6 +219,7 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./espresso
 D: 20-08-26 13:43:30 [002] 0141
@@ -260,6 +261,7 @@ D: 20-08-26 13:43:33 [002] 0042
 발행자 스레드가 여전히 메시지를 보내고 있지만 소켓은 조용히 그들을 버립니다.
 
 > [옮긴이] 구독자는 발행자에게 구독 시와 구독 취소 시 이벤트(event)를 보내며 보내는 메시지는 바이트(byte) 형태로 첫 번째 바이트(HEX 코드)는 "00"은 구독, "01"은 구독 취소이며 나머지 바이트들은 토픽(sizeof(event)-1)으로 구성됩니다.
+
 ~~~{.bash}
 [002] 0141       --> "01" 구독, 토픽 : "41" A
 [002] 0142       --> "01" 구독, 토픽 : "41" B
@@ -395,7 +397,8 @@ int main (int argc, char *argv [])
 ~~~
 
 > [옮긴이] 빌드 및 테스트
-"pathsub" 실행하면 생성된 토픽에 해당되는 "Sava Roger"을 수신하고 임의의 긴 시간(1초~16.7분) 후에 "Off with his head!"을 수신하게 됩니다.
+ - "pathsub" 실행하면 생성된 토픽에 해당되는 "Sava Roger"을 수신하고 임의의 긴 시간(1초~16.7분) 후에 "Off with his head!"을 수신하게 됩니다.
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc pathopub.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc pathosub.c libzmq.lib czmq.lib
@@ -505,7 +508,8 @@ int main (void)
 ./pathosub tcp://localhost:5558
 ~~~
 >[옮긴이] 빌드 및 테스트
-"lvcahe.c" 소스코드의 이상과 pathopub 인수가 잘못되어 정상 동작하지 않습니다.
+ - "lvcahe.c" 소스코드의 이상과 pathopub 인수가 잘못되어 정상 동작하지 않습니다.
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./lvcache
 Sending cached topic 000
@@ -530,6 +534,7 @@ PS D:\git_store\zguide-kr\examples\C> ./pathopub tcp://*:5557
 ~~~
 
 > [옮긴이] 수정된 lvcache.c 
+
 ```cpp
 //  Last value cache
 //  Uses XPUB subscription messages to re-send data
@@ -606,6 +611,7 @@ int main (void)
 }
 ```
 > [옮긴이] pathopub 인수 변경 후 테스트
+
 ~~~{.bash} 
 PS D:\git_store\zguide-kr\examples\C> ./lvcache
 Sending cached topic 045
@@ -768,6 +774,7 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 실행
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc suisnail.c libzmq.lib czmq.lib
 
@@ -968,7 +975,8 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
-3개의 작업자들에게 라운드로빈 형태로 메시지가 전달되는 것을 확인 가능합니다.
+ - 3개의 작업자들에게 라운드로빈 형태로 메시지가 전달되는 것을 확인 가능합니다.
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc hssub.c libzmq.lib czmq.lib
 
@@ -1132,6 +1140,7 @@ int main (void)
 `while (!zctx_interrupted)`로 변경하였습니다.
 
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv1.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli1.c libzmq.lib czmq.lib
@@ -1536,6 +1545,7 @@ kvmsg_test (int verbose)
 }
 ```
 > [옮긴이] "kvsimpler.c"의 `kvmsg_test()`에서 ipc를 사용하고 있으나 원도우 환경에서는 동작할 수 없어 inproc로 변경하여 테스트를 수행합니다.(inproc는 원도우 및 Linux에서 동작 가능)
+
 ```cpp
 // 변경전
     int rc = zmq_bind (output, "ipc://kvmsg_selftest.ipc");
@@ -1549,6 +1559,7 @@ kvmsg_test (int verbose)
     rc = zmq_connect (input, "inproc://kvmsg_selftest");
 ```
 > [옮긴이] "kvsimpler"에 대한 테스트를 수행하기 위한 "kvsimtest.c"는 다음과 같습니다.
+
 ```cpp
 #include "kvsimple.c"
 
@@ -1558,6 +1569,7 @@ void main()
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc kvsimtest.c libzmq.lib czmq.lib
 
@@ -1795,8 +1807,11 @@ int main (void)
 ```
 > [옮긴이] clonecli2에서 "ICANHAZ?" 메시지를 clonesrv2로 보내면 서버는 해시 테이블에 저장한 변경정보들을 `s_send_single()`통하여 모두 전송하고 "KTHXBAI" 메시지를 전송합니다.
 clonecli2에서 "KTHXBAI"을 받으면 해당 sequence를 기준으로 clonesrv2에서 발행된 변경정보의 sequence와 비교하여 이후의 것들만 받아 해시 테이블에 보관합니다.(이전 정보는 폐기)
+
 > [옮긴이] "ICANHAZ?"는 "I Can has?"(가져도 될까요?)이며 "KTHXBAI"는 "Ok, Thank you, goodbye"(예, 고마워요, 잘 있어요)를 의미합니다.
+
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv2.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli2.c libzmq.lib czmq.lib
@@ -2055,7 +2070,9 @@ int main (void)
 }
 ```
 > [옮긴이] clonecli3에서 1초마다 보내는 변경정보를 clonesrv3은 클라이언트들에 발행하며 clonecli3 중지하면 clonesrv3도 더 이상 변경정보를 발행하지 않습니다.
+
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv3.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli3.c libzmq.lib czmq.lib
@@ -2337,7 +2354,8 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
-clonecli4에서 필터링을 통해 "SUBTREE"가 포함되어 발행(publish)된 kvmsg 객체를 받아 해시 테이블에 저정하며, 1초 간격으로 상태 요청에 사용될 kvmsg의 key에 "SUBTREE"을 포함하여 보냅니다.
+- clonecli4에서 필터링을 통해 "SUBTREE"가 포함되어 발행(publish)된 kvmsg 객체를 받아 해시 테이블에 저정하며, 1초 간격으로 상태 요청에 사용될 kvmsg의 key에 "SUBTREE"을 포함하여 보냅니다.
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv4.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli4.c libzmq.lib czmq.lib
@@ -2359,6 +2377,7 @@ I: received update=4
 ...
 ~~~
 > [옮긴이] `kvm_dump()`을 통하여 메시지 내용을 확인하면 다음과 같습니다.
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./clonesrv4
 I: sending shapshot=0
@@ -3030,6 +3049,7 @@ kvmsg_test (int verbose)
   - 변경전 : "ipc://kvmsg_selftest.ipc"
   - 변경후 : "inproc://kvmsg_selftest"
 2. uuid를 원도우 환경에서 사용할 수 있도록 4장 "titanic.c" 예제를 참조한다.
+
 ```cpp
 #ifdef _WIN32
 #pragma comment(lib, "rpcrt4.lib")  // UuidCreate - Minimum supported OS Win 2000
@@ -3071,6 +3091,7 @@ kvmsg_set_uuid (kvmsg_t *self)
 ```
 
 > [옮긴이] 테스트를 위하여 "kvmsgtest.c" 코드는 다음과 같습니다.
+
 ```cpp
 #include "kvmsg.c"
 
@@ -3080,6 +3101,7 @@ void main()
 }
 ```
 > [옮긴이] 빌드 및 테스트 
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc kvmsgtest.c libzmq.lib czmq.lib
 
@@ -3392,6 +3414,7 @@ int main (void)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv5.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli5.c libzmq.lib czmq.lib
@@ -3968,6 +3991,7 @@ C 언어의 주요 관심사로 컴파일러에서 가비지(garbage) 수집을 
 > [옮긴이] "clonecli6.c" 상태(INITIAL, SYNCING, ACTIVE)를 PUSH-PULL을 PUB-SUB로 변경한 클라이언트의 마지막 모델(모델 6)로 다음 주제에서 설명합니다.
 
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv6.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli6.c libzmq.lib czmq.lib
@@ -4162,6 +4186,7 @@ UUID는 선택 사항이며 "Frame 2"는 공백일 수 있습니다(크기 0). �
 
 다른 변경정보들이 없는 경우 서버는 일정한 간격(예 : 1초당 한번)으로 HUGZ 명령을 발행자 소켓(PUB)으로 보내야 합니다. HUGZ 명령의 형식은 다음과 같습니다.
 > [옮긴이] HUGZ는 상대편 서버 및 클라이언트들에게 보냅니다.
+
 ~~~{.bash}
 [서버] HUGZ 명령
 -----------------------------------
@@ -4257,7 +4282,7 @@ CHP는 인증, 접근 제어 또는 암호화 메커니즘을 구현하지 않�
 멜티스레드 API는 2개의 PAIR 소켓으로 연결된 프론트엔드 개체와 백그라운드 에이전트로 구성됩니다. 이와 같이 2개의 PAIR 소켓을 연결하는 것은 매우 유용하여 ØMQ의 C 개발 언어에서 제공하는 고수준의 바인딩인 CZMQ에서 수행합니다. 이것은 "신규 스레드를 생성 시에 메시지를 보내는 데 사용할 수 있는 파이프를 사용"하는 방법입니다.
 
 > [옮긴이] "clone.c"에서 아래와 같이 사용합니다.
-  self->pipe = zthread_fork (self->ctx, clone_agent, NULL);
+ - self->pipe = zthread_fork (self->ctx, clone_agent, NULL);
 
 ;The multithreaded APIs that we see in this book all take the same form:
 
