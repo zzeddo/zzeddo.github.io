@@ -21,7 +21,7 @@
 
 ;Programming is science dressed up as art because most of us don't understand the physics of software and it's rarely, if ever, taught. The physics of software is not algorithms, data structures, languages and abstractions. These are just tools we make, use, throw away. The real physics of software is the physics of people—specifically, our limitations when it comes to complexity, and our desire to work together to solve large problems in pieces. This is the science of programming: make building blocks that people can understand and use easily, and people will work together to solve the very largest problems.
 
-프로그래밍은 예술로 치장된 과학이지만 우리 대부분은 소프트웨어의 물리학을 거의 이해하지 못하고 있으며 과학으로 가르치는 곳이 거의 없습니다.  소프트웨어의 물리학은 알고리즘이나, 자료 구조, 프로그래밍 언어나 추상화 등이 아닙니다. 이런 것들은 다만 우리가 그냥 만들어내고 사용하고 버리는 도구들일 뿐입니다. 소프트웨어의 진정한 물리학은 인간의 물리학입니다. 특히 복잡성 앞에서의 인간의 한계와 우리의 협력을 통하여 거대한 문제를 작은 조각들로 쪼개서 해결하려고 하는 욕구가 있습니다.
+프로그래밍은 예술로 치장된 과학이지만 우리 대부분은 소프트웨어의 물리학을 거의 이해하지 못하고 있으며 과학으로 가르치는 곳이 거의 없습니다.  소프트웨어의 물리학은 알고리즘이나, 자료 구조, 프로그래밍 언어나 추상화 등이 아닙니다. 이런 것들은 다만 우리가 그냥 만들어내고 사용하고 버리는 도구들일 뿐입니다. 소프트웨어의 진정한 물리학은 인간의 물리학입니다. 특히 복잡성 앞에서의 인간의 한계와 우리의 협력을 통하여 거대한 문제를 작은 조각들로 쪼개서 해결하려고 하는 욕구가 있습니다.
 이것이 프로그래밍 과학입니다 : 사람들이 쉽게 이해하고 사용할 수 있는 구성요소들을 만들어냄으로써, 사람들이 그걸 이용하여 거대한 문제들을 해결하게 도와줍니다.
 
 ;We live in a connected world, and modern software has to navigate this world. So the building blocks for tomorrow's very largest solutions are connected and massively parallel. It's not enough for code to be "strong and silent" any more. Code has to talk to code. Code has to be chatty, sociable, well-connected. Code has to run like the human brain, trillions of individual neurons firing off messages to each other, a massively parallel network with no central control, no single point of failure, yet able to solve immensely difficult problems. And it's no accident that the future of code looks like the human brain, because the endpoints of every network are, at some level, human brains.
@@ -39,13 +39,13 @@
 ;Brooks missed free and open source software, which solved that crisis, enabling us to share knowledge efficiently. Today we face another software crisis, but it's one we don't talk about much. Only the largest, richest firms can afford to create connected applications. There is a cloud, but it's proprietary. Our data and our knowledge is disappearing from our personal computers into clouds that we cannot access and with which we cannot compete. Who owns our social networks? It is like the mainframe-PC revolution in reverse.
 
 브룩스가 놓쳤던 것은 자유롭게 이용 가능한 오픈소스 소프트웨어들이었으며, 서로 효율적으로 지식을 공유함으로 위기를 해결할 수 있었습니다. 
-하지만 오늘날 우리는 또 다른 소프트웨어 위기에 직면하고 있지만 이번에는 이걸 얘기하는 사람은 거의 없습니다. 위기는 가장 크고 가장 부유한 기업들만이 “연결된 응용프로그램들을” 만들 수 있다는 점이다. 물론 요즘에는 클라우드가 있지만 클라우드는 사적 소유이며 우리의 데이터와 우리의 지식은 개인 컴퓨터에서 점점 사라지고, 우리가 접근할 수 없고 우리가 그걸 상대로 경쟁조차 펼칠 수 없는 클라우드로 흘러 들어가고 있습니다. 우리의 소셜 네트워크를 누가 가지고 있을까요? 이것은 PC에서 대형 컴퓨터로 전환되는 혁명이 역으로 수행되고 있습니다.
+하지만 오늘날 우리는 또 다른 소프트웨어 위기에 직면하고 있지만 이번에는 이걸 얘기하는 사람은 거의 없습니다. 위기는 가장 크고 가장 부유한 기업들만이 “연결된 응용프로그램들을” 만들 수 있다는 점이다. 물론 요즘에는 클라우드가 있지만 클라우드는 사적 소유이며 우리의 데이터와 우리의 지식은 개인 컴퓨터에서 점점 사라지고, 우리가 접근할 수 없고 우리가 그걸 상대로 경쟁조차 펼칠 수 없는 클라우드로 흘러 들어가고 있습니다. 우리의 소셜 네트워크를 누가 가지고 있을까요? 이것은 PC에서 대형 컴퓨터로 전환되는 혁명이 역으로 수행되고 있습니다.
 
 ;We can leave the political philosophy for another book. The point is that while the Internet offers the potential of massively connected code, the reality is that this is out of reach for most of us, and so large interesting problems (in health, education, economics, transport, and so on) remain unsolved because there is no way to connect the code, and thus no way to connect the brains that could work together to solve these problems.
 
 우리는 이런 정치철학은 [문명과 제국, 디지털 혁명](http://cultureandempire.com/)에서 다루고 있습니다 여기서 말하고자 하는 건, 인터넷이 대규모 연결된 프로그램에 잠재력을 제공하고 있음에도 불구하고, 현실은 이것을 충분히 이용할 수 있는 사람은 극히 드물다는 점입니다. 그러므로 거대하고 흥미로운 문제들(건강 의료, 교육, 경제, 물류 등 분야들의)에 대하여 해결되지 못하고 있으며 원인은 우리가 코드들을 효과적으로 연결 못하고 개개인이 함께 협력하여 이러한 문제를 해결할 방법이 없었기 때문입니다.
 
-> [옮긴이] 문화와 제국, 디지털 혁명은 피터 힌트젠스가 지은 책이다. 링크 내 무료로 읽을 수 있고 PDF나 전자책 포맷으로 다운로드할 수 있습니다.
+> [옮긴이] 문화와 제국, 디지털 혁명은 피터 힌트젠스가 지은 책이다. 링크 내 무료로 읽을 수 있고 PDF나 전자책 포맷으로 다운로드할 수 있습니다.
 
 ;There have been many attempts to solve the challenge of connected code. There are thousands of IETF specifications, each solving part of the puzzle. For application developers, HTTP is perhaps the one solution to have been simple enough to work, but it arguably makes the problem worse by encouraging developers and architects to think in terms of big servers and thin, stupid clients.
 
@@ -96,7 +96,7 @@ hwserver.c: Hello World 서버
 #include <unistd.h>
 #else
 #include <windows.h>
-#define sleep(n)    Sleep(n*1000)
+#define sleep(n)    Sleep(n*1000)
 #endif
 #include <string.h>
 #include <assert.h>
@@ -466,14 +466,14 @@ s_send (void *socket, char *string) {
 version.c : ØMQ 버전 확인하기
 
 ```cpp
-//  Report ØMQ version
-#include <zmq.h>
-int main (void)
+//  Report ØMQ version
+#include <zmq.h>
+int main (void)
 {
-    int major, minor, patch;
-    zmq_version (&major, &minor, &patch);
-    printf ("Current ØMQ version is %d.%d.%d\n", major, minor, patch);
-    return 0;
+    int major, minor, patch;
+    zmq_version (&major, &minor, &patch);
+    printf ("Current ØMQ version is %d.%d.%d\n", major, minor, patch);
+    return 0;
 }
 ```
 > [옮긴이] 빌드 및 테스트
@@ -956,15 +956,15 @@ the end.
 
 C 언어의 경우
 ```cpp
-    void *context = zmq_ctx_new ();
-    void *responder = zmq_socket (context, ZMQ_REP);
-    int rc = zmq_bind (responder, "tcp://*:5555");
+    void *context = zmq_ctx_new ();
+    void *responder = zmq_socket (context, ZMQ_REP);
+    int rc = zmq_bind (responder, "tcp://*:5555");
 ```
 C++ 언어의 경우
 ```cpp
-    zmq::context_t context (1);
-    zmq::socket_t socket (context, ZMQ_REP);
-    socket.bind ("tcp://*:5555");
+    zmq::context_t context (1);
+    zmq::socket_t socket (context, ZMQ_REP);
+    socket.bind ("tcp://*:5555");
 ```
 실행 시 하나의 프로세스에서 2개의 컨텍스트를 가진다면 그들은 독자적인 ØMQ 인스턴스가 됩니다. 명시적으로 그런 상황이 필요하면 가능하지만 다음 사항을 기억하시기 바랍니다.
 컨텍스트 생성(C 언어 : `zmq_ctx_new()`) 호출하여 프로세스 시작한 경우, 종료 시 컨텍스트 제거(C 언어 : `zmq_ctx_destory()`) 호출합니다.
@@ -1244,7 +1244,7 @@ PID  USER  PR  NI  VIRT  RES  SHR S %CPU %MEM   TIME+  COMMAND
 
 응용프로그램을 v2.x와 v3.2 모두에서 동작시키고 싶은 경우에 가능한 한 v3.2를 에뮬레이트 하는 것이 좋습니다. 다음은 C/C ++ 코드가 두 버전에서 작동하도록 도와주는 C 매크로 정의입니다(CZMQ에서 가져옴).
 
-~~~ {.c}
+```cpp
 #ifndef ZMQ_DONTWAIT
 # define ZMQ_DONTWAIT ZMQ_NOBLOCK
 #endif
@@ -1258,7 +1258,7 @@ PID  USER  PR  NI  VIRT  RES  SHR S %CPU %MEM   TIME+  COMMAND
 #elif ZMQ_VERSION_MAJOR == 3
 #   define ZMQ_POLL_MSEC 1 // zmq_poll is msec
 #endif
-~~~
+```
 
 ## 주의 - 불안정한 패러다임!
 ;Traditional network programming is built on the general assumption that one socket talks to one connection, one peer. There are multicast protocols, but these are exotic. When we assume "one socket = one connection", we scale our architectures in certain ways. We create threads of logic where each thread work with one socket, one peer. We place intelligence and state in these threads.

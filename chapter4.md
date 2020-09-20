@@ -505,7 +505,8 @@ int main (void)
 	return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트 - hwserver는 REP소켓을 사용하며 수정 없이 사용 가능합니다.
+> [옮긴이] 빌드 및 테스트 
+- hwserver는 REP소켓을 사용하며 수정 없이 사용 가능합니다.
 
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./hwserver
@@ -699,7 +700,7 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트 결과
+> [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./lppattern
@@ -2076,7 +2077,7 @@ int main (void)
   return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트 결과
+> [옮긴이] 빌드 및 테스트
 
 ~~~{.bash
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc pppattern.c libzmq.lib czmq.lib
@@ -3456,7 +3457,7 @@ int main (int argc, char *argv [])
 
 현재 MDP 구현과 통신규약은 개선하고 확장하였으며, 현재 자체 [Github 프로젝트](https://github.com/zeromq/majordomo)로 자리 잡았습니다. 적절하게 사용 가능한 MDP 스택을 원한다면 GitHub 프로젝트를 사용하십시오.
 
-> [옮긴이] 빌드 및 테스트 결과
+> [옮긴이] 빌드 및 테스트
 - 브로커(mdbroker)와 작업자(mdworker)를 실행하고 나서 클라이언트(mdclient)를 수행합니다.
 - 클라이언트(mdclient)에서 루프를 100,000번 수행하는 것을 2로 변경합니다.
 - 작업자(mdworker)에 등록된 서비스 이름이 "echo"와 클라이언트에서 요청하는 서비스 이름인 "echo"가 일치해야만 정상 구동됩니다.
@@ -7096,7 +7097,7 @@ flcliapi_agent (void *args, zctx_t *ctx, void *pipe)
     agent_destroy (&self);
 }
 ```
-> [빌드 및 테스트]
+> [옮긴이] 빌드 및 테스트
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc flserver3.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc flclient3.c libzmq.lib czmq.lib

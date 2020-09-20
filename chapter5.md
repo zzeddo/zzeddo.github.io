@@ -128,7 +128,7 @@
 
 다음 코드는 매우 단순합니다.
 
-espresso.c: Espresso Pattern in C
+espresso.c: 에스프레소 패턴
 ```cpp
 //  Espresso Pattern
 //  This shows how to capture data using a pub-sub proxy
@@ -310,7 +310,7 @@ TV 드라마에서 그레고르라는 탈옥한 죄수가 8.3분 내에 구독�
 
 다음은 발행자 코드입니다. 일부 주소에 연결하는 명령 줄 옵션이 없으면 단말에 바인딩되며, 나중에 마지막 값 캐시(LVC)에 연결에 사용합니다.
 
-pathopub.c : Pathologic Publisher in C
+pathopub.c : 병리학적인 발행자
 ```cpp
 //  Pathological publisher
 //  Sends out 1,000 topics and then one random update per second
@@ -352,7 +352,7 @@ int main (int argc, char *argv [])
 
 구독자 코드는 다음과 같습니다.
 
-pathosub.c : Pathologic Subscriber in C
+pathosub.c : 병리학적인 구독자
 ```cpp
 //  Pathological subscriber
 //  Subscribes to one random topic and prints received messages
@@ -507,7 +507,7 @@ int main (void)
 ~~~{.bash}
 ./pathosub tcp://localhost:5558
 ~~~
->[옮긴이] 빌드 및 테스트
+> [옮긴이] 빌드 및 테스트
  - "lvcahe.c" 소스코드의 이상과 pathopub 인수가 잘못되어 정상 동작하지 않습니다.
 
 ~~~{.bash}
@@ -533,7 +533,7 @@ PS D:\git_store\zguide-kr\examples\C> ./pathopub tcp://localhost:5557
 PS D:\git_store\zguide-kr\examples\C> ./pathopub tcp://*:5557
 ~~~
 
-> [옮긴이] 수정된 lvcache.c 
+> [옮긴이] 수정된 마지막 값 캐싱(lvcache.c)
 
 ```cpp
 //  Last value cache
@@ -691,7 +691,7 @@ Hotmail에 2주 동안  로그인하지 않았을 때 수행하는 것이며, �
 
 자살하는 달팽이에 대한 작은 예제입니다.
 
-suisnail.c: Suicidal Snail in C
+suisnail.c: 자살하는 달팽이
 ```cpp
 //  Suicidal Snail
 
@@ -773,7 +773,7 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 실행
+> [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc suisnail.c libzmq.lib czmq.lib
@@ -891,7 +891,7 @@ E: subscriber cannot keep up, aborting
 
 > [옮긴이] 고속 구독자에 대한 테스트를 위한 예제입니다.
 
-hssub.c : high speed subscriber
+hssub.c : 고속 구독자
 ```cpp
 // high speed subscriber
 
@@ -1069,7 +1069,7 @@ PS D:\git_store\zguide-kr\examples\C> ./hssub
 
 다음은 서버 코드입니다.
 
-clonesrv1.c: Clone server, Model One in C
+clonesrv1.c: 복제 서버, 모델 1
 ```cpp
 //  Clone server Model One
 
@@ -1106,7 +1106,7 @@ int main (void)
 
 다음은 클라이언트 코드입니다.
 
-clonecli1: Clone client, Model One in C
+clonecli1.c: 복제 클라이언트, 모델 1
 ```cpp
 //  Clone client Model One
 
@@ -1178,7 +1178,7 @@ Figure 58 - 상태 변경정보 발행
 
 다음은 현재 동작하는 가장 간단한 형식의 kvmsg 클래스입니다.
 
-kvsimple.c : Key-value message class in C
+kvsimple.c : 키-값 메시지 클래스
 ```cpp
 //  kvsimple class - key-value message class for example applications
 
@@ -1629,7 +1629,7 @@ OK
 
 다음의 서버 예제는 ØMQ의 자체 내부 대기열을 이용하는 단순한 모델입니다. 
 
-clonesrv2.c : Clone server, Model Two in C
+clonesrv2.c : 복제 서버, 모델 2
 ```cpp
 //  Clone server - Model Two
 
@@ -1754,7 +1754,7 @@ state_manager (void *args, zctx_t *ctx, void *pipe)
 
 ;And here is the client:
 
-clonecli2.c : Clone client, Model Two in C
+clonecli2.c : 복제 클라이언트, 모델 2
 ```cpp
 //  Clone client - Model Two
 
@@ -1883,7 +1883,7 @@ Received snapshot=1401876
 클라이언트에서 상태 변경들을 생성하겠습니다. 
 다음은 서버의 코드입니다.
 
-clonesrv3.c : Clone server, Model Three in C
+clonesrv3.c : 복제 서버, 모델 3
 ```cpp
 //  Clone server - Model Three
 
@@ -2142,7 +2142,7 @@ I: received update=5
 
 다음은 모델 3의 작은 변형으로 하위트리를 구현하는 서버의 코드입니다.
 
-clonesrv4.c : Clone server, Model Four in C
+clonesrv4.c : 복제 서버, 모델 4
 ```cpp
 //  Clone server - Model Four
 
@@ -2261,7 +2261,7 @@ int main (void)
 
 하위트리의 저장소의 내용을 구독하는 클라이언트의 코드입니다.
 
-clonecli4.c : Clone client, Model Four in C
+clonecli4.c : 복제 클라이언트, 모델 4
 ```cpp
 //  Clone client - Model Four
 
@@ -3145,7 +3145,7 @@ kvmsg_set_prop (kvmsg, "ttl", "%d", randof (30));
 * 하나는 PULL 소켓을 통해 오는 클라이언트들의 변경정보를 처리합니다.
 * 하나는 TTL이 경과된 임시값을 만료 처리(값을 공백으로 처리)합니다.
 
-clonesrv5.c : Clone server, Model Five in C
+clonesrv5.c : 복제 서버, 모델 5
 ```cpp
 //  Clone server - Model Five
 
@@ -3332,7 +3332,7 @@ s_flush_ttl (zloop_t *loop, int timer_id, void *args)
 
 kvmsg클래스에 TTL 속성을 부가한 클라이언트 소스는 다음과 같습니다.
 
-clonecli5.c : Clone Client, Model Five in C
+clonecli5.c : 복제 클라이언트, 모델 5
 ```cpp
 //  Clone client - Model Five
 
@@ -3560,7 +3560,7 @@ I: received update=4
 
 여기에 6번째로 복제 서버의 마지막 모델(모델 6)의 코드입니다.
 
-clonesrv6.c : Clone server, Model Six in C
+clonesrv6.c : 복제 서버, 모델 6
 
 ```cpp
 //  Clone server Model Six
@@ -4354,7 +4354,7 @@ char *
 
 복제 클라이언트의 모델 6 코드가 있으며 `clone` 클래스를 사용하여 얇은 껍질에 불과하게 되었습니다.
 
-clonecli6.c : Clone client, Model Six in C
+clonecli6.c : 복제 클라이언트, 모델 6
 ```cpp
 //  Clone client Model Six
 
@@ -4431,7 +4431,7 @@ int main (void)
 
 아래는 실제 `clone` 클래스가 구현된 코드입니다.
 
-clone.c: Clone class in C
+clone.c: 복제 클래스
 ```cpp
 //  clone class - Clone client API stack (multithreaded)
 

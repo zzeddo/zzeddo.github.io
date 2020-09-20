@@ -3023,7 +3023,7 @@ int main (int argc, char *argv [])
 }
 ```
 
-> [옮긴이] 빌드 및 실행 결과
+> [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering1_tcp.c libzmq.lib czmq.lib

@@ -302,7 +302,7 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 
 * PUB와 SUB
 * REQ와 REP
-* REQ와 ROUTER(주의 필요, REQ는 추가로 1개의 널(\0) 프레임을 넣는다.)
+* REQ와 ROUTER(주의 필요, REQ는 추가로 1개의 널(\0) 프레임을 넣는다.)
 * DEALER와 REP(주의 필요, REP는 1개의 널(\0) 프레임으로 가정한다.)
 * DEALER와 ROUTER
 * DEALER와 DEALER
@@ -343,12 +343,12 @@ libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 AP
 ;* Work with message properties: zmq_msg_get(), zmq_msg_set().
 ;* Message manipulation: zmq_msg_copy(), zmq_msg_move().
 
-* 메시지 초기화 : `zmq_msg_init()`,  `zmq_msg_init_size()`,  `zmq_msg_init_data() `
-* 메시지 송/수신 : `zmq_msg_send()`,  `zmq_msg_recv()` 
+* 메시지 초기화 : `zmq_msg_init()`,  `zmq_msg_init_size()`,  `zmq_msg_init_data() `
+* 메시지 송/수신 : `zmq_msg_send()`,  `zmq_msg_recv()` 
 * 메시지 해제 : `zmq_msg_close()`
-* 메시지 내용 접근 : `zmq_msg_data()`,  `zmq_msg_size()`,  `zmq_msg_more()`
-* 메시지 속성 작업 : `zmq_msg_get()` ,  `zmq_msg_set()`
-* 메시지 조작 : `zmq_msg_copy()` ,  `zmq_msg_move()`
+* 메시지 내용 접근 : `zmq_msg_data()`,  `zmq_msg_size()`,  `zmq_msg_more()`
+* 메시지 속성 작업 : `zmq_msg_get()` ,  `zmq_msg_set()`
+* 메시지 조작 : `zmq_msg_copy()` ,  `zmq_msg_move()`
 
 ;On the wire, ØMQ messages are blobs of any size from zero upwards that fit in memory. You do your own serialization using protocol buffers, msgpack, JSON, or whatever else your applications need to speak. It's wise to choose a data representation that is portable, but you can make your own decisions about trade-offs.
 
@@ -649,17 +649,17 @@ int main (void)
 `zmq_pollitem_t`는 4개의 맴버가 있으며 구조체이다(ØMQ 4.3.2).
 
 ```cpp
-typedef struct zmq_pollitem_t
+typedef struct zmq_pollitem_t
 {
-    void *socket;
-#if defined _WIN32
-    SOCKET fd;
+    void *socket;
+#if defined _WIN32
+    SOCKET fd;
 #else
-    int fd;
+    int fd;
 #endif
-    short events;
-    short revents;
-} zmq_pollitem_t;
+    short events;
+    short revents;
+} zmq_pollitem_t;
 ```
 
 > [옮긴이] msreader와 mspoller 테스트를 위해서는 taskvent(선동가 서버)와 wuserver(기상 정보 변경 서버) 수행이 필요함
@@ -2192,7 +2192,7 @@ int main (void)
 
 > [옮긴이] 원도우 운영체제에서 POSIX 스레드(pthread) 사용하기 위해서는 [pthreads Win32](http://www.sourceware.org/pthreads-win32/)를 참조합니다.
 응용프로그램 빌드 시 timespec 관련 오류(Error C2011 'timespec': 'struct' type redefinition) 발생할 경우 `pthread.h" 파일에 
-`#define HAVE_STRUCT_TIMESPEC` 추가합니다.
+`#define HAVE_STRUCT_TIMESPEC` 추가합니다.
 사이트(ftp://sourceware.org/pub/pthreads-win32/dll-latest)에서 최신 파일(pthreadVC2.dll, pthreadVC2.lib, pthread.h, sched.h, semaphore.h)을 받아 설치합니다.
 
 ;All the code should be recognizable to you by now. How it works:
