@@ -11,7 +11,7 @@
 ;For the examples, we started with GPL, but it rapidly became clear this wasn't workable. The point of examples is to give people reusable code fragments so they will use ØMQ more widely, and if these are GPL, that won't happen. We switched to MIT/X11, even for the larger and more complex examples that conceivably would work as LGPL.
 
 예제 소스 코드는 GPL로 공개하였지만 곧 제대로 운용되지 않는 것을 알 수 있었습니다.
-예제 소스 코드의 조각을 다양한 용도로 재사용하여 ØMQ가 광범위하게 사용되길 희망하였지만 잘 되지 않았습니다. 그래서 예제 코드의 라이선스를 MIT / X11로 전환했습니다.
+예제 소스 코드의 조각들을 다양한 용도로 재사용하여 ØMQ가 광범위하게 사용되길 희망하였지만 잘 되지 않았습니다. 그래서 예제 코드의 라이선스를 MIT/X11로 전환하였습니다.
 규모가 크고 더 복잡한 예제 코드에 관해서는 LGPL하에서 운용됩니다.
 
 ;However, when we started turning the examples into standalone projects (as with Majordomo), we used the LGPL. Again, remixability trumps dissemination. Licenses are tools; use them with intent, not ideology.

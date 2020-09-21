@@ -7,15 +7,18 @@
 * 스테로이드를 먹은 스켓입니다.
 * 라우팅 기능이 있는 우편함과 같습니다.
 * 빠릅니다.
+
 어떤 사람들은 깨달음의 순간을 공유하려 합니다.
-* 모든 것이 분명해졌을 때 번쩍-우르릉-쾅쾅 깨달음(zap-pow-kaboom satori) 패러다임 전환 순간을 느낍니다.
+* 모든 것이 분명해졌을 때 번쩍-우르릉-쾅쾅 깨달음(zap-pow-kaboom satori) 패러다임 전환의 순간을 느낍니다.
 * 사물은 단순해지고 복잡성이 사라집니다
 * 마음을 열게 합니다.
-어떤 사람들은 다른 것과 비교하여 ØMQ를 설명하려고 한다:
+
+어떤 사람들은 다른 것과 비교하여 ØMQ를 설명하려고 합니다.
 *  더 작고 단순하지만 여전히 익숙해 보입니다
+
 개인적으로 저는 왜 우리가 ØMQ를 만들었는지를 기억하고 싶으며, 독자 여러분은 우리가 처음 길을 접어든 근처에 머물고 있을지 모르기 때문입니다.
 
-> [옮긴이] 번쩍-우르릉-쾅쾅 사토리(zap-pow-kaboom satori)에서 사토리는 불교의 용어로 해달의 경지인 깨달음 의미합니다. 일본에서 돈버는 것에도 출세에도 관심이 없는 젊은 세대를 ‘사토리 세대’라고 부릅니다.
+> [옮긴이] 번쩍-우르릉-쾅쾅 깨달음(zap-pow-kaboom satori)에서 사토리는 불교의 용어로 해달의 경지인 깨달음 의미합니다. 일본에서 돈버는 것에도 출세에도 관심이 없는 젊은 세대를 "사토리 세대"라고 부릅니다.
 
 ![zap-pow-kaboom satori](images/fig0_satori.jpg)
 
@@ -30,26 +33,26 @@
 
 ;If you've done any work with threads, protocols, or networks, you'll realize this is pretty much impossible. It's a dream. Even connecting a few programs across a few sockets is plain nasty when you start to handle real life situations. Trillions? The cost would be unimaginable. Connecting computers is so difficult that software and services to do this is a multi-billion dollar business.
 
-당신이 스레드, 통신규약 또는 네트워크와 관련된 일을 하였다면 당신은 이것이 얼마나 불가능에 가까운 일인가를 알 것입니다. 이건 꿈과 같습니다. 실제 상황에서 몇 개의 프로그램들을 몇 개의 소켓을 통해 연결하는 것조차도 어렵고 불쾌합니다. 수조 원? 그 비용은 상상도 할 수 없을 정도입니다. 컴퓨터들을 연결시키는 것이 매우 어렵기 때문에 이를 수행하는 소프트웨어와 서비스들은 수십억 달러짜리의 사업입니다.
+당신이 스레드, 통신규약 또는 네트워크와 관련된 일을 하였다면 당신은 이것이 얼마나 불가능에 가까운 일인가를 알 것입니다. 이건 꿈과 같습니다. 실제 상황에서 몇 개의 프로그램들을 몇 개의 소켓을 통해 연결하는 것조차도 어렵고 불쾌합니다. 수조 원? 그 비용은 상상도 할 수 없을 정도입니다. 컴퓨터들을 연결시키는 것은 매우 어렵기 때문에 이를 수행하는 소프트웨어와 서비스들은 수십억 달러짜리의 사업입니다.
 
 ;So we live in a world where the wiring is years ahead of our ability to use it. We had a software crisis in the 1980s, when leading software engineers like Fred Brooks believed there was no "Silver Bullet" to "promise even one order of magnitude of improvement in productivity, reliability, or simplicity".
 
-그래서 결국 우리는 이러한 세상에서 살게 되었습니다: 인터넷 보급과 속도는 상당히 발전되었는데, 그것을 제대로 활용하는 능력은 몇 년이나 뒤쳐져 있습니다. 우리는 1980년대에 한차례 소프트웨어 위기를 겼었으며, 그때 프레드 브룩스와 같은 수준급 소프트웨어 엔지니어들은 “소프트웨어 업계에서 생산성, 신뢰성, 단순성 이 세 가지 척도중 그 어느 한 방면에서도 진보를 이루는 것에는 [「은총알이 존재하지 않는다」](http://en.wikipedia.org/wiki/No_Silver_Bullet)” 고 주장하였습니다.
+그래서 결국 우리는 이러한 세상에서 살게 되었습니다: 인터넷 보급과 속도는 상당히 발전되었는데, 그것을 제대로 활용하는 능력은 몇 년이나 뒤쳐져 있습니다. 우리는 1980년대에 한차례 소프트웨어 위기를 겼었으며, 프레드 브룩스와 같은 수준급 소프트웨어 엔지니어들은 “소프트웨어 업계에서 생산성, 신뢰성, 단순성 이 세 가지 척도 중에 어느 한 방면에서도 진보를 이루는 것에는 [「은총알이 존재하지 않는다」](http://en.wikipedia.org/wiki/No_Silver_Bullet)” 고 주장하였습니다.
 
 ;Brooks missed free and open source software, which solved that crisis, enabling us to share knowledge efficiently. Today we face another software crisis, but it's one we don't talk about much. Only the largest, richest firms can afford to create connected applications. There is a cloud, but it's proprietary. Our data and our knowledge is disappearing from our personal computers into clouds that we cannot access and with which we cannot compete. Who owns our social networks? It is like the mainframe-PC revolution in reverse.
 
-브룩스가 놓쳤던 것은 자유롭게 이용 가능한 오픈소스 소프트웨어들이었으며, 서로 효율적으로 지식을 공유함으로 위기를 해결할 수 있었습니다. 
-하지만 오늘날 우리는 또 다른 소프트웨어 위기에 직면하고 있지만 이번에는 이걸 얘기하는 사람은 거의 없습니다. 위기는 가장 크고 가장 부유한 기업들만이 “연결된 응용프로그램들을” 만들 수 있다는 점이다. 물론 요즘에는 클라우드가 있지만 클라우드는 사적 소유이며 우리의 데이터와 우리의 지식은 개인 컴퓨터에서 점점 사라지고, 우리가 접근할 수 없고 우리가 그걸 상대로 경쟁조차 펼칠 수 없는 클라우드로 흘러 들어가고 있습니다. 우리의 소셜 네트워크를 누가 가지고 있을까요? 이것은 PC에서 대형 컴퓨터로 전환되는 혁명이 역으로 수행되고 있습니다.
+브룩스가 놓쳤던 것은 자유롭게 사용 가능한 오픈 소스 소프트웨어들이었으며, 서로 효율적으로 지식을 공유함으로 위기를 해결할 수 있었습니다. 
+하지만 오늘날 우리는 또 다른 소프트웨어 위기에 직면하고 있지만 이번에는 이걸 얘기하는 사람은 거의 없습니다. 위기는 가장 크고 가장 부유한 기업들만이 “연결된 응용프로그램들을” 만들 수 있다는 점입니다. 물론 요즘에는 클라우드가 있지만 클라우드는 사적 소유이며 우리의 데이터와 우리의 지식은 개인 컴퓨터에서 점점 사라지고, 우리가 접근할 수 없고 우리가 그걸 상대로 경쟁조차 펼칠 수 없는 클라우드로 흘러 들어가고 있습니다. 우리의 소셜 네트워크를 누가 가지고 있을까요? 이것은 PC에서 대형 컴퓨터로 전환되는 혁명이 역으로 수행되고 있습니다.
 
 ;We can leave the political philosophy for another book. The point is that while the Internet offers the potential of massively connected code, the reality is that this is out of reach for most of us, and so large interesting problems (in health, education, economics, transport, and so on) remain unsolved because there is no way to connect the code, and thus no way to connect the brains that could work together to solve these problems.
 
-우리는 이런 정치철학은 [문명과 제국, 디지털 혁명](http://cultureandempire.com/)에서 다루고 있습니다 여기서 말하고자 하는 건, 인터넷이 대규모 연결된 프로그램에 잠재력을 제공하고 있음에도 불구하고, 현실은 이것을 충분히 이용할 수 있는 사람은 극히 드물다는 점입니다. 그러므로 거대하고 흥미로운 문제들(건강 의료, 교육, 경제, 물류 등 분야들의)에 대하여 해결되지 못하고 있으며 원인은 우리가 코드들을 효과적으로 연결 못하고 개개인이 함께 협력하여 이러한 문제를 해결할 방법이 없었기 때문입니다.
+우리는 이런 정치철학을 「[문명과 제국, 디지털 혁명](http://cultureandempire.com/)」에서 다루고 있습니다 여기서 말하고자 하는 건, 인터넷이 대규모 연결된 프로그램에 잠재력을 제공하고 있음에도 불구하고, 현실은 이것을 충분히 이용할 수 있는 사람들은 극히 드물다는 점입니다. 그러므로 거대하고 흥미로운 문제들(건강, 의료, 교육, 경제, 물류 등의 분야들)을 해결되지 못하고 있으며 원인은 우리가 코드을 효과적으로 연결 못하고 개개인이 함께 협력하여 이러한 문제를 해결할 방법이 없었기 때문입니다.
 
-> [옮긴이] 문화와 제국, 디지털 혁명은 피터 힌트젠스가 지은 책이다. 링크 내 무료로 읽을 수 있고 PDF나 전자책 포맷으로 다운로드할 수 있습니다.
+> [옮긴이] 문화와 제국, 디지털 혁명은 피터 힌트젠스가 지은 책입니다. 링크 내 무료로 읽을 수 있고 PDF나 전자책 포맷으로 다운로드할 수 있습니다.
 
 ;There have been many attempts to solve the challenge of connected code. There are thousands of IETF specifications, each solving part of the puzzle. For application developers, HTTP is perhaps the one solution to have been simple enough to work, but it arguably makes the problem worse by encouraging developers and architects to think in terms of big servers and thin, stupid clients.
 
-연결된 코드의 도전 문제를 해결하기 위한 많은 시도들도 있었습니다. 예를 들어 수천 개의 IETF 규격들, 그것들은 각각 퍼즐의 일부만 해결합니다. 응용프로그램 개발자에게 있어서 HTTP 는 아마도 한가지 충분히 간단하고 효과도 괜찮은 해결책이었지만 HTTP는 개발자들과 아키텍처들을 거대한  서버와 작고, 어리석은 클라이언트로 구성된 아키텍처를 권고하면서 문제를 더 악화시키게 되었습니다.
+연결된 코드의 도전 문제를 해결하기 위한 많은 시도들도 있었습니다. 예를 들어 수천 개의 「국제 인터넷 표준화 기구(Internet Engineering Task Force, IETF)」 규격들, 그것들은 각각 퍼즐의 일부만을 해결합니다. 응용프로그램 개발자에게 있어서 HTTP는 간단하고 효과 좋은 해결책이었지만 HTTP는 개발자들에게 거대한 서버와 작고, 어리석은 클라이언트로 구성된 아키텍처를 권고하면서 문제를 더 악화시키게 되었습니다.
 
 ;So today people are still connecting applications using raw UDP and TCP, proprietary protocols, HTTP, and Websockets. It remains painful, slow, hard to scale, and essentially centralized. Distributed P2P architectures are mostly for play, not work. How many applications use Skype or Bittorrent to exchange data?
 
@@ -57,9 +60,9 @@
 
 ;Which brings us back to the science of programming. To fix the world, we needed to do two things. One, to solve the general problem of "how to connect any code to any code, anywhere". Two, to wrap that up in the simplest possible building blocks that people could understand and use easily.
 
-이 모든 현실은 다시 우리를 최초의 프로그래밍 과학에 대한 문제로 되돌려 보냅니다. 세상을 구원하기 위해 우리는 두 가지 일을 해야 합니다. :
+이 모든 현실은 다시 우리를 최초의 프로그래밍 과학에 대한 문제로 되돌려 보냅니다. 세상을 구원하기 위해 우리는 두 가지 일을 해야 합니다 :
 * 첫째, 일반적인 문제인 “어디서나, 코드와 코드 간에 연결시키기”
-* 둘째, 모든 대책을 최대한 간단한 구성요소로 만들어 사람들이 이해하고 사용하기도 쉽게 하기
+* 둘째, 모든 대책을 최대한 간단한 구성요소로 만들어 사람들이 쉽게 이해하고 사용하게 하기
 
 ;It sounds ridiculously simple. And maybe it is. That's kind of the whole point.
 
@@ -68,14 +71,14 @@
 ## 전제 조건
 ;We assume you are using at least version 3.2 of ØMQ. We assume you are using a Linux box or something similar. We assume you can read C code, more or less, as that's the default language for the examples. We assume that when we write constants like PUSH or SUBSCRIBE, you can imagine they are really called ZMQ_PUSH or ZMQ_SUBSCRIBE if the programming language needs it.
 
-ØMQ 3.2 버젼을 사용하고 리눅스와 유사한 운영체제를 사용한다고 가정합니다. 이 책의 기본 예제는 C 언어로 구성되어 있어 C 코드를 읽을 수 있어야 합니다. PUSH와 SUBSCRIBE와 같은 상수를 사용할 때 실제 프로그래밍 언어에서는 ZMQ_PUSH, ZMQ_SUBSCRIBE가 호출된다고 생각할 수 있습니다.
+ØMQ 3.2 버전을 사용하고 리눅스와 유사한 운영체제를 사용한다고 가정합니다. 이 책의 기본 예제는 C 언어로 구성되어 있어 C 코드를 읽을 수 있어야 합니다. PUSH와 SUBSCRIBE와 같은 상수를 사용할 때 실제 프로그래밍 언어에서는 ZMQ_PUSH, ZMQ_SUBSCRIBE가 호출된다고 생각할 수 있습니다.
 
 > [옮긴이] C 예제들을 원도우 운영체제에서도 사용 가능하도록 변경하였습니다.
 
 ## 예제 받기
 ;The examples live in a public GitHub repository. The simplest way to get all the examples is to clone this repository:
 
-예제들은 [깃허브 공개 저장소](https://github.com/imatix/zguide)에 있으며, `git clone`명령으로 받을 수 있으며 동기화 이후 예제 폴더에서 다양한 개발언어로 작성된 예제들을 확인 가능합니다.
+예제들은 「[깃허브 공개 저장소](https://github.com/imatix/zguide)」에 있으며, `git clone`명령으로 받을 수 있으며 동기화 이후 예제 폴더에서 다양한 개발 언어로 작성된 예제들을 확인 가능합니다.
 
 ~~~ {.bash}
 git clone --depth=1 git://github.com/imatix/zguide.git
@@ -85,7 +88,7 @@ git clone --depth=1 git://github.com/imatix/zguide.git
 ;So let's start with some code. We start of course with a Hello World example. We'll make a client and a server. The client sends "Hello" to the server, which replies with "World". Here's the server in C, which opens a ØMQ socket on port 5555, reads requests on it, and replies with "World" to each request:
 
 Hello World 예제로 시작하며, 클라이언트와 서버 프로그램을 만들도록 하겠습니다.
-클라이언트에서 서버로 "Hello"을 보내면 서버에서 "World"를 클라이언트에게 응답합니다. 예제에서 ØMQ 소켓을 5555 포트로 오픈하여 요청에 대응한다.
+클라이언트에서 서버로 "Hello"을 보내면 서버에서 "World"를 클라이언트에게 응답합니다. 예제에서 ØMQ 소켓을 5555 포트로 오픈하여 요청에 대응합니다.
 
 hwserver.c: Hello World 서버
 ```cpp
@@ -125,8 +128,8 @@ int main (void)
 
 ;The REQ-REP socket pair is in lockstep. The client issues zmq_send() and then zmq_recv(), in a loop (or once if that's all it needs). Doing any other sequence (e.g., sending two messages in a row) will result in a return code of -1 from the send or recv call. Similarly, the service issues zmq_recv() and then zmq_send() in that order, as often as it needs to.
 
-REQ-REP 소켓 쌍은 진행 순서가 고정되어  클라이언트는 루프상에서 `zmq_send()`를 호출하고 나서 `zmq_recv()`를 호출할 수 있으며, `zmq_send()`를 2번 호출(예 : 2개의 메시지를 연속으로 전송) 할 경우에는 오류 코드로 -1이 반환됩니다.
-마찬가지로 서버 측은 `zmq_recv()`를 호출하고 나서 `zmq_send ()`를 호출해야 합니다.
+REQ-REP 소켓 쌍은 진행 순서가 고정되어 REQ 클라이언트는 루프상에서 `zmq_send()`를 호출하고 나서 `zmq_recv()`를 호출할 수 있으며, `zmq_send()`를 두 번 호출(예 : 두 개의 메시지를 연속으로 전송) 할 경우에는 오류 코드로 -1이 반환됩니다.
+마찬가지로 REP 서버 측은 `zmq_recv()`를 호출하고 나서 `zmq_send ()`를 호출해야 합니다.
 
 ;ØMQ uses C as its reference language and this is the main language we'll use for examples. If you're reading this online, the link below the example takes you to translations into other programming languages. Let's compare the same server in C++:
 
@@ -174,7 +177,7 @@ int main () {
     return 0;
 }
 ```
-> [옮긴이] C++ 바인딩의 경우 2개의 헤더 파일("zmq.hpp", "zmq_addon.hpp")로 구성되어 있습니다.
+> [옮긴이] C++ 바인딩의 경우 두 개의 헤더 파일("zmq.hpp", "zmq_addon.hpp")로 구성되어 있습니다.
 
 ;You can see that the ØMQ API is similar in C and C++. In a language like PHP or Java, we can hide even more and the code becomes even easier to read:
 
@@ -300,7 +303,7 @@ int main (void)
 이 두 프로그램이 실제로 무엇을 하고 있는지 간략하게 살펴보겠습니다.
 이들은 우선 ØMQ 컨텍스트 ØMQ 소켓을 생성합니다.
 서버는 REP 소켓을 포트 5555번으로 바인딩하여 매번 루프에서 요청을 기다리고 각 요청에 응답합니다.
-클라이언트는 요청을 보내고 서버의 응답을 받습니다.
+클라이언트는 REQ 소켓을 포트 5555번에 연결하여 요청을 보내고 서버의 응답을 받습니다.
 
 > [옮긴이] 빌드 및 테스트
 
@@ -355,7 +358,7 @@ Received World 9
 ## 문자열에 대한 간단한 주의 사항
 ;ØMQ doesn't know anything about the data you send except its size in bytes. That means you are responsible for formatting it safely so that applications can read it back. Doing this for objects and complex data types is a job for specialized libraries like Protocol Buffers. But even for strings, you need to take care.
 
-ØMQ는 데이터의 바이트 크기 외에는 아무것도 모르기 때문에 문자열을 안전하게 처리할 책임이 있습니다. 이러한 복잡한 데이터 형이나 객체에 대하여 작업하기 위해 특화된 "통신규약 버퍼(Protocol Buffer)"라는 라이브러리가 있지만 문자열에 대하여서는 주의해야 합니다.
+ØMQ는 데이터의 바이트 크기 외에는 아무것도 모르기 때문에 개발자가 문자열을 안전하게 처리할 책임이 있습니다. 복잡한 데이터 타입이나 객체에 대하여 작업하기 위해 특화된 "통신규약 버퍼(Protocol Buffer)"라는 라이브러리가 있지만 문자열에 대하여서는 주의해야 합니다.
 
 ;In C and some other languages, strings are terminated with a null byte. We could send a string like "HELLO" with that extra null byte:
 
@@ -386,7 +389,7 @@ socket.send ("Hello")
 
 ;And if you read this from a C program, you will get something that looks like a string, and might by accident act like a string (if by luck the five bytes find themselves followed by an innocently lurking null), but isn't a proper string. When your client and server don't agree on the string format, you will get weird results.
 
-C 언어를 통해 코드를 본다면 문자열과 비슷한 것을 확인할 수 있으며 우연히 문자열처럼 동작할 수 있지만(운이 좋아 5 바이트(Hello) 널(\0) 뒤따르는 경우) 적절한 문자열이 아닙니다. 클라이언트와 서버가 문자열 형식에 동의하지 않는다면 이상한 결과를 가져오게 됩니다.
+C 언어를 통해 코드를 본다면 문자열과 비슷한 것을 확인할 수 있으며 우연히 문자열처럼 동작할 수 있지만(운이 좋아 5 바이트(Hello)에 널(\0) 뒤따르는 경우) 적절한 문자열이 아닙니다. 클라이언트와 서버가 문자열 형식에 동의하지 않는다면 이상한 결과를 가져오게 됩니다.
 
 ;When you receive string data from ØMQ in C, you simply cannot trust that it's safely terminated. Every single time you read a string, you should allocate a new buffer with space for an extra byte, copy the string, and terminate it properly with a null.
 
@@ -455,7 +458,7 @@ s_send (void *socket, char *string) {
 ```
 ;The result is zhelpers.h, which lets us write sweeter and shorter ØMQ applications in C. It is a fairly long source, and only fun for C developers, so read it at leisure.
 
-도우미 함수들은 C 언어에서 사용할 수 있도록 "zhelper.h" 파일에 정의해 두었지만 소스가 상당히 길고 C 개발자에게만 흥미롭기 때문에 여유롭게 보시기 바랍니다.
+도우미 함수들은 C 언어에서 사용할 수 있도록 "zhelpers.h" 파일에 정의해 두었지만 소스가 상당히 길고 C 개발자에게만 흥미롭기 때문에 여유롭게 보시기 바랍니다.
 
 ## ØMQ 버전 확인하기
 ;ØMQ does come in several versions and quite often, if you hit a problem, it'll be something that's been fixed in a later version. So it's a useful trick to know exactly what version of ØMQ you're actually linking with.
@@ -497,8 +500,8 @@ Current ØMQ version is 4.3.2
 ## 메시지 송신하기
 ;The second classic pattern is one-way data distribution, in which a server pushes updates to a set of clients. Let's see an example that pushes out weather updates consisting of a zip code, temperature, and relative humidity. We'll generate random values, just like the real weather stations do.
 
-두 번째 고전적인 패턴으로 서버의 일방적인 데이터 전송으로, 서버가 일련의 클라이언트들에게 변경정보들을 분배하는 것이다.
-예를 들면 우편번호, 온도, 상대습도 등으로 구성된 기상 변경정보들이 분배하여 실제 기상관측소처럼 임의의 값을 생성하도록 하였습니다.
+두 번째 고전적인 패턴으로 서버의 단방향 데이터 전송으로, 서버가 일련의 클라이언트들에게 변경정보들을 배포합니다.
+예를 들면 우편번호, 온도, 상대습도 등으로 구성된 기상 변경정보들이 배포하여 실제 기상관측소처럼 임의의 값을 생성하도록 하였습니다.
 
 ;Here's the server. We'll use port 5556 for this application:
 
@@ -598,7 +601,7 @@ int main (int argc, char *argv [])
 ;Note that when you use a SUB socket you must set a subscription using zmq_setsockopt() and SUBSCRIBE, as in this code. If you don't set any subscription, you won't get any messages. It's a common mistake for beginners. The subscriber can set many subscriptions, which are added together. That is, if an update matches ANY subscription, the subscriber receives it. The subscriber can also cancel specific subscriptions. A subscription is often, but not necessarily a printable string. See zmq_setsockopt() for how this works.
 
 클라이언트는 SUB 소켓을 사용할 때 반드시 `zmq_setsocket()`와 `ZMQ_SUBSCRIBE` 을 사용하여 구독을 설정해야 하며 미수행시 어떤 메시지도 받을 수 없습니다.
-구독자는 다수의 구독을 설정할 수 있으며 특정 구독은 취소할 수 있습니다. 즉, 변경정보는 설정한 모든 구독과 일치하면 구독자가 변경정보를 받습니다. 구독은 반드시 출력 가능한 문자열일 필요는 없으며, 동작 방법은 `zmq_setsocket()` 참조하시기 바랍니다.
+구독자는 다수의 구독을 설정할 수 있으며 특정 구독은 취소할 수 있습니다. 즉, 구독자에 설정된 구독과 일치하면 변경정보를 받습니다. 구독은 반드시 출력 가능한 문자열일 필요는 없으며, 동작 방법은 `zmq_setsocket()` 참조하시기 바랍니다.
 
 ;The PUB-SUB socket pair is asynchronous. The client does zmq_recv(), in a loop (or once if that's all it needs). Trying to send a message to a SUB socket will cause an error. Similarly, the service does zmq_send() as often as it needs to, but must not do zmq_recv() on a PUB socket.
 
@@ -614,12 +617,12 @@ SUB 소켓에 메시지를 보내려고 하면 오류가 발생합니다.
 
 ;There is one more important thing to know about PUB-SUB sockets: you do not know precisely when a subscriber starts to get messages. Even if you start a subscriber, wait a while, and then start the publisher, the subscriber will always miss the first messages that the publisher sends. This is because as the subscriber connects to the publisher (something that takes a small but non-zero time), the publisher may already be sending messages out.
 
-PUB-SUB 소켓에 대한 한 가지 중요한 사항으로 구독자가 메시지를 받기 시작하는 시기를 정확히 알 수 없습니다. 구독자를 기동하고 기다리는 동안 발행자를 기동 하면, 구독자는 항상  발행자가 보내는 첫 번째 메시지를 유실힙니다. 사유는 구독자가 발행자에게 연결할 때(작지면 0이 아닌 시간 소요) 발행자 이미 메시지를 전송했기 때문입니다.
+PUB-SUB 소켓에 대한 한 가지 중요한 사항으로 구독자가 메시지를 받기 시작하는 시기를 정확히 알 수 없습니다. 구독자를 기동하고 기다리는 동안 발행자를 기동 하면, 구독자는 항상 발행자가 보내는 첫 번째 메시지를 유실힙니다. 사유는 구독자가 발행자에게 연결할 때(작지면 0이 아닌 시간 소요) 발행자가 이미 메시지를 전송했기 때문입니다.
 
 ;This "slow joiner" symptom hits enough people often enough that we're going to explain it in detail. Remember that ØMQ does asynchronous I/O, i.e., in the background. Say you have two nodes doing this, in this order:
 
 이 "더딘 결합(slow joiner)" 현상은 사람들을 놀라게 하며 나중에 자세히 설명하겠습니다. ØMQ는 백그라운드에서 비동기 I/O를 수행합니다.
-백그라운드에서 2개의 노드에서 아래의 순서로 통신을 수행합니다.
+백그라운드에서 두 개의 노드에서 아래의 순서로 통신을 수행합니다.
 
 ;* Subscriber connects to an endpoint and receives and counts messages.
 ;* Publisher binds to an endpoint and immediately sends 1,000 messages.
@@ -680,7 +683,7 @@ Average temperature for zipcode '10001' was 35F
 
 * 구독자는 한 개 이상의 발행자와 연결할 수 있다. 매번 하나의 연결을 사용하며 데이터가 도착하면 개별 대기열(`fair-queued`)에 쌓이며 개별 발행자로부터 수신된 데이터의 대기열은 다른 것에 영향을 주지 않습니다.
 * 발행자에 어떤 구독자들도 연결하지 않았다면, 모든 메시지들은 버려집니다.
-* TCP를 사용하고 구동자의 처리가 지연된다면 메시지는 발행자의 대기열에 추가됩니다. 이후 발행자를 HWM(high-water mark) 사용하여 보호하는 방법을 알아보겠습니다.
+* TCP를 사용하고 구독자의 처리가 지연된다면 메시지는 발행자의 대기열에 추가됩니다. 이후 발행자를 최고수위 표시(HWM(high-water mark))를 사용하여 보호하는 방법을 알아보겠습니다.
 * ØMQ v3.x부터, 발행자에서도 필터 기능이 추가되었습니다(tcp:// 혹은 ipc://). epgm:// 통신규약을 사용하여 구독자에서도 필터를 사용할 수 있습니다. ØMQ v2.x에서는 필터 기능은 구독자에서만 사용 가능했습니다.
 
 ;This is how long it takes to receive and filter 10M messages on my laptop, which is an 2011-era Intel i5, decent but nothing special:
@@ -711,16 +714,16 @@ sys     0m0.008s
 ;* A set of workers that process tasks
 ;* A sink that collects results back from the worker processes
 
-* 선동자(ventilator)는 병렬 처리 가능한 작업들을 생성합니다.
-* 일련의 작업자(Worker)들을 작업들을 처리합니다.
+* 호흡기(ventilator)는 병렬 처리 가능한 작업들을 생성합니다.
+* 일련의 작업자(Worker)들이 작업들을 처리합니다.
 * 수집기(Sink)는 작업자 프로세스들로부터 작업 결과를 수집합니다.
 
 ;In reality, workers run on superfast boxes, perhaps using GPUs (graphic processing units) to do the hard math. Here is the ventilator. It generates 100 tasks, each a message telling the worker to sleep for some number of milliseconds:
 
 실제로 작업자는 초고속 컴퓨터들에서 병렬 처리로 실행되며 GPU(그래픽 처리 장치)를 사용하여 어려운 연산을 수행합니다.
-선동자 소스는 100개의 작업할 메시지들을 만들며 각 메시지에는 작업자의 부하를 시간으로 전달(<100 msec)하여 해당 시간 동안 대기하게 합니다.
+호흡기 소스는 100개의 작업할 메시지들을 만들며 각 메시지에는 작업자의 부하를 시간으로 전달(<100 msec)하여 해당 시간 동안 대기하게 합니다.
 
-taskvent.c: 선동자
+taskvent.c: 호흡기
 
 ```cpp
 //  Task ventilator
@@ -774,7 +777,7 @@ int main (void)
 
 ;Here is the worker application. It receives a message, sleeps for that number of seconds, and then signals that it's finished:
 
-작업자는 선동자로부터 받은 메시지에 지정된 시간(밀리초)을 받아 시간만큼 대기하고 수집기에 메시지를 전달합니다.
+작업자는 호흡기로부터 받은 메시지에 지정된 시간(밀리초)을 받아 시간만큼 대기하고 수집기에 메시지를 전달합니다.
 
 taskwork.c 작업자
 
@@ -916,9 +919,9 @@ Total elapsed time: 2675 msec
 ;* The ventilator's PUSH socket distributes tasks to workers (assuming they are all connected before the batch starts going out) evenly. This is called load balancing and it's something we'll look at again in more detail.
 ;* The sink's PULL socket collects results from workers evenly. This is called fair-queuing.
 
-* 작업자는 상류의 선동자와 하류의 싱크를 연결(connect)하며 자유롭게 작업자를 추가할 수 있습니다. 만약 작업자가 선동자와 수집기에 바인딩(bind)를 수행할 경우 선동자와 싱크 변경(및 추가) 시마다 작업자를 추가해야 합니다. 작업자에서 동적 요소로 연결(connect)을 수행하고 선동자와 싱크는 정적 요소로 바인딩(bind)를 수행합니다.
- * 모든 작업자가 시작할 때까지 처리의 시작을 동기화해야 합니다. 이것은 ØMQ의 일반적인 원칙이며 간단한 해결 방법은 없습니다. `zmq_connect()`함수 수행 시 일정 정도의 시간이 소요되며, 여러 작업자가 선동자에 연결할 때 첫 번째 작업자가 성공적으로 연결하여 메시지를 수신하는 동안 다른 작업자는 연결을 수행합니다. 동기화되어야만 시스템은 병렬로 동작합니다. 선동자에서 작업자들이 동기화를 위하여 사용한 `getchar()`를 제거할 경우 어떤 일이 발생하는지 확인해 보시기 바랍니다.
-* 선동자의 PUSH 소켓은 작업자들에게 작업들을 분배하고 이것을 "부하 분산"이라고 부릅니다(선동자에 작업자들이 연결하여 동기화되었다는 가정).
+* 작업자는 상류의 호흡기와 하류의 수집기를 연결(connect)하며 자유롭게 작업자를 추가할 수 있습니다. 만약 작업자가 호흡기와 수집기에 바인딩(bind)를 수행할 경우 호흡기와 싱크 변경(및 추가) 시마다 작업자를 추가해야 합니다. 작업자에서 동적 요소로 연결(connect)을 수행하고 호흡기와 싱크는 정적 요소로 바인딩(bind)를 수행합니다.
+ * 모든 작업자가 시작할 때까지 호흡기의 작업 시작과 동기화해야 합니다. 이것은 ØMQ의 일반적인 원칙이며 간단한 해결 방법은 없습니다. `zmq_connect()`함수 수행 시 일정 정도의 시간이 소요되며, 여러 작업자가 호흡기에 연결할 때 첫 번째 작업자가 성공적으로 연결하여 메시지를 수신하는 동안 다른 작업자는 연결을 수행합니다. 동기화되어야만 시스템은 병렬로 동작합니다. 호흡기에서 작업자들이 동기화를 위하여 사용한 `getchar()`를 제거할 경우 어떤 일이 발생하는지 확인해 보시기 바랍니다.
+* 호흡기의 PUSH 소켓은 작업자들에게 작업들을 분배하고 이것을 "부하 분산"이라고 부릅니다(호흡기에 작업자들을 연결하여 동기화되었다는 가정).
 * 수집기의 PULL 소켓은 작업자들의 결과를 균등하게 수집하여 이를 "공정-대기열(fair-queuing)"이라고 합니다.
 
 그림 6 - 공정 대기열
@@ -926,7 +929,7 @@ Total elapsed time: 2675 msec
 
 ;The pipeline pattern also exhibits the "slow joiner" syndrome, leading to accusations that PUSH sockets don't load balance properly. If you are using PUSH and PULL, and one of your workers gets way more messages than the others, it's because that PULL socket has joined faster than the others, and grabs a lot of messages before the others manage to connect. If you want proper load balancing, you probably want to look at the The load balancing pattern in Chapter 3 - Advanced Request-Reply Patterns.
 
-파이프라인 패턴도 "더딘 결합(slow joiner)" 현상을 나타내며 PUSH 소켓이 올바르게 "부하 분산"을 수행하지 못하는 경우도 있습니다. PUSH-PULL을 사용하는 경우의 특정 작업자가 다른 작업자보다 많은 메시지를 처리하는 경우가 있습니다. 이는 특정 작업자의 PULL 소켓 이미 연결되어 있어 다른 작업자의 PULL 소켓이 연결하려는 동안 메시지를 처리하기 때문입니다. 올바른 "부하 분산"을 수행하기 위해서는 "3장-고급 요청-응답 패턴"을 참조하시기 바랍니다.
+파이프라인 패턴도 "더딘 결합(slow joiner)" 현상을 나타내며 PUSH 소켓이 올바르게 "부하 분산"을 수행하지 못하는 경우도 있습니다. PUSH-PULL을 사용하는 경우의 특정 작업자가 다른 작업자보다 많은 메시지를 처리하는 경우가 있습니다. 이는 특정 작업자의 PULL 소켓이 이미 호흡기에 연결되어 있어, 다른 작업자의 PULL 소켓에 연결하려는 동안 메시지를 처리하기 때문입니다. 올바른 "부하 분산"을 수행하기 위해서는 "3장-고급 요청-응답 패턴"을 참조하시기 바랍니다.
 
 ## ØMQ 프로그램하기
 ;Having seen some examples, you must be eager to start using ØMQ in some apps. Before you start that, take a deep breath, chillax, and reflect on some basic advice that will save you much stress and confusion.
@@ -941,7 +944,7 @@ Total elapsed time: 2675 msec
 
 * 단계별로 ØMQ 배우기 : 단지 하나의 단순한 API이지만, 세상의 가능성을 숨기고 있습니다. 천천히 가능성을 취하고 자신의 것으로 만드십시오.
 * 멋진 코드 작성 : 추악한 코드는 오류를 숨기고 있으며 다른 사람의 도움을 받기 어렵습니다. 의미 있는 단어로 변수의 명을 사용하면 변수가 하고자 하는 바를 전달할 수 있습니다. 좋은 코드를 작성하면 당신의 세계가 좀 더 편안해질 것입니다.
-* 당신이 만든 것을 테스트하십시오 : 당신의 프로그램이 작동하지 않을 때, 당신은 탓할 다섯 줄이 무엇인지 알아야 합니다. 이것은 ØMQ 마술을 부릴 때이며, 처음에는 몇 번 시도해도 동작하지 않다가 점차 익숙해지면 잘할 수 있습니다.
+* 당신이 만든 것을 테스트하십시오 : 당신의 프로그램이 작동하지 않을 때, 당신은 탓할 다섯 줄이 무엇인지 알아야 합니다. 이것은 ØMQ가 마술을 부릴 때이며, 처음에는 몇 번 시도해도 동작하지 않다가 점차 익숙해지면 잘할 수 있습니다.
 * 무엇인가 바라는 대로 동작하지 않을 때, 코드를 작은 조작으로 쪼개어 각각에 대하여 테스트를 하면 동작하지 않는 부분을 찾을 수 있습니다. ØMQ는 기본적으로 모듈라 코드로 만들 수 있게 하며 이것을 이용하십시오.
 * 필요하다면 추상화(클래스, 메서드 등 무엇이든지)하십시오. 만약 단순히 복사/붙여 넣기를 한다면 이것은 오류도 복사/붙여 넣기를 하는 것입니다.
 
@@ -950,7 +953,7 @@ Total elapsed time: 2675 msec
 Do one zmq_ctx_new() at the start of your main code, and one zmq_ctx_destroy() at
 the end.
 
-ØMQ 응용프로그램 컨텍스트를 생성하며 시작하고 소켓을 생성하는데 이용합니다. C 언어에서는 `zmq_ctx_new()` 호출을 통해 생성합니다. 프로세스에서 정확히 하나의 컨텍스트를 생성하고 사용해야 합니다. 기능적으로 컨텍스트는 단일 프로세스 내의 모든 소켓들에 대한 컨테이너이며, inproc 소켓을 통하여 프로세스 내의 스레드들 간에 빠른 연결을 하게 합니다. 
+ØMQ 응용프로그램은 컨텍스트를 생성하여 시작하고, 컨텍스트를 소켓을 생성하는데 사용합니다. C 언어에서는 `zmq_ctx_new()` 호출을 통해 컨텍스트를 생성합니다. 프로세스에서 정확히 하나의 컨텍스트를 생성하고 사용해야 합니다. 기능적으로 컨텍스트는 단일 프로세스 내의 모든 소켓들에 대한 컨테이너이며, inproc 소켓을 통하여 프로세스 내의 스레드들 간에 빠른 연결을 하게 합니다. 
 
 > [옮긴이] 컨텍스트 및 소켓의 생성
 
@@ -977,7 +980,7 @@ C++ 언어의 경우
 ### 깨끗하게 종료하기(Making a Clean Exit)
 ;Classy programmers share the same motto as classy hit men: always clean-up when you finish the job. When you use ØMQ in a language like Python, stuff gets automatically freed for you. But when using C, you have to carefully free objects when you're finished with them or else you get memory leaks, unstable applications, and generally bad karma.
 
-세련된 프로그래머들은 세련된 암살자와 같은 모토를 공유합니다. : 항상 일이 끝나면 깨끗하게 정리하기. 
+세련된 프로그래머는 세련된 암살자와 같은 모토를 공유합니다. : 항상 일이 끝나면 깨끗하게 정리하기. 
 ØMQ를 사용할 경우, Python과 같은 개발언어는 자동으로 메모리 해제를 수행하지만, C 언어의 경우 종료 시 각 객체들에 대한 메모리 해제를 수행하지 않을 경우 메모리 누수 현상이나 불안정된 상태를 가질 수 있습니다.
 
 ;Memory leaks are one thing, but ØMQ is quite finicky about how you exit an application. The reasons are technical and painful, but the upshot is that if you leave any sockets open, the zmq_ctx_destroy() function will hang forever. And even if you close all sockets, zmq_ctx_destroy() will by default wait forever if there are pending connects or sends unless you set the LINGER to zero on those sockets before closing them.
@@ -1014,12 +1017,12 @@ C++ 언어의 경우
 
 ;First, do not try to use the same socket from multiple threads. Please don't explain why you think this would be excellent fun, just please don't do it. Next, you need to shut down each socket that has ongoing requests. The proper way is to set a low LINGER value (1 second), and then close the socket. If your language binding doesn't do this for you automatically when you destroy a context, I'd suggest sending a patch.
 
-* 첫째, 멀티스레드에서 동일 소켓을 사용하지 마십시오. 왜 이것이 아주 재미있을 것이라고 생각하는지 설명하지 마십시오. 제발 하지 마십시오. 
+* 첫째, 멀티스레드에서 동일 소켓을 사용하지 마십시오. 재미있을 것같다고 생각조차 마십시요. 제발 하지 마십시오. 
 * 둘째, 스레드들에 대한 지속되는 요청들에 대하여 개별적으로 소켓 종료해야 합니다. 적절한 방법으로(1초 정도) 지연(LINGER) 설정하여 소켓을 닫을 수 있습니다. 컨텍스트를 삭제할 때 언어 바인딩이 자동으로 작업을 수행하지 않으면, 언어 바인딩 개발자에게 수정 요청을 보내시기 바랍니다.
 
 ;Finally, destroy the context. This will cause any blocking receives or polls or sends in attached threads (i.e., which share the same context) to return with an error. Catch that error, and then set linger on, and close sockets in that thread, and exit. Do not destroy the same context twice. The zmq_ctx_destroy in the main thread will block until all sockets it knows about are safely closed.
 
-* 마지막으로 컨텍스트 제거하기입니다. 메인 스레드의 `zmq_ctx_destory()`는 컨텍스트를 공유하는 다른 스레드의 소켓이 모두 닫혀질 때까지 차단되며 오류를 발생합니다. 이러한 오류가 발생할 경우 지연(LINGER) 설정하고 해당 스레드의 소켓을 닫은 후에 종료하시기 바랍니다.  동일한 컨텍스트를 2번 제거하지 마십시오. 메인 스레드의 `zmq_ctx_destroy()`는 알고 있는 모든 소켓이 안전하게 닫힐 때까지 차단됩니다.
+* 마지막으로 컨텍스트 제거하기입니다. 메인 스레드의 `zmq_ctx_destory()`는 컨텍스트를 공유하는 다른 스레드의 소켓이 모두 닫혀질 때까지 차단되며 오류를 발생합니다. 이러한 오류가 발생할 경우 지연(LINGER) 설정하고 해당 스레드의 소켓을 닫은 후에 종료하시기 바랍니다.  동일한 컨텍스트를 두 번 제거하지 마십시오. 메인 스레드의 `zmq_ctx_destroy()`는 알고 있는 모든 소켓이 안전하게 닫힐 때까지 차단됩니다.
 
 ;Voila! It's complex and painful enough that any language binding author worth his or her salt will do this automatically and make the socket closing dance unnecessary.
 
@@ -1036,7 +1039,7 @@ C++ 언어의 경우
 
 ;Let's look at the typical problems we face when we start to connect pieces using raw TCP. Any reusable messaging layer would need to solve all or most of these:
 
-원시(RAW) TCP를 사용할 때 직면하는 전통적인 문제들을 보도록 하겠습니다. 재사용 가능한 메시징 레이어를 구현하기 위해서는 아래의 문제들을 해결해야 합니다.
+원시(RAW) TCP를 사용할 때 직면하는 전통적인 문제들을 보도록 하겠습니다. 재사용 가능한 메시징 계층을 구현하기 위해서는 아래의 문제들을 해결해야 합니다.
 
 ;* How do we handle I/O? Does our application block, or do we handle I/O in the background? This is a key design decision. Blocking I/O creates architectures that do not scale well. But background I/O can be very hard to do right.
 ;* How do we handle dynamic components, i.e., pieces that go away temporarily? Do we formally split components into "clients" and "servers" and mandate that servers cannot disappear? What then if we want to connect servers to servers? Do we try to reconnect every few seconds?
@@ -1051,27 +1054,27 @@ C++ 언어의 경우
 ;* How do we handle network errors? Do we wait and retry, ignore them silently, or abort?
 
 * I/O를 어떻게 처리합니까? 
-애플리케이션이 차단할까요, 아니면 백그라운드에서 I/O를 처리합니까? 이것은 주요 설계 결정입니다. I/O를 차단하면 제대로 확장하기 어려운 아키텍처가 되며 백그라운드 I/O는  제대로 다루기 어렵습니다.
+ - 응용프로그램이 차단할까요, 아니면 백그라운드에서 I/O를 처리합니까? 이것은 주요 설계 결정입니다. I/O를 차단하면 제대로 확장하기 어려운 아키텍처가 되며 백그라운드 I/O는  제대로 다루기 어렵습니다.
 * 일시적으로 사라지는 동적 컴포넌트를 어떻게 다루어야 할까요? 
-일반적으로 작업 수행 단위들을 클라이언트와 서버, 머신으로 나누면 서버들은 유지되며 서버 간의 연결이 필요할 경우라든지, 매번 다시 재연결 해야 하는 경우가 생길 수 있다.
+ - 일반적으로 작업 수행 단위들을 클라이언트와 서버, 머신으로 나누면 서버들은 유지되며 서버 간의 연결이 필요할 경우라든지, 매번 다시 연결 해야 하는 경우가 생길 수 있습니다.
 *  네트워크상에서 메시지를 어떻게 표현합니까?
-프레임 데이터를 쓰고 읽기 쉽게 하고, 버퍼 오버플로우로부터 안전하게, 작은 메시지에 대하여 효율적으로 처리 필요합니다.
+ - 프레임 데이터를 쉽게 쓰고 읽게하며, 버퍼 오버플로우로부터 안전하고 작은 메시지에 대하여 효율적으로 처리 필요합니다.
 * 즉시 전달할 수 없는 메시지를 어떻게 처리합니까?
-온라인이 될 때까지 기다려야 하는 상황에서 해당 메시지를 버리든지, 데이터베이스에 넣든지, 메모리 대기열에 관리해야 합니다.
+ - 온라인이 될 때까지 기다려야 하는 상황에서 해당 메시지를 버리든지, 데이터베이스에 넣든지 혹은 메모리 대기열에 관리해야 합니다.
 * 어디에 메시지 대기열을 보관하나요?
-대기열로부터 데이터 읽기가 지연되고 새로 대기열이 만들어져야 하면 어떤 전략으로 대응할 것인가.
-* 메시지 유실에 어떻게 처리합니까?
-신규 데이터를 기다리거나 재전송을 요청하거나 메시지 유실을 방지하기 위한 신뢰성 있는 계층을 만들어야 하는가. 만약 해당 계층이 깨진다면 어떻게 할 것인가?
+ - 대기열로부터 데이터 읽기가 지연되고 새로 대기열이 만들어져야 하면 어떤 전략으로 대응할 것인가.
+* 메시지 유실에 어떻게 대응하나요?
+ - 신규 데이터를 기다리거나 재전송을 요청하거나 메시지 유실을 방지하기 위한 신뢰성 있는 계층을 만들어야 할지. 만약 해당 계층이 깨진다면 어떻게 할 것인지
 * 다른 네트워크 전송계층을 사용하는 경우에는 어떻게 하나요? 
-예를 들면 TCP 유니케스트 대신에 멀티캐스트, IPV6 등의 전송계층 간의 통신을 위하여 응용프로그램 재작성해야 할지 다른 계층으로 전송계층을 추상화할 것인지
+ - 예를 들면 TCP 유니케스트 대신에 멀티캐스트, IPV6 등의 전송계층 간의 통신을 위하여 응용프로그램 재작성해야 할지 다른 계층으로 전송계층을 추상화할 것인지
 * 메시지들을 어떻게 라우팅 할까요?
-동일한 메시지를 여러 개의 단말들에게 보낼 수 있는지, 원래 요청에 대하여 회신을 보낼 수 있는지
+ - 동일한 메시지를 여러 개의 단말들에게 보낼 수 있는지, 원래 요청에 대하여 회신을 보낼 수 있는지
 * 다른 개발 언어에서 어떻게 API를 작성할까요?
-다른 개발언어에서도 상호운영성 보장이 가능한지, 효율적이고 안정적인 수단을 제공할 수 있는지, 라이브러리 재작성해야 하는지
+ - 다른 개발언어에서도 상호운영성 보장이 가능한지, 효율적이고 안정적인 수단을 제공할 수 있는지, 라이브러리 재작성해야 하는지
 * 다른 아키텍처(예 운영체제) 간에 어떻게 동일한 데이터를 표현할까요?
-데이터 유형별 특정 엔코딩이 강제로 적용합니까? 이것이 상위 계층이 아닌 메시징 시스템의 역할은 얼마나 됩니까?
+ - 데이터 유형별 특정 엔코딩이 강제로 적용합니까? 이것이 상위 계층이 아닌 메시징 시스템의 역할은 얼마나 됩니까?
 * 네트워크 장애를 어떻게 처리할지?
-기다렸다가 재시도하기, 무시하기, 종료합니까?
+ - 기다렸다가 재시도하기, 무시하기, 종료합니까?
 
 ;Take a typical open source project like Hadoop Zookeeper and read the C API code in src/c/src/zookeeper.c. When I read this code, in January 2013, it was 4,200 lines of mystery and in there is an undocumented, client/server network communication protocol. I see it's efficient because it uses poll instead of select. But really, Zookeeper should be using a generic messaging layer and an explicitly documented wire level protocol. It is incredibly wasteful for teams to be building this particular wheel over and over.
 
@@ -1079,14 +1082,14 @@ C++ 언어의 경우
 
 ;But how to make a reusable messaging layer? Why, when so many projects need this technology, are people still doing it the hard way by driving TCP sockets in their code, and solving the problems in that long list over and over?
 
-하지만 어떻게 재사용 가능한 메시징 레이어를 만들까요?
+하지만 어떻게 재사용 가능한 메시징 계층을 만들까요?
 많은 프로젝트에서 이 기술이 요구하였지만 사람들은 아직도 TCP 소켓을 사용하여 많은 문제 목록을 계속 반복해서 해결하고 있습니다.
 
 ;It turns out that building reusable messaging systems is really difficult, which is why few FOSS projects ever tried, and why commercial messaging products are complex, expensive, inflexible, and brittle. In 2006, iMatix designed AMQP which started to give FOSS developers perhaps the first reusable recipe for a messaging system. AMQP works better than many other designs, but remains relatively complex, expensive, and brittle. It takes weeks to learn to use, and months to create stable architectures that don't crash when things get hairy.
 
 하지만 재사용 가능한 메세징 시스템을 만드는 것은 정말 어려운 것으로 밝혀졌으며 일부 “[「FOSS 프로젝트」](https://en.wikipedia.org/wiki/Free_and_open-source_software)” 에서도 시도하였습니다.
-그리서 상용 메세징 제품이 복잡하고 고비용이고 유연하지 못하고 예민한가에 대한 이유입니다.
-2006년 "iMatix"는 AMQP를 설계하여 FOSS 개발자들에서 공유하여 아마도 메세징 시스템에 대한 첫 번째 재사용 방법을 제공하였습니다. AMQP는 다른 많은 설계들보다 잘 동작하지만 상대적으로 복잡하고 고비용이고 예민하여, 사용하기 위해서는 몇 주나 몇 달의 학습 기간이 필요합니다.
+그래서 상용 메세징 제품이 복잡하고 고비용이고 유연하지 못하고 예민한가에 대한 이유입니다.
+2006년 "iMatix"는 AMQP를 설계하여 FOSS 개발자들에서 공유하였으며 아마도 메세징 시스템에 대한 첫 번째 재사용 방법을 제공하였습니다. AMQP는 다른 많은 설계들보다 잘 동작하지만 상대적으로 복잡하고 고비용이고 예민하여, 사용하기 위해서는 몇 주나 몇 달의 학습 기간이 필요합니다.
 
 > [옮긴이] AMQP(Advanced Message Queuing Protocol)는 메시지 지향 미들웨어를 위한 개방형 표준 응용 계층 통신규약이며 AMQP 기반 제품은 RabbitMQ, ActiveMQ, ØMQ가 있습니다.
 
@@ -1098,7 +1101,7 @@ C++ 언어의 경우
 
 대부분의 메세징 프로젝트와 같이 AMQP에서도 재사용에 대한 오랫동안 지속된 문제를 해결하려 했으며, 새로운 개념으로 "브로커(Broker)"를 발명하였으며, 브로커는 주소 지정, 라우팅, 대기열 관리를 수행하였습니다.
 그 결과 클라이언트/서버 통신규약과 일련의 API들은 응용프로그램들이 브로커를 통하여 소통할 수 있게 되었습니다. 브로커는 거대한 네트워크상에서 복잡성을 제거하는 데는 뛰어났지만, 주키퍼처럼 브로커 기반 메세징은 상황을 개선하기는 보다 더 나쁘게 만들었습니다. 이것은 브로커라는 부가적인 거대한 요소를 추가함으로 새로운 단일 장애점(SPOF, Single Point Of Failure)이 되었습니다.
-브로커는 빠르게 병목 지점이 되어감에 따라 새로운 위험을 관리해야 했습니다. 소프트웨어적으로 이러한 이슈(장애 조치)를 해결하기 위하여 브로커를 2개, 3개, 4개 추기 해야 했습니다. 이것을 결국 더욱 많은 조각으로 나누어지며, 복잡성을 증가하고, 중단 지점을 늘어가게 했습니다.
+브로커는 빠르게 병목 지점이 되어감에 따라 새로운 위험을 관리해야 했습니다. 소프트웨어적으로 이러한 이슈(장애조치)를 해결하기 위하여 브로커를 2개, 3개, 4개 추기 해야 했습니다. 이것을 결국 더욱 많은 조각으로 나누어지며, 복잡성을 증가하고, 중단 지점을 늘어가게 했습니다.
 
 ;And a broker-centric setup needs its own operations team. You literally need to watch the brokers day and night, and beat them with a stick when they start misbehaving. You need boxes, and you need backup boxes, and you need people to manage those boxes. It is only worth doing for large applications with many moving pieces, built by several teams of people over several years.
 
@@ -1139,24 +1142,24 @@ C++ 언어의 경우
 ;* It reduces your carbon footprint. Doing more with less CPU means your boxes use less power, and you can keep your old boxes in use for longer. Al Gore would love ØMQ.
 
 * 백그라운드 스레드들에서 비동기 I/O 처리합니다.
-백그라운드 스레드들은 응용프로그램 스레드 간에 통신을 하며, 잠금 없는 자료 구조를 사용하여 동시성 ØMQ 응용프로그램은 잠금, 세마포어, 대기 상태와 같은 것들을 필요로 하지 않습니다.
+ - 백그라운드 스레드들은 응용프로그램 스레드들 간에 통신을 하며, 잠금 없는 자료 구조를 사용하여 동시성 ØMQ 응용프로그램은 잠금, 세마포어, 대기 상태와 같은 것들을 필요로 하지 않습니다.
 * 서비스 구성요소는 동적 요구에 따라 들어오고 나갈 수 있으며 ØMQ는 자동으로 재연결할 수 있습니다.
-서비스 구성요소를 어떤 순서로도 시작할 수 있으며 마치 서비스 지향 아키텍처처럼 네트워크상에서 언제든지 합류하거나 떠날 수 있습니다.
+ - 서비스 구성요소를 어떤 순서로도 시작할 수 있으며 마치 서비스 지향 아키텍처처럼 네트워크상에서 언제든지 합류하거나 떠날 수 있습니다.
 * 필요시 자동으로 메시지들을 대기열에 넣습니다.
-지능적으로 수행하여 메시지를 대기열에 추가하기 전에 가능한 수신자에게 전송합니다.
+ - 지능적으로 수행하여 메시지를 대기열에 추가하기 전에 가능한 수신자에게 전송합니다.
 * 가득 찬 대기열(Over-full Queue(HWM, 최고 수위 표시))을 다룰 수 있습니다.
-대기열이 가득 차게 되면 ØMQ는 특정 메세징 종류(소위 "패턴")에 따라 자동적으로 송신자의 메시지를 막거나 혹은 버릴 수 있습니다.
-*  응용프로그램들을 임의의 전송계층상에서 상호 통신하게 합니다 :
-TCP, PGM(multicast), inproc(in-process), ipc(inter-process) 등 다른 전송계층을 사용하더라도 소스코드를 수정하지 않고 통신할 수 있습니다.
+ - 대기열이 가득 차게 되면 ØMQ는 특정 메세징 종류(소위 "패턴")에 따라 자동적으로 송신자의 메시지를 막거나 혹은 버릴 수 있습니다.
+*  응용프로그램들을 임의의 전송계층상에서 상호 통신하게 합니다.
+ - TCP, PGM(multicast), inproc(in-process), ipc(inter-process) 등 다른 전송계층들을 사용하더라도 소스코드를 수정하지 않고 통신할 수 있습니다.
 * 지연/차단된 수신자들을 메세징 패턴에 따라 다른 전략을 사용하여 안전하게 처리합니다.
 * 요청-응답, 발행-구독과 같은 다양한 패턴을 통하여 메시지를 전송할 수 있습니다. 이러한 패턴은 네트워크의 구조와 위상을 생성하는 방법입니다.
 * 단일 호출(`zmq_proxy()`)로 메시지를 대기열에 추가, 전달 또는 캡처하는 프록시를 만들 수 있습니다. 프록시는 네트워크의 상호 연결 복잡성을 줄일 수 있습니다.
 * 네트워크 상의 단순한 프레이밍(Framing)을 사용하여 메시지를 전송한 상태 그대로 전달합니다. 10,000개 메시지를 전송하면 10,000개 메시지를 받게 됩니다.
 * 메시지의 어떤 포맷도 강요하지 않습니다.
-메시지들은 0에서 기가바이트로 거대할 수 있으며 데이터를 표현하기 위해서는 상위에 별도 제품을 사용하면 됩니다.
+ - 메시지들은 0에서 기가바이트로 거대할 수 있으며 데이터를 표현하기 위해서는 상위에 별도 제품을 사용하면 됩니다.
 * 필요할 경우 자동 재시도를 통해 네트워크 장애를 지능적으로 처리합니다. 
 * 탄소 배출량을 줄입니다.
-CPU 자원을 덜 사용하여 전력을 덜 소모하게 하며, 오래된 컴퓨터도 사용할 수 있게 합니다. 엘 고어(Al Gore)는 ØMQ를 사랑할 겁니다.
+ - CPU 자원을 덜 사용하여 전력을 덜 소모하게 하며, 오래된 컴퓨터도 사용할 수 있게 합니다. 엘 고어(Al Gore)는 ØMQ를 사랑할 겁니다.
 
 ;Actually ØMQ does rather more than this. It has a subversive effect on how you develop network-capable applications. Superficially, it's a socket-inspired API on which you do zmq_recv() and zmq_send(). But message processing rapidly becomes the central loop, and your application soon breaks down into a set of message processing tasks. It is elegant and natural. And it scales: each of these tasks maps to a node, and the nodes talk to each other across arbitrary transports. Two nodes in one process (node is a thread), two nodes on one box (node is a process), or two nodes on one network (node is a box)—it's all the same, with no application code changes.
 
@@ -1204,7 +1207,7 @@ PID  USER  PR  NI  VIRT  RES  SHR S %CPU %MEM   TIME+  COMMAND
 ;* Pub-sub filtering is now done at the publisher side instead of subscriber side. This improves performance significantly in many pub-sub use cases. You can mix v3.2 and v2.1/v2.2 publishers and subscribers safely.
 ;* ØMQ v3.2 has many new API methods (zmq_disconnect(), zmq_unbind(), zmq_monitor(), zmq_ctx_set(), etc.)
 
- * PUB-SUB 필터링이 기존 구독자뿐만 아니라 발행자 측면에서도 수행할 수 있게 되었습니다. 이것은 많은 PUB-SUB 사용 사례에서 성능을 크게 개선합니다. 안전하게 v3.2과 v2.1/v2.2를 조합하여 사용 가능합니다.
+* PUB-SUB 필터링이 기존 구독자뿐만 아니라 발행자 측면에서도 수행할 수 있게 되었습니다. 이것은 많은 PUB-SUB 사용 사례에서 성능을 크게 개선합니다. 안전하게 v3.2과 v2.1/v2.2를 조합하여 사용 가능합니다.
 * ØMQ v3.2에서 많은 신규 API가 추가되었습니다. (`zmq_disconnect()`, `zmq_unbind()`, `zmq_monitor()`, `zmq_ctx_set()`등)
 
 ### 호환되지 않는 변경
@@ -1242,7 +1245,7 @@ PID  USER  PR  NI  VIRT  RES  SHR S %CPU %MEM   TIME+  COMMAND
 ### 호환성 매크로
 ;For applications that want to run on both v2.x and v3.2, such as language bindings, our advice is to emulate c3.2 as far as possible. Here are C macro definitions that help your C/C++ code to work across both versions (taken from CZMQ):
 
-응용프로그램을 v2.x와 v3.2 모두에서 동작시키고 싶은 경우에 가능한 한 v3.2를 에뮬레이트 하는 것이 좋습니다. 다음은 C/C ++ 코드가 두 버전에서 작동하도록 도와주는 C 매크로 정의입니다(CZMQ에서 가져옴).
+응용프로그램을 v2.x와 v3.2 모두에서 동작시키고 싶은 경우에 가능한 v3.2를 에뮬레이트 하는 것이 좋습니다. 다음은 C/C++ 코드가 두 버전에서 정상적으로 작동하도록 도와주는 C 매크로 정의입니다(CZMQ에서 가져옴).
 
 ```cpp
 #ifndef ZMQ_DONTWAIT
@@ -1268,11 +1271,11 @@ PID  USER  PR  NI  VIRT  RES  SHR S %CPU %MEM   TIME+  COMMAND
 
 ;In the ØMQ universe, sockets are doorways to fast little background communications engines that manage a whole set of connections automagically for you. You can't see, work with, open, close, or attach state to these connections. Whether you use blocking send or receive, or poll, all you can talk to is the socket, not the connections it manages for you. The connections are private and invisible, and this is the key to ØMQ's scalability.
 
-ØMQ 세계에서는 소켓들은 출입구로 빠르고 작은 백그라운드 통신 엔진으로 일련의 연결이 자동적으로 이루어지도록 관리합니다. 당신은 연결에 대한 오픈과 닫기 혹은 설정된 상태를 볼 수 없으며,  차단된 송/수신, 풀링을 사용하던지 간에 소켓과 소통할 수 있으며, 직접 연결 관리할 필요는 없습니다. 연결은 비공개이며 보이지 않으며 이것이 ØMQ 확장성의 핵심입니다.
+ØMQ 세계에서는 소켓들은 출입구로 빠르고 작은 백그라운드 통신 엔진으로 일련의 연결이 자동적으로 이루어지도록 관리합니다. 당신은 연결에 대한 오픈과 닫기 혹은 설정된 상태를 볼 수 없으며, 차단된 송/수신, 풀링을 사용하던지 간에 소켓과 소통할 수 있으며, 직접 연결 관리할 필요는 없습니다. 연결은 비공개이며 보이지 않으며 이것이 ØMQ 확장성의 핵심입니다.
 
 ;This is because your code, talking to a socket, can then handle any number of connections across whatever network protocols are around, without change. A messaging pattern sitting in ØMQ scales more cheaply than a messaging pattern sitting in your application code.
 
-이것은 소켓과 통신하는 코드의 변경 없이 주변에 있는 다양한 네트워크 통신규약의 많은 연결들을 처리할 수 있기 때문입니다. ØMQ에 있는 메시징 패턴은 응용프로그램 코드에 있는 메시징 패턴보다 비용이 절감되고 확장성이 높아집니다.
+이것은 소켓과 통신하는 코드의 변경 없이 주변에 있는 다양한 네트워크 통신규약의 연결들을 처리할 수 있게 합니다. ØMQ에 있는 메시징 패턴은 응용프로그램 코드에 있는 메시징 패턴보다 비용이 절감되고 확장성이 높아집니다.
 
 ;So the general assumption no longer applies. As you read the code examples, your brain will try to map them to what you know. You will read "socket" and think "ah, that represents a connection to another node". That is wrong. You will read "thread" and your brain will again think, "ah, a thread represents a connection to another node", and again your brain will be wrong.
 

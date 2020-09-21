@@ -540,8 +540,8 @@ REP를 DEALER로 교체하면 작업자가 갑자기 전체 비동기식으로 �
 ;The common thread in this valid versus invalid breakdown is that a ØMQ socket connection is always biased towards one peer that binds to an endpoint, and another that connects to that. Further, that which side binds and which side connects is not arbitrary, but follows natural patterns. The side which we expect to "be there" binds: it'll be a server, a broker, a publisher, a collector. The side that "comes and goes" connects: it'll be clients and workers. Remembering this will help you design better ØMQ architectures.
 
 ØMQ의 올바른 소켓의 조합에 대해 일반적인 사항은 항상 어느 한쪽이 단말에 바인딩하고 다른 쪽에서는 연결한다는 것입니다.
-추가로, 어느 쪽에서 바인드를 하거나 연결을 해도 상관없지만 자연스러운 패턴을 따라야 합니다.
-"확실(정적)한 존재"임이 기대되는 측면이 바인드를 실시해 : 서버, 브로커, 발행자, 수집가가 될 것입니다. '희미(동적)한 존재'는 연결을 실시해 :클라이언트와 작업자가 될 것입니다.
+추가로, 어느 쪽에서 바인딩을 하거나 연결을 해도 상관없지만 자연스러운 패턴을 따라야 합니다.
+"확실(정적)한 존재"임이 기대되는 측면이 바인딩을 실시해 : 서버, 브로커, 발행자, 수집가가 될 것입니다. '희미(동적)한 존재'는 연결을 실시해 :클라이언트와 작업자가 될 것입니다.
 이를 기억해두면 더 좋은 ØMQ 아키텍처를 설계하는 데 도움이 됩니다.
 
 ## ROUTER 소켓 알아보기(Exploring ROUTER Sockets)

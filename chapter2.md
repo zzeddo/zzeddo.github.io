@@ -1,7 +1,7 @@
 # 2장-소켓 및 패턴(Sockets and Patterns)
 ;In Chapter 1 - Basics we took ØMQ for a drive, with some basic examples of the main ØMQ patterns: request-reply, pub-sub, and pipeline. In this chapter, we're going to get our hands dirty and start to learn how to use these tools in real programs.
 
-1장 - 기본에서 몇 가지 ØMQ 패턴의 기본 예제로 ØMQ의 세계로 뛰어들었습니다. : 요청-응답, 발행-구독, 파이프라인. 이장에서는 우리의 손을 더럽히면서 실제 프로그램에서 이러한 도구들을 어떻게 사용하는지 배우게 될 것입니다.
+1장 - 기본에서 몇 가지 ØMQ 패턴의 기본 예제로 ØMQ의 세계로 뛰어들었습니다 : 요청-응답, 발행-구독, 파이프라인. 이장에서는 우리의 손을 더럽히면서 실제 프로그램에서 이러한 도구들을 어떻게 사용하는지 배우게 될 것입니다.
 
 ;We'll cover:
 
@@ -51,7 +51,7 @@
 
 ;Sockets are the de facto standard API for network programming, as well as being useful for stopping your eyes from falling onto your cheeks. One thing that makes ØMQ especially tasty to developers is that it uses sockets and messages instead of some other arbitrary set of concepts. Kudos to Martin Sustrik for pulling this off. It turns "Message Oriented Middleware", a phrase guaranteed to send the whole room off to Catatonia, into "Extra Spicy Sockets!", which leaves us with a strange craving for pizza and a desire to know more.
 
-소켓은 네트워크 프로그래밍에서는 표준 API이며 눈알이 빰에 떨어지는 것을 막을 정도로 유용합니다. 
+소켓은 네트워크 프로그래밍에서는 표준 API이며 눈꺼풀처럼 눈알이 빰에 떨어지는 것을 막을 정도로 유용합니다. 
 특히 개발자에게 ØMQ  매력적인 점은 다른 개념 대신 소켓과 메시지를 사용한다란 것이며, 이러한 개념을 이끌어낸 [Martin Sustrik](http://250bpm.com/)에게 감사하고 싶습니다. 
  "메시지 기반 미들웨어"로 방 전체를 긴장감으로 채울 것 문구를 "특별히 매운 소켓!"으로 변경하여 피자에 대한 이상한 갈망과 더 많은 것을 알고 싶게 합니다. 
 
@@ -66,28 +66,28 @@
 ;* Using the sockets to carry data by writing and receiving messages on them (see zmq_send(), zmq_recv()).
 
 * 소켓 생성 및 파괴를 합니다.
-소켓의 운명의 생명 주기를 만듭니다(`zmq_socket()`, `zmq_close()` 참조).
+ - 소켓의 운명의 생명 주기를 만듭니다(`zmq_socket()`, `zmq_close()` 참조).
 * 소켓 구성 옵션 설정합니다.
-필요할 경우 설정 필요합니다(`zmq_setsockopt()` 참조).
+ - 필요할 경우 설정 필요합니다(`zmq_setsockopt()` 참조).
 * 소켓 연결을 합니다.
-ØMQ 연결을 생성하여 소켓을 네트워크에 참여시킵니다(`zmq_bind()`, `zmq_connect()` 참조).
+ - ØMQ 연결을 생성하여 소켓을 네트워크에 참여시킵니다(`zmq_bind()`, `zmq_connect()` 참조).
 * 소켓을 통한 메시지 송/수신합니다.
-(`zmq_msg_send()`, `zme_msg_recv()` 참조)
+ - 다양한 통신 패턴에서 메세지 송신과 수신에 사용됩니다.(`zmq_msg_send()`, `zme_msg_recv()` 참조)
 
 ;Note that sockets are always void pointers, and messages (which we'll come to very soon) are structures. So in C you pass sockets as-such, but you pass addresses of messages in all functions that work with messages, like zmq_send() and zmq_recv(). As a mnemonic, realize that "in ØMQ, all your sockets are belong to us", but messages are things you actually own in your code.
 
-소켓은 향상 void 포인터이며, 메시지들은 구조체입니다. C 언어에서 `zmq_msg_send()`, `zmq_msg_recv()` 메시지의 주소를 전달합니다.
+소켓은 향상 void 포인터이며, 메시지들은 구조체이며 C 언어에서 `zmq_msg_send()`에 메시지의 주소를 전달하거나 `zmq_msg_recv()` 메시지의 주소를 반환받습니다.
 기억하기 쉽게 ØMQ에서 모든 소켓은 우리에게 속해 있지만 메시지들은 소스 코드상에 있습니다.
 
 ;Creating, destroying, and configuring sockets works as you'd expect for any object. But remember that ØMQ is an asynchronous, elastic fabric. This has some impact on how we plug sockets into the network topology and how we use the sockets after that.
 
-소켓 생성, 소멸 및 구성은 모든 객체에 대해 예상대로 동작하지만 ØMQ는 비동기식이며 소켓을 네트워크 토폴로지에 연결하는 방법에 따라 이후 소켓을 사용하는 방법에 영향을 미칩니다.
+소켓 생성, 소멸 및 구성은 모든 객체에 대해 예상대로 동작하지만, ØMQ는 비동기식이며 소켓을 네트워크 토폴로지에 연결하는 방법에 따라 소켓을 사용하는데 영향을 미칩니다.
 
 ### 네트워크상에 소켓 넣기(Plugging Sockets into the Topology)
 ;To create a connection between two nodes, you use zmq_bind() in one node and zmq_connect() in the other. As a general rule of thumb, the node that does zmq_bind() is a "server", sitting on a well-known network address, and the node which does zmq_connect() is a "client", with unknown or arbitrary network addresses. Thus we say that we "bind a socket to an endpoint" and "connect a socket to an endpoint", the endpoint being that well-known network address.
 
 2개의 노드 간의 연결을 생성하기 위하여, 한쪽 노드에 `zmq_bind()`를  그리고 다른 쪽 노드에 `zmq_connect()`를 사용할 수 있습니다. 일반적으로 `zmq_bind()`를 수행하는 노드를 서버(네트워크 주소가 고정됨)라고 하며 `zmq_connect()`를 수행하는 노드를 클라이언트(네트워크 주소가 모르거나 임시)라고 합니다.
-우리는 "단말(endpoint)에 소켓을 바인드"와 "단말에 소켓을 연결"라고 말하며, 단말은 네트워크 주소를 알 수 있어야 합니다.
+우리는 "단말(endpoint)에 소켓을 바인딩"과 "단말에 소켓을 연결"라고 말하며, 단말은 네트워크 주소를 알 수 있어야 합니다.
 
 ;ØMQ connections are somewhat different from classic TCP connections. The main notable differences are:
 
@@ -100,12 +100,12 @@
 ;* Your application code cannot work with these connections directly; they are encapsulated under the socket.
 
 * ØMQ는 임의의 전송방식(inproc, ipc, tcp, pgm, epgm)을 교차하여 사용할 수 있습니다.
-`zmq_inproc()`, `zmq_ipc()`, `zmq_tcp()`, `zmq_pgm()`, `zmq_epgm()` 참조
+ - `zmq_inproc()`, `zmq_ipc()`, `zmq_tcp()`, `zmq_pgm()`, `zmq_epgm()` 참조
 * 하나의 소켓에서 여러 개의 송/수신 연결들(connections)을 가질 수 있습니다.
 * `zmq_accept()`가 같은 함수가 없습니다.
-소켓이 단말에 바인딩되면 자동으로 연결을 수락합니다.
+ - 소켓이 단말에 바인딩되면 자동으로 연결을 수락합니다.
 * ØMQ는 네트워크 연결을 백그라운드로 수행하며, 네트워크 연결이 끊기면 자동으로 재연결합니다(예를 들어 통신 대상이 사라졌다가 다시 돌아올 경우).
-* 응용프로그램 코드상에서 이러한 연결을 직접 넣을 필요가 없습니다 : ØMQ 소켓에 내장되어 있습니다.
+* 응용프로그램 코드가 이러한 연결에 대해 직접 작업하지 않습니다. : ØMQ 소켓에 내장되어 있습니다.
 
 ;Many architectures follow some kind of client/server model, where the server is the component that is most static, and the clients are the components that are most dynamic, i.e., they come and go the most. There are sometimes issues of addressing: servers will be visible to clients, but not necessarily vice versa. So mostly it's obvious which node should be doing zmq_bind() (the server) and which should be doing zmq_connect() (the client). It also depends on the kind of sockets you're using, with some exceptions for unusual network architectures. We'll look at socket types later.
 
@@ -113,11 +113,11 @@
 
 ;Now, imagine we start the client before we start the server. In traditional networking, we get a big red Fail flag. But ØMQ lets us start and stop pieces arbitrarily. As soon as the client node does zmq_connect(), the connection exists and that node can start to write messages to the socket. At some stage (hopefully before messages queue up so much that they start to get discarded, or the client blocks), the server comes alive, does a zmq_bind(), and ØMQ starts to deliver messages.
 
-서버를 시작하기 전에 클라이언트를 수행하는 경우, 전통적인 네트워킹에서는 오류가 발생하지만, ØMQ의 경우 순서에 관계없이 시작과 중단을 할 수 있습니다. 클라이언트 노드에서 `zmq_connect()`를 수행하자마자, 연결이 존재하면 소켓에 메시지를 전달하기 시작한다. 일정 단계(희망하건대 메시지가 너무 많이 대기열에 쌓이게 되어 버리거나 차단되기 전까지)까지, 서버가 기동 되어 `zmq_bind()`를 하게 되면 ØMQ는 메시지를 전송하게 된다.
+서버를 시작하기 전에 클라이언트를 수행하는 경우, 전통적인 네트워킹에서는 오류가 발생하지만, ØMQ의 경우 순서에 상관없이 시작과 중단을 할 수 있습니다. 클라이언트 노드에서 `zmq_connect()`를 수행하여 성공하면 소켓에 메시지를 전달하기 시작합니다. 일정 단계(희망하건대 메시지가 너무 많이 대기열에 쌓이게 되어 버리거나 차단되기 전까지)까지, 서버가 기동 되어 `zmq_bind()`를 하게 되면 ØMQ는 메시지를 전송하게 됩니다.
 
 ;A server node can bind to many endpoints (that is, a combination of protocol and address) and it can do this using a single socket. This means it will accept connections across different transports:
 
-서버 노드는 다수의 단말들(통신규약과 네트워크 주소의 조합)을 바인딩할 수 있으며 이것도 하나의 소켓을 통해 가능하다. 즉 서로 다른 전송방식(inproc, ipc, pgm, tcp 등)으로 연결을 수락한다.
+서버 노드는 다수의 단말들(통신규약과 네트워크 주소의 조합)을 바인딩할 수 있으며 이것도 하나의 소켓을 통해 가능합니다. 즉 서로 다른 전송방식(inproc, ipc, pgm, tcp 등)으로 연결을 수락한다.
 
 ```cpp
 zmq_bind (socket, "tcp://*:5555");
@@ -127,7 +127,7 @@ zmq_bind (socket, "inproc://somename");
 
 ;With most transports, you cannot bind to the same endpoint twice, unlike for example in UDP. The ipc transport does, however, let one process bind to an endpoint already used by a first process. It's meant to allow a process to recover after a crash.
 
-UDP를 제외하고 대부분의 전송방식에서 동일한 단말을 두 번 바인딩할 수 없다.
+UDP를 제외하고 대부분의 전송방식에서 동일한 단말을 두 번 바인딩할 수 없습니다.
 그러나 ipc(프로세스 간 통신) 전송계층은 하나의 프로세스가 첫 번째 프로세스에서 이미 사용된 단말에 바인딩하게 합니다. 이것은 프로세스 간의 충돌에 대비하여 복구하기 위한 목적입니다.
 
 ;Although ØMQ tries to be neutral about which side binds and which side connects, there are differences. We'll see these in more detail later. The upshot is that you should usually think in terms of "servers" as static parts of your topology that bind to more or less fixed endpoints, and "clients" as dynamic parts that come and go and connect to these endpoints. Then, design your application around this model. The chances that it will "just work" are much better like that.
@@ -136,7 +136,7 @@ UDP를 제외하고 대부분의 전송방식에서 동일한 단말을 두 번 
 
 ;Sockets have types. The socket type defines the semantics of the socket, its policies for routing messages inwards and outwards, queuing, etc. You can connect certain types of socket together, e.g., a publisher socket and a subscriber socket. Sockets work together in "messaging patterns". We'll look at this in more detail later.
 
-소켓은 유형이 있고 소켓 유형은 소켓의 의미를 정의하며 네트워크 상에서 내부/외부 메시지 라우팅 정책이나 대기열 저장 등의 의미가 있다. 특정 소켓 유형을 함께 사용할 수 없으며 예를 들면 PUB 소켓과 SUB 소켓이다. 
+소켓은 유형이 있고 소켓 유형에 따라 정의되는 의미는 네트워크 상에서 내부/외부 메시지 라우팅 정책이나 대기열 저장 등입니다. 특정 소켓 유형은 함께 사용할 수 없으며 예를 들면 PUB 소켓과 SUB 소켓. 
 
 
 ;It's the ability to connect sockets in these different ways that gives ØMQ its basic power as a message queuing system. There are layers on top of this, such as proxies, which we'll get to later. But essentially, with ØMQ you define your network architecture by plugging pieces together like a child's construction toy.
@@ -163,29 +163,29 @@ TCP 소켓과 ØMQ 소켓의 주요 차이는 데이터 처리 방식입니다.
 * ØMQ 소켓은 메시지들을 전달합니다.
 마치 UDP처럼. 다소 TCP의 바이트 스트림처럼 동작한다. ØMQ 메시지는 길이가 지정된 바이너리 데이터로 성능 최적화를 위해 다소 까다롭게 설계되었습니다.
 * ØMQ 소켓의 I/O는 백그라운드 스레드로 동작합니다.
-응용프로그램이 무엇을 바쁘게 처리하더라도 I/O 스래드는 메시지들을 입력 대기열에 수신하고, 출력 대기열로부터 송신하게 합니다.
+응용프로그램이 무엇을 바쁘게 처리하더라도 I/O 스래드는 메시지들을 입력 대기열로부터 수신하고, 출력 대기열로에서 송신하게 합니다.
 * ØMQ 소켓들은 소켓 유형에 따라 1:N 라우팅이 내장되어 있다.
 
 ;The zmq_send() method does not actually send the message to the socket connection(s). It queues the message so that the I/O thread can send it asynchronously. It does not block except in some exception cases. So the message is not necessarily sent when zmq_send() returns to your application.
 
-`zmq_send()` 함수는 실제 메시지를 소켓 연결에서 전송하지 않고 메시지를 대기열에 쌓아 I/O 스레드가 비동기로 전송할 수 있게 합니다. 이러한 동작은 일부 예외 상황을 제외하고는 차단되지 않는다. 그래서 메시지를 `zmq_send()`로 전송할 때 반환값이 필요 없습니다.
+`zmq_send()` 함수는 실제 메시지를 소켓 연결에서 전송하지 않고 메시지를 대기열에 쌓아 I/O 스레드가 비동기로 전송할 수 있게 합니다. 이러한 동작은 일부 예외 상황을 제외하고는 차단되지 않습니다. 그래서 메시지를 `zmq_send()`로 전송할 때 반환값이 필요 없습니다.
 
 ### 유니케스트 전송방식(Unicast Transports)
 ;ØMQ provides a set of unicast transports (inproc, ipc, and tcp) and multicast transports (epgm, pgm). Multicast is an advanced technique that we'll come to later. Don't even start using it unless you know that your fan-out ratios will make 1-to-N unicast impossible.
 
-ØMQ는 일련의 유니케스트 전송방식(inproc, ipc, tcp)과 멀티캐스트 통신방식(epgm, pgm)을 제공한다. 멀티캐스트는 진보된 기술로 나중에 다루지만 전개 비율에 따라 1:N 유니케스트가 불가하다는 것을 모른다면 시작조차 하지 마시기 바랍니다.
+ØMQ는 일련의 유니케스트 전송방식(inproc, ipc, tcp)과 멀티캐스트 통신방식(epgm, pgm)을 제공합니다. 멀티캐스트는 진보된 기술로 나중에 다루지만 전개 비율에 따라 1:N 유니케스트가 불가하다는 것을 모른다면 시작조차 하지 마시기 바랍니다.
 
 ;For most common cases, use tcp, which is a disconnected TCP transport. It is elastic, portable, and fast enough for most cases. We call this disconnected because ØMQ's tcp transport doesn't require that the endpoint exists before you connect to it. Clients and servers can connect and bind at any time, can go and come back, and it remains transparent to applications.
 
-대부분의 경우 TCP 사용하며 "연결 해제 TCP 전송계층"라고 하며, 대부분의 경우 충분히 빠르고 유연하고 간편합니다. 우리가 "연결 해제"라고 부르는 것은 ØMQ의 TCP 전송방식은 단말이 연결을 하기전에 존재할 필요가 없기 때문입니다. 클라이언트들과 서버들은 언제든지 연결하거나 바인딩할 수 있으며, 나가고 들어오는 것이 가능하며 응용프로그램에 투명하게 유지됩니다.
+대부분의 경우 TCP 사용하며 "비연결성 TCP 전송계층"라고 하며, 대부분의 경우 충분히 빠르고 유연하고 간편합니다. 우리가 "비연결성"라고 부르는 것은 ØMQ의 TCP 전송방식은 단말이 연결을 하기전에 존재할 필요가 없기 때문입니다. 클라이언트들과 서버들은 언제든지 연결하거나 바인딩할 수 있으며, 나가고 들어오는 것이 가능하며 응용프로그램에 투명하게 유지됩니다.
 
 ;The inter-process ipc transport is disconnected, like tcp. It has one limitation: it does not yet work on Windows. By convention we use endpoint names with an ".ipc" extension to avoid potential conflict with other file names. On UNIX systems, if you use ipc endpoints you need to create these with appropriate permissions otherwise they may not be shareable between processes running under different user IDs. You must also make sure all processes can access the files, e.g., by running in the same working directory.
 
-프로세스 간 IPC 전송방식도 TCP처럼 "연결 해제"되어 있지만 1가지 제약 사항은 원도우 환경에서는 아직 동작하지 않습니다. 편의상 단말의 명칭들을 ".ipc" 확장명으로 사용하여 다른 파일명과 잠재적인 충돌을 피하도록 하겠습니다. 유닉스 시스템에서 IPC 단말을 사용하려 한다면 적절한 접근 권한을 생성이 필요하며 그렇지 않다면 다른 사용자 식별자(ID)하에 구동되는 프로세스 간에 공유는 허용되지 않을 것입니다. 그리고 모든 프로세스들은 파일들(예를 들면 동일 디렉터리에서 존재하는 파일들)에 대하서 접근할 수 있어야 합니다.
+프로세스 간 ipc 전송방식도 TCP처럼 "비연결성"이지만 한 가지 제약 사항은 원도우 환경에서는 아직 동작하지 않습니다. 편의상 단말의 명칭들을 ".ipc" 확장명으로 사용하여 다른 파일명과 잠재적인 충돌을 피하도록 하겠습니다. 유닉스 시스템에서 ipc 단말을 사용하려 한다면 적절한 접근 권한을 생성이 필요하며 그렇지 않다면 다른 사용자 식별자(ID)하에 구동되는 프로세스 간에 공유는 허용되지 않을 것입니다. 그리고 모든 프로세스들은 파일들(예를 들면 동일 디렉터리에서 존재하는 파일들)에 대하서 접근할 수 있어야 합니다.
 
 ;The inter-thread transport, inproc, is a connected signaling transport. It is much faster than tcp or ipc. This transport has a specific limitation compared to tpc and icp: the server must issue a bind before any client issues a connect. This is something future versions of ØMQ may fix, but at present this defines how you use inproc sockets. We create and bind one socket and start the child threads, which create and connect the other sockets.
 
-스레드 간 통신 전송방식 inproc는  "연결된 신호 전송계층"이며 tcp 혹은 ipc 보다 훨씬 빠르지만 tcp나 ipc와 비교했을 때 특정 제약을 가지고 있습니다 : 서버는 반드시 클라이언트가 연결을 요청하기 전에 바인드가 되어야 한다. 이것은 미래의 ØMQ 버전에서 개선되겠지만 현재는 어떻게 inproc 소켓을 사용해야 하는지를 정의합니다. 우리는 부모 스레드에서 소켓을 생성하고 바인딩하고 자식 스레드를 시작하여 소켓을 생성하고 연결하게 합니다.
+스레드 간 inproc 전송방식은  "연결된 신호 전송계층"이며 tcp 혹은 ipc 보다 훨씬 빠르지만 tcp나 ipc와 비교했을 때 특정 제약을 가지고 있습니다 : 서버는 반드시 클라이언트가 연결을 요청하기 전에 바인딩이 되어야 한다. 이것은 미래의 ØMQ 버전에서 개선되겠지만 현재는 어떻게 inproc 소켓을 사용해야 하는지를 정의합니다. 우리는 부모 스레드에서 소켓을 생성하고 바인딩하고 자식 스레드를 시작하여 소켓을 생성하고 연결하게 합니다.
 
 ### ØMQ는 중립적인 전송수단이 아니다(ØMQ is Not a Neutral Carrier).
 ;A common question that newcomers to ØMQ ask (it's one I've asked myself) is, "how do I write an XYZ server in ØMQ?" For example, "how do I write an HTTP server in ØMQ?" The implication is that if we use normal sockets to carry HTTP requests and responses, we should be able to use ØMQ sockets to do the same, only much faster and better.
@@ -204,7 +204,7 @@ TCP 소켓과 ØMQ 소켓의 주요 차이는 데이터 처리 방식입니다.
 
 ;The HTTP request uses CR-LF as its simplest framing delimiter, whereas ØMQ uses a length-specified frame. So you could write an HTTP-like protocol using ØMQ, using for example the request-reply socket pattern. But it would not be HTTP.
 
-HTTP 요청은 CR(0x0D)-LF(0x0A)을 프레이임 구분자로 사용하지만 ØMQ는 길이가 지정된 프레임을 사용합니다.. 그래서 ØMQ를 사용하여 요청-응답 소켓 패턴으로 HTTP와 유사한 통신규약을 작성할 수 있지만 HTTP에서는 할 수 없습니다.
+HTTP 요청은 CR(0x0D)-LF(0x0A)을 프레이임 구분자로 사용하지만 ØMQ는 길이가 지정된 프레임을 사용합니다. 그래서 ØMQ를 사용하여 요청-응답 소켓 패턴으로 HTTP와 유사한 통신규약을 작성할 수 있지만 HTTP에서는 할 수 없습니다.
 
 그림 11 - 네트워크상 ØMQ
 
@@ -231,7 +231,7 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 
 ;We've seen that one socket can handle dozens, even thousands of connections at once. This has a fundamental impact on how you write applications. A traditional networked application has one process or one thread per remote connection, and that process or thread handles one socket. ØMQ lets you collapse this entire structure into a single process and then break it up as necessary for scaling.
 
-하나의 소켓에서 한 번에 수십 개 혹은 수천 개의 연결을 처리할 수 있으며 이것이 ØMQ 기반 응용프로그램 작성에 근본적인 영향을 줍니다. 기존의 네트워크 응용프로그램에서는 원격 연결당 하나의 프로세스 혹은 하나의 스레드가 필요하였으며, 해당 프로세스 혹은 스레드에서 하나의 소켓으로 처리하였습니다. ØMQ를 사용하면이 전체 구조를 단일 프로세스로 축소하고 필요에 따라 확장할 수 있습니다.
+하나의 소켓에서 한 번에 수십 개 혹은 수천 개의 연결을 처리할 수 있으며 이것이 ØMQ 기반 응용프로그램 작성에 근본적인 영향을 줍니다. 기존의 네트워크 응용프로그램에서는 원격 연결당 하나의 프로세스 혹은 하나의 스레드가 필요하였으며, 해당 프로세스 혹은 스레드에서 하나의 소켓으로 처리하였습니다. ØMQ를 사용하면 전체 구조를 단일 프로세스로 축소하고 필요에 따라 확장할 수 있습니다.
 
 > [옮긴이] ØMQ 응용프로그램 작성 시 클라이언트/서버를 각각의 스레드로 작성하여 inproc를 통하여 테스트를 수행하고, 정상적인 경우 각 스레드는 프로세스로 분리하여 IPC나 TCP로 연결할 수 있습니다.
 
@@ -252,15 +252,15 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 * ØMQ는 응용프로그램에서 전송방식(in-process, inter-process, TCP, multicast)에 관계없이 단일 소켓 API를 제공합니다.
 * 노드들 간 연결이 끊기면 자동으로 재연결하게 합니다.
 * 송/수신 측에서 메시지들을 대기열에 관리하며, 이러한 대기열을 신중하게 관리하여 프로세스에 메모리가 부족하지 않도록 하며, 필요하다면 디스크에 저장합니다.
-* 소켓 오류를 처리한다.
-* 모든 I/O 처리를 백그라운드 스레드가 처리한다(기본 1개이며, 수량 조정 가능).
+* 소켓 오류를 처리합니다.
+* 모든 I/O 처리를 백그라운드 스레드가 처리합니다(기본 1개이며, 수량 조정 가능).
 * ØMQ는 노드 간의 통신에 잠금 없는 기술을 사용하여 잠금, 대기, 세마포어, 교착이 발생하지 않습니다.
 
 > [옮긴이] 대기열에 설정한 HMW(최고수위 표시)를 초과할 경우 디스크에 저장하기 위해서는 `zmq_setsockopt()`에서 `ZMQ_SWAP`설정을 통해 수행합니다.
 
 ;But cutting through that, it routes and queues messages according to precise recipes called patterns. It is these patterns that provide ØMQ's intelligence. They encapsulate our hard-earned experience of the best ways to distribute data and work. ØMQ's patterns are hard-coded but future versions may allow user-definable patterns.
 
-패턴이란 불리는 정확한 레시피에 따라 메시지들을 경유하고 대기열에 쌓을 수 있으며, 이러한 패턴들을 통하여 ØMQ의 지능을 제공합니다.
+패턴이란 불리는 정확한 레시피에 따라 메시지들을 경유하고 대기열에 쌓을 수 있으며, 이러한 패턴들을 통하여 ØMQ에 지능을 제공합니다.
 패턴들은 우리가 힘겹게 얻은 경험을 통하여 데이터와 작업을 분산하기 위한 최선의 방법을 제공합니다. ØMQ의 패턴은 하드 코딩되어 있지만 향후 버전에서는 사용자 정의 가능 패턴이 허용될 수 있습니다.
 
 ;ØMQ patterns are implemented by pairs of sockets with matching types. In other words, to understand ØMQ patterns you need to understand socket types and how they work together. Mostly, this just takes study; there is little that is obvious at this level.
@@ -277,18 +277,18 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 ;* Exclusive pair, which connects two sockets exclusively. This is a pattern for connecting two threads in a process, not to be confused with "normal" pairs of sockets.
 
 * 요청-응답(REQ-REP)
-일련의 클라이언트들에게 서비스들 연결을 하게 하며, 이것은 RPC(remote procedure call)와 작업 분배 패턴입니다.
+ - 일련의 클라이언트들에게 서비스들 연결을 하게 하며, 이것은 RPC(remote procedure call)와 작업 분배 패턴입니다.
 * 발행-구독(PUSH-PULL)
-일련의 발행자들과 구독자들 연결을 하게 하며, 데이터 분배 패턴입니다.
-* 파이프라인(PUSH-PULL)
-노드들을 팬아웃/팬인(fan-out/fan-in) 패턴으로 연결하게 하며 여러 개의 절차들과 루프를 가질 수 있습니다. 이것은 병렬 작업 분배와 수집 패턴입니다.
+ - 일련의 발행자들과 구독자들 연결을 하게 하며, 데이터 분배 패턴입니다.
+* 파이프라인(Pipeline)
+ - 노드들을 팬아웃/팬인(fan-out/fan-in) 패턴으로 연결하게 하며 여러 개의 절차들과 루프를 가질 수 있습니다. 이것은 병렬 작업 분배와 수집 패턴입니다.
 * 독점적인 쌍(PAIR-PAIR)
-2개의 소켓들을 상호 독점적으로 연결하며, 이것은 하나의 프로세스에서 2개의 스레드 간에 연결하는 패턴이며 정상적인 소켓의 쌍과 혼동이 없어야 합니다.
+ - 2개의 소켓들을 상호 독점적으로 연결합니다. 이것은 하나의 프로세스에서 2개의 스레드 간에 연결하는 패턴이며 정상적인 소켓의 쌍과 혼동이 없어야 합니다.
 
 ;We looked at the first three of these in Chapter 1 - Basics, and we'll see the exclusive pair pattern later in this chapter. The zmq_socket() man page is fairly clear about the patterns — it's worth reading several times until it starts to make sense. These are the socket combinations that are valid for a connect-bind pair (either side can bind):
 
-1장 기본에서 3개의 패턴을 보았으며 "독점적인 쌍"은 다음 장에서 보도록 하겠습니다.. `zmq_socket()` 매뉴얼에 패턴에 대한 설명이 되어 있으며 이해될 때까지 숙지할 필요가 있습니다.
-다음은 연결-바인드 쌍에 대하여 유효한 소켓 조합입니다(어느쪽이든 바인드를 수행할 수 있습니다.).
+1장 기본에서 3개의 패턴을 보았으며 "독점적인 쌍"은 다음 장에서 보도록 하겠습니다. `zmq_socket()` 매뉴얼에 패턴에 대한 설명이 되어 있으며 이해될 때까지 숙지할 필요가 있습니다.
+다음은 연결-바인드 쌍에 대하여 유효한 소켓 조합입니다(어느쪽이든 바인딩을 수행할 수 있습니다.).
 
 ; * PUB and SUB
 ; * REQ and REP
@@ -312,12 +312,12 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 
 ;You'll also see references to XPUB and XSUB sockets, which we'll come to later (they're like raw versions of PUB and SUB). Any other combination will produce undocumented and unreliable results, and future versions of ØMQ will probably return errors if you try them. You can and will, of course, bridge other socket types via code, i.e., read from one socket type and write to another.
 
-XPUB와 XSUB 소켓도 있으며, 다음장에서 다루도록 하겠다(PUB와 SUB의 원시(raw) 버전과 유사). 다른 소켓 조합들은 신뢰할 수 없는 결과를 낳을 수 있으며, 미래의 ØMQ에서는 오류를 생성하게 할 예정입니다. 물론 코드상에서 다른 소켓 유형을 연결할 수 있습니다(즉, 한 소켓 유형에서 읽고 다른 소켓 유형에 쓰기).
+XPUB와 XSUB 소켓도 있으며, 다음장에서 다루도록 하겠습니다(PUB와 SUB의 원시(raw) 버전과 유사). 다른 소켓 조합들은 신뢰할 수 없는 결과를 낳을 수 있으며, 미래의 ØMQ에서는 오류를 생성하게 할 예정입니다. 물론 코드상에서 다른 소켓 유형을 연결할 수 있습니다(즉, 한 소켓 유형에서 읽고 다른 소켓 유형에 쓰기).
 
 ### 고수준의 메시지 패턴들(High Level Messaging Patterns)
 ;These four core patterns are cooked into ØMQ. They are part of the ØMQ API, implemented in the core C++ library, and are guaranteed to be available in all fine retail stores.
 
-ØMQ 에는 내장된 4개의 핵심 패턴이 있으며, 그들은 ØMQ API의 일부이며 C++ 라이브러리도 구현되어 있으며 모든 용도에 적절하게 동작함을 보장한다.
+ØMQ 에는 내장된 4개의 핵심 패턴이 있으며, 그들은 ØMQ API의 일부이며 C++ 라이브러리로 구현되어 있으며 모든 용도에 적절하게 동작함을 보장합니다.
 
 > [옮긴이] 핵심 패턴들은 ØMQ RFC사이트(https://rfc.zeromq.org)에서 정의되어 있습니다.
 - MDP(Majordome Protocol), TSP(Titanic Service Protocol), FLP(Freelance Protocol), CHP(Clustered Hashmap Protocol) 등이 있습니다.
@@ -334,7 +334,7 @@ XPUB와 XSUB 소켓도 있으며, 다음장에서 다루도록 하겠다(PUB와 
 ### 메시지와 작업하기(Working with Messages)
 ;The libzmq core library has in fact two APIs to send and receive messages. The zmq_send() and zmq_recv() methods that we've already seen and used are simple one-liners. We will use these often, but zmq_recv() is bad at dealing with arbitrary message sizes: it truncates messages to whatever buffer size you provide. So there's a second API that works with zmq_msg_t structures, with a richer but more difficult API:
 
-libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 API를 가지고 있습니다. `zmq_send()`와 `zmq_recv()` 함수이며, 이미 한줄짜리 코드로 보았습니다. `zmq_recv()`는 임의의 메시지 크기를 가지는 데이터를 처리하는 데는 좋지 않습니다. zmq_recv()는 응용프로그램의 코드 내에서 정의한 버퍼의 크기를 넘을 경우 크기 이상 메시지 데이터는 버리게 됩니다. 그래서 "zmq_msg_t" 구조체를 다룰 수 있도록 추가적인 API로 작업해야 합니다.
+libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 API를 가지고 있습니다. `zmq_send()`와 `zmq_recv()` 함수이며, 이미 한줄짜리 코드로 보았습니다. `zmq_recv()`는 임의의 메시지 크기를 가지는 데이터를 처리하는 데는 좋지 않습니다. `zmq_recv()`는 응용프로그램의 코드 내에서 정의한 버퍼의 크기를 넘을 경우 크기 이상 메시지 데이터는 버리게 됩니다. 그래서 `zmq_msg_t` 구조체를 다룰 수 있도록 추가적인 API로 작업해야 합니다.
 
 ;* Initialise a message: zmq_msg_init(), zmq_msg_init_size(), zmq_msg_init_data().
 ;* Sending and receiving a message: zmq_msg_send(), zmq_msg_recv().
@@ -369,8 +369,8 @@ libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 AP
 ; * These rules don't apply if you use zmq_send() and zmq_recv(), to which you pass byte arrays, not message structures.
 
 * `zmq_msg_t` 객체(데이터의 블록 아님)를 생성하고 전달할 수 있습니다.
-* 메시지를 읽기 위해서 `zmq_msg_init()`을 호출하여 하나의 빈 메시지를 만들고 `zmq_msg_recv()`을 통하여 전달받습니다.
-* 새로운 데이터(구조체)에 메시지를 쓰기 위해서 `zmq_msg_init_size()`을 호출하여 메시지를 생성하고 동시에 구조체 크기의 데이터 블록을 할당합니다. 그리고 `memcpy()`을 사용하여 데이터를 채워 넣고 `zmq_msg_send()`를 통하여 메시지를 전송합니다.
+* 메시지를 읽기 위해서 `zmq_msg_init()`을 호출하여 하나의 빈 메시지를 만들고 `zmq_msg_recv()`을 통하여 수신합니다.
+* 새로운 데이터(구조체)에 메시지를 쓰기 위해서 `zmq_msg_init_size()`을 호출하여 메시지를 생성하고 동시에 구조체 크기의 데이터 블록을 할당합니다. 그리고 `memcpy()`을 사용하여 데이터를 채워 넣고 `zmq_msg_send()`를 통하여 메시지를 송신합니다.
 * 메시지를 해제(파괴가 아님)를 위하여, `zmq_msg_close()`을 호출하여 참조를 없애고 결국 ØMQ가 메시지를 삭제하게 합니다.
 * 메시지 내용을 접근하기 위하여 `zmq_msg_data()`을 사용하며, 메시지 내용에 얼마나 많은 데이터가 있는지 알기 위하여 `zmq_msg_size()`을 호출합니다.
 * `zmq_msg_move()`, `zmq_msg_copy()`, `zmq_msg_init_data()`에 대하여 정확하게 사용법을 확인하여 사용해야 합니다.
@@ -379,7 +379,7 @@ libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 AP
 
 ;If you want to send the same message more than once, and it's sizable, create a second message, initialize it using zmq_msg_init(), and then use zmq_msg_copy() to create a copy of the first message. This does not copy the data but copies a reference. You can then send the message twice (or more, if you create more copies) and the message will only be finally destroyed when the last copy is sent or closed.
 
-만약 동일 메시지를 한번 이상 보내고 싶을 경우, 추가적인 메시지를 만들어 `zmq_msg_init()`으로 초기화하고 `zmq_msg_copy()`을 사용하고 첫 번째 메시지의 복사하여 생성할 수 있습니다. 이것은 데이터를 복사하는 것이 아니라 참조를 복사합니다. 그런 다음 메시지를 두 번(혹은 이상으로 더 많은 복사를 작성하는 경우) 보내며, 마지막 사본을 보내거나 닫을 때 메시지가 삭제됩니다.
+만약 동일 메시지를 한번 이상 보내고 싶을 경우, 추가적인 메시지를 만들어 `zmq_msg_init()`으로 초기화하고 `zmq_msg_copy()`을 사용하고 첫 번째 메시지를 복사하여 생성할 수 있습니다. 이것은 데이터를 복사하는 것이 아니라 참조를 복사합니다. 그런 다음 메시지를 두 번(혹은 이상으로 더 많은 복사를 작성하는 경우) 보내며, 마지막 사본을 보내거나 닫을 때 메시지가 삭제됩니다.
 
 ;ØMQ also supports multipart messages, which let you send or receive a list of frames as a single on-the-wire message. This is widely used in real applications and we'll look at that later in this chapter and in Chapter 3 - Advanced Request-Reply Patterns.
 
@@ -424,9 +424,9 @@ libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 AP
 ; * A message (single or multipart) must fit in memory. If you want to send files of arbitrary sizes, you should break them into pieces and send each piece as separate single-part messages. Using multipart data will not reduce memory consumption.
 ; * You must call zmq_msg_close() when finished with a received message, in languages that don't automatically destroy objects when a scope closes. You don't call this method after sending a message.
 
-* 길이가 0인 메시지를 전송할 수 있다. 예를 들어 하나의 스레드에서 다른 스레드로 신호를 전송하기 위한 목적입니다.
+* 길이가 0인 메시지를 전송할 수 있습니다. 예를 들어 하나의 스레드에서 다른 스레드로 신호를 전송하기 위한 목적입니다.
 * ØMQ는 메시지의 모든 파트들(하나 이상)의 전송을 보증하거나, 하지 않을 수 있습니다.
-* ØMQ는 메시지(1개 혹은 멀티파트)를 바로 전송하지 않고, 일정 시간 후에 보낸다.  하나의 멀티파트 메시지는 메모리의 크기에 맞아야 합니다.
+* ØMQ는 메시지(1개 혹은 멀티파트)를 바로 전송하지 않고, 일정 시간 후에 보냅니다.  그래서 하나의 멀티파트 메시지는 설정한 메모리의 크기에 맞아야 합니다.
 * 하나의 메시지(1개 혹은  멀티파트)는 반드시 메모리 크기에 맞아야 하며 파일이나 임의의 크기를 전송하려면 하나의 파트의 메시지로 쪼개어서 각 조각을 전송해야 합니다. 멀티파트 데이터를 사용하여 메모리 사용을 줄일 수는 없습니다.
 * 메시지 수신이 끝나면 `zmq_msg_close()`을 반드시 호출하여야 하며, 일부 개발 언어에서는 변수의 사용 범위를 벋어나도 자동으로 삭제하지 않습니다. 메시지를 전송할 때는 `zmq_msg_close()`을 호출하지 마시기 바랍니다.
 
@@ -477,7 +477,7 @@ s_dump (void *socket)
 
 ;And to be repetitive, do not use zmq_msg_init_data() yet. This is a zero-copy method and is guaranteed to create trouble for you. There are far more important things to learn about ØMQ before you start to worry about shaving off microseconds.
 
-아직 `zmq_msg_init_data()`을 언급하지 않았지만 이것은 "zero-copy"며 문제를 일으킬 수 있습니다. 마이크로초 단축에 대해 걱정하기보다는 ØMQ에 대해 알아야 할 중요한 사항이 많이 있습니다.
+아직 `zmq_msg_init_data()`을 언급하지 않았지만 이것은 "zero-copy"며 문제를 일으킬 수 있습니다. 마이크로초 단축에 대해 걱정하기보다는 ØMQ에 대해 알아야 할 중요한 사항들이 많이 있습니다.
 
 ;This rich API can be tiresome to work with. The methods are optimized for performance, not simplicity. If you start using these you will almost definitely get them wrong until you've read the man pages with some care. So one of the main jobs of a good language binding is to wrap this API up in classes that are easier to use.
 
@@ -662,9 +662,9 @@ typedef struct zmq_pollitem_t
 } zmq_pollitem_t;
 ```
 
-> [옮긴이] msreader와 mspoller 테스트를 위해서는 taskvent(선동가 서버)와 wuserver(기상 정보 변경 서버) 수행이 필요함
+> [옮긴이] msreader와 mspoller 테스트를 위해서는 taskvent(호흡기 서버)와 wuserver(기상 정보 변경 서버) 수행이 필요함
 
-taskvent.c : 선동가 서버 프로그램
+taskvent.c : 호흡기 서버 프로그램
 
 ```cpp
 //  Task ventilator
@@ -1627,7 +1627,7 @@ s_send (controller, "KILL");
 
 ;Here is the worker process, which manages two sockets (a PULL socket getting tasks, and a SUB socket getting control commands), using the zmq_poll() technique we saw earlier:
 
-작업자 프로세스에서는 2개의 소켓(선동가에서 작업을 받아 오는 PULL 소켓과 제어 명령을 가져오는 SUB 소켓)을 이전에 보았던 `zmq_poll()` 기술을 사용해서 관리합니다.
+작업자 프로세스에서는 2개의 소켓(호흡기에서 작업을 받아 오는 PULL 소켓과 제어 명령을 가져오는 SUB 소켓)을 이전에 보았던 `zmq_poll()` 기술을 사용해서 관리합니다.
 
 taskwork2.c: 종료 신호를 처리하는 작업자
 
