@@ -12,6 +12,11 @@
 
 오자・오역 및 의견이 있을 경우 [@박재도(zzeddo@gmail.com)](https://www.facebook.com/zzeddo) 연락 부탁드립니다.
 
+옮긴이(박재도)는 2000년대 초반부터 hp BASEstar Open이란 MOM(Message Oriented Middleware)를 국내 적용하였으며 
+2011년부터 하이텍크 산업(반도체/LCD/OLED)에서 TIB/Rendezvous(TIB/RV)를 적용하는 일을 하였습니다.
+2012년에 zeroMQ를 처음 접하고 TIB/Rendezvous(TIB/RV) 대체하기 위한 프로젝틀 수행하였으며
+2017년 CERN(European Organization for Nuclear Research)에서 사용하는 CMW(Control Middleware)가 zeroMQ 기반으로 구축된 것을 확인하고 기술 이전을 받아 국내 적용하기도 하였습니다.
+현재 기존의 경험을 바탕으로 zeroMQ 기반의 SOOK MOM(Message Oriented Middleware)을 개발하고 있습니다.
 
 # 목차
 * [서문(Preface)](preface.md)
