@@ -15,10 +15,10 @@
 ;* The Binary Star pattern: primary-backup server failover
 ;* The Freelance pattern: brokerless reliable request-reply
 
-* 게으른 해적 패턴 : 클라이언트 측의 신뢰할 수 있는 요청-응답
-* 단순한 해적 패턴 : 부하 분산을 사용한 신뢰할 수 있는 요청-응답
-* 편집증 해적 패턴 : 심박을 통한 신뢰할 수 있는 요청-응답
-* 집사(majordomo) 패턴 : 서비스 지향 신뢰할 수 있는 메세지 대기열
+* 게으른 해적 패턴(LPP) : 클라이언트 측의 신뢰할 수 있는 요청-응답
+* 단순한 해적 패턴(SPP) : 부하 분산을 사용한 신뢰할 수 있는 요청-응답
+* 편집증 해적 패턴(PPP) : 심박을 통한 신뢰할 수 있는 요청-응답
+* 집사(majordomo) 패턴(MDP) : 서비스 지향 신뢰할 수 있는 메세지 대기열
 * 타이타닉 패턴 : 디스크 기반 / 연결 해제된 신뢰할 수 있는 메세지 대기열
 * 바이너리 스타 패턴 : 기본-백업 서버 장애조치
 * 프리랜서 패턴 : 브로커 없는 신뢰할 수 있는 요청 응답
@@ -37,7 +37,7 @@
 
 * 응용프로그램 코드가 최악의 범죄자입니다. 충돌, 종료, 멈춤, 입력에 대한 무응답, 입력 처리 지연, 메모리 고갈 등이 발생할 수 있습니다.
 * 시스템 코드 -- ØMQ의 시스템 코드를 사용하여 작성한 브로커는 응용프로그램 코드와 같은 이유로 죽을 수 있습니다. 시스템 코드는 응용프로그램 코드보다 더 신뢰할 수 있어야 하지만 여전히 충돌 및 잘못될 수 있으며 특히 느린 클라이언트에 대한 메시지를 대기열에 넣으려고 하면 메모리가 부족할 수 있습니다.
-* 메시지 대기열 초과로 인한 메시지 유실, 메시지 대기열은 초과될 수 있으며 보통 느린 클라이언트들과 함께 동작하는 브로커(시스템 코드)에 기인합니다. 대기열이 초과되면 메시지를 버리기 시작하여 메시지 "유실"이 발생합니다.
+* 메시지 대기열 초과로 인한 메시지 유실이 발생합니다. 처리가 느린 클라이언트와 함께 동작하는 브로커(시스템 코드)로 인해 메시지 대기열은 초과될 수 있습니다. 대기열이 초과되면 메시지를 버리기 시작하여 메시지 "유실"이 발생합니다.
 * 하드웨어 장애 -- 하드웨어는 장애가 발생하면 박스에서 실행되는 모든 프로세스들도 영향을 받게 됩니다.
 * 네트워크 장애 -- 네트워크는 색다르게 장애가 발생합니다. 예를 들어 스위치의 일부 포트가 죽거나 네트워크 상의 일부 지점에 접근할 수 없게 됩니다.
 * 전체 데이터 센터 장애 -- 데이터 센터는 번개, 지진, 화재, 일상적인 전력 장애, 냉각 장애로 영향을 받을 수 있습니다.
@@ -48,12 +48,12 @@
 
 ;Because the first five cases in the above list cover 99.9% of real world requirements outside large companies (according to a highly scientific study I just ran, which also told me that 78% of statistics are made up on the spot, and moreover never to trust a statistic that we didn't falsify ourselves), that's what we'll examine. If you're a large company with money to spend on the last two cases, contact my company immediately! There's a large hole behind my beach house waiting to be converted into an executive swimming pool.
 
-위 목록의 5개 사례는 대기업을 제외한 실제 요구사항의 99.9%를 해당됩니다(과학적 연구에 따르면 통계의 78%가 즉석해서 만들어진 것으며, 조작되지 않은 통계는 믿을 수 없게 합니다.). 대기업에 속해 있고 마지막 2가지 사안(네트워크, 데이터 센터)에 지출할 돈이 있다면 즉시 저희 회사(iMatix)에 연락 주시기 바랍니다. 저의 별장 뒷편의 공간을 호화로운 수영장으로 바꾸기를 기다리고 있습니다.
+위 목록의 5개 사례는 대기업을 제외한 실제 요구사항의 99.9%를 해당됩니다(과학적 연구에 따르면 통계의 78%가 즉석해서 만들어진 것으며, 조작되지 않은 통계를 믿을 수 없게 합니다.). 대기업에 속해 있고 마지막 2가지 사안(네트워크, 데이터 센터)에 지출할 돈이 있다면 즉시 저희 회사(iMatix)에 연락 주시기 바랍니다. 저의 별장 뒷편의 공간을 호화로운 수영장으로 바꾸기를 기다리고 있습니다.
 
 ## 신뢰성 설계(Designing Reliability)
 ;So to make things brutally simple, reliability is "keeping things working properly when code freezes or crashes", a situation we'll shorten to "dies". However, the things we want to keep working properly are more complex than just messages. We need to take each core ØMQ messaging pattern and see how to make it work (if we can) even when code dies.
 
-주제를 단순화하면, 신뢰성은 "코드가 멈추거나 충돌할 때 정상 동작하게 유지"하는 것이며 이런 장애 상황을 "죽음"으로 줄여 이야기합니다. 그러나 우리가 정상 동작하고 싶은 것은 단순한 메시지보다 더 복잡합니다. 우리는 각각의 핵심 ØMQ 메시징 패턴을 통해 코드가 죽더라도 동작하는 방법을 살펴보겠습니다.
+주제를 단순화하면, 신뢰성은 "코드가 멈추거나 충돌할 때 정상적으로 동작하게 유지"하는 것이며 이런 장애 상황을 "죽음"으로 줄여 이야기합니다. 그러나 우리가 정상적으로 동작하고 싶은 것은 단순한 메시지보다 더 복잡합니다. 우리는 각각의 핵심 ØMQ 메시징 패턴을 통해 코드가 죽더라도 동작하는 방법을 살펴보겠습니다.
 
 ;Let's take them one-by-one:
 
@@ -125,7 +125,7 @@ OMQ의 요청-응답 패턴은 TCP보다 훨씬 좋습니다. ØMQ는 자동으�
 
 ;If you try to use a REQ socket in anything other than a strict send/receive fashion, you'll get an error (technically, the REQ socket implements a small finite-state machine to enforce the send/receive ping-pong, and so the error code is called "EFSM"). This is slightly annoying when we want to use REQ in a pirate pattern, because we may send several requests before getting a reply.
 
-엄격한 송/수신 방식 외에 클라이언트에서 REQ 소켓을 사용하려 하면 오류가 발생합니다 (기술적으로 REQ 소켓은 송/수신 핑-퐁(ping-pong)을 위해 작은 유한 상태 머신을 구현합니다. 오류 코드는 "EFSM"입니다.). 해적 패턴으로 REQ 소켓을 사용하는 것을 어렵게 하며, 해적 패턴에서는 답변을 받기 전에 여러 요청(재시도)을 보낼 수 있어야 하기 때문입니다.
+엄격한 송/수신 방식 외에 클라이언트에서 REQ 소켓을 사용하려 하면 오류가 발생합니다 (기술적으로 REQ 소켓은 송/수신 핑-퐁(ping-pong)을 위해 작은 유한 상태 머신을 구현합니다. 오류 코드는 "EFSM"입니다.). 해적 패턴으로 REQ 소켓을 사용하는 것을 어렵게 하며, 해적 패턴에서는 응답을 받기 전에 여러 요청(재시도)을 보낼 수 있어야 하기 때문입니다.
 
 ;The pretty good brute force solution is to close and reopen the REQ socket after an error:
 
@@ -320,7 +320,8 @@ I: server replied OK (1)
         return 0;
     }
 ```
-`zsock_destroy()` 함수의 수행 위치를 변경한 소스는 다음과 같습니다.
+> [옮긴이] `zsock_destroy()` 함수의 수행 위치를 변경한 "lpclient.c"는 다음과 같습니다.
+
 ```cpp
 #include <czmq.h>
 #define REQUEST_TIMEOUT 2500 // msecs, (>1000!)
@@ -442,7 +443,7 @@ E: Server seems to be offline, abandoning
 ;The client sequences each message and checks that replies come back exactly in
  order: that no requests or replies are lost, and no replies come back more than once, or out of order. Run the test a few times until you're convinced that this mechanism actually works. You don't need sequence numbers in a production application; they just help us trust our design.
 
-클라이언트는 각 메시지의 순서를 정하여 응답들이 순서에 따라 정확히 왔는지 확인합니다 :
+클라이언트는 각 메시지의 요청 순서에 따라 응답 순서가 정확히 왔는지 확인합니다 :
 요청들이나 응답들이 유실되지 않거나, 응답들이 한번 이상 반환되지 않거나, 순서가 맞지 않을 경우를 확인합니다. 이 동작 방식이 실제로 동작한다고 확신할 때까지 테스트를 수행하시기 바랍니다. 양산 응용프로그램에서는 순서 번호는 필요하지 않지만 설계를 신뢰하는 데 도움이 됩니다.
 
 ;The client uses a REQ socket, and does the brute force close/reopen because REQ sockets impose that strict send/receive cycle. You might be tempted to use a DEALER instead, but it would not be a good decision. First, it would mean emulating the secret sauce that REQ does with envelopes (if you've forgotten what that is, it's a good sign you don't want to have to do it). Second, it would mean potentially getting back replies that you didn't expect.
@@ -689,14 +690,14 @@ server_task (void *args)
 
 int main (void)
 {
-	int server_nbr;
-	for (server_nbr = 0; server_nbr < NBR_SERVERS; server_nbr++)
+    int server_nbr;
+    for (server_nbr = 0; server_nbr < NBR_SERVERS; server_nbr++)
         zthread_new (server_task, (void *)(intptr_t)server_nbr);
-	
+
     int client_nbr;
     for (client_nbr = 0; client_nbr < NBR_CLIENTS; client_nbr++)
         zthread_new (client_task, (void *)(intptr_t)client_nbr);
-	 zclock_sleep (60 * 1000);
+    zclock_sleep (60 * 1000);
     return 0;
 }
 ```
@@ -1226,7 +1227,7 @@ PS D:\git_store\zguide-kr\examples\C> ./sppattern
 ;* The queue does not detect worker failure, so if a worker dies while idle, the queue can't remove it from its worker queue until the queue sends it a request. The client waits and retries for nothing. It's not a critical problem, but it's not nice. To make this work properly, we do heartbeating from worker to queue, so that the queue can detect a lost worker at any stage.
 
 * [Heatbeat : Queue to Worker] 대기열 프록시 장애와 재시작의 경우 안정적이지 않습니다. 클라이언트는 복구되지만 작업자는 복구되지 않습니다. ØMQ는 작업자의 소켓을 자동으로 다시 연결하지만, 재시작된 대기열 프록시에 작업자는 준비(ready) 신호를 보내지 않았으므로 브로커의 리스트(zlist_t)상에 존재하지 않아  클라이언트의 요청을 처리할 수 없습니다. 이 문제를 해결하려면 대기열 프록시에서 작업자로 심박을 전송하여 작업자는 대기열 프록시가 장애가 일어난 시각을 알 수 있습니다.
-*  [Heatbeat : Worker to Queue] 대기열 프록시는 작업자 장애를 감지하지 않으므로, 작업자가 유휴 상태에서 죽으면 클라이언트가 대기열 프록시로 요청을 보낼 때까지 죽은 작업자를 대기열 프록시(zlist_t)에서 제거할 수 없습니다. 클라이언트는 아무것도 기다리지 않고 재시도합니다. 중대한 문제는 아니지만 좋지 않습니다. 제대로 된 작업을 수행하려면, 작업자에서 대기열 프록시로 심박 전송하여 대기열 프록시가 모든 단계에서 죽은 작업자를 감지할 수 있습니다.
+*  [Heatbeat : Worker to Queue] 대기열 프록시는 작업자 장애를 감지하지 않으므로, 작업자가 유휴 상태에서 죽으면 클라이언트가 대기열 프록시로 요청을 보낼 때까지 죽은 작업자를 대기열 프록시(zlist_t)에서 제거할 수 없습니다. 클라이언트는 아무것도 기다리지 않고 재시도합니다. 중대한 문제는 아니지만 좋지 않습니다. 제대로 된 작업을 수행하려면, 작업자가 대기열 프록시로 심박을 전송하여 대기열 프록시의 송/수신 단계에서 죽은 작업자를 감지할 수 있습니다.
 
 ;We'll fix these in a properly pedantic Paranoid Pirate Pattern.
 
@@ -2132,7 +2133,7 @@ PS D:\git_store\zguide-kr\examples\C> stop-process -name pppattern
 ## 심박(Heartbeating)
 ;Heartbeating solves the problem of knowing whether a peer is alive or dead. This is not an issue specific to ØMQ. TCP has a long timeout (30 minutes or so), that means that it can be impossible to know whether a peer has died, been disconnected, or gone on a weekend to Prague with a case of vodka, a redhead, and a large expense account.
 
-심박은 상대가 살아 있거나 죽었는지 알기 위한 문제를 해결합니다. 이것은 ØMQ에 한정된 문제가 아니며, TCP는 오랜 제한시간(30 분 정도)이 있어, 상대가 죽었는지, 연결이 끊어졌는지,  주말에 빨간 머리 아가씨와 프라하에 가서 보드카 한잔하는지 알 수가 없습니다.
+심박은 상대가 살았는지 죽었는지 알기 위한 문제를 해결합니다. 이것은 ØMQ에 한정된 문제가 아니며, TCP는 오랜 제한시간(30 분 정도)이 있어, 상대가 죽었는지, 연결이 끊어졌는지,  주말에 빨간 머리 아가씨와 프라하에 가서 보드카 한잔하는지 알 수가 없습니다.
 
 ;It's is not easy to get heartbeating right. When writing the Paranoid Pirate examples, it took about five hours to get the heartbeating working properly. The rest of the request-reply chain took perhaps ten minutes. It is especially easy to create "false failures", i.e., when peers decide that they are disconnected because the heartbeats aren't sent properly.
 
@@ -2197,7 +2198,7 @@ SUB 소켓은 PUB 소켓에 메시지를 전송할 수 없지만, PUB 소켓은 
 
 ;In the worker, this is how we handle heartbeats from the queue:
 
-작업자가 대기열 브로커로부터 심박(quueu-to-worker)을 처리하는 방법은 다음과 같습니다.
+작업자가 대기열 브로커로부터 심박(broker->worker)을 처리하는 방법은 다음과 같습니다.
 
 ;* We calculate a liveness, which is how many heartbeats we can still miss before deciding the queue is dead. It starts at three and we decrement it each time we miss a heartbeat.
 ;* We wait, in the zmq_poll loop, for one second each time, which is our heartbeat interval.
@@ -2209,7 +2210,7 @@ SUB 소켓은 PUB 소켓에 메시지를 전송할 수 없지만, PUB 소켓은 
 
 * 대기열 브로커가 죽었다고 결정하기 전에, 허용 가능한 최대 심박 수인 `liveness` 변수를 정합니다. 3(`HEARTBEAT_LIVENESS`)에서 시작하며 요청 데이터나 심박이 수신되지 않을 때(1초 간격)마다 -1씩 감소합니다.
 * `zmq_poll()` 루프에서  1초(timeout) 동안 대기합니다. 이것이 심박 시간 간격입니다.
-* `zmq_poll()` 대기 시간 동안 수신 메시지(요청, 심박)가 있으면, `liveness` 변수를 최대 심박 수(HEARTBEAT_LIVENESS로 재설정합니다.
+* `zmq_poll()` 대기 시간 동안 수신 메시지(요청, 심박)가 있으면, `liveness` 변수를 최대 심박 수인 `HEARTBEAT_LIVENESS`로 재설정합니다.
 * `zmq_poll()` 대기 시간 동안 메시지(요청, 심박)가 없으면,  `liveness` 변수를 -1 감소(--liveness) 시킵니다.
 * `liveness` 가 0에 도달하면 대기열 브로커이 죽은 것으로 판단합니다.
 * 대기열 브로커가 죽으면, 소켓을 제거(`zsocket_destroy()`)하고, 신규 소켓을 생성(`zsocket_new()`)하고 재연결(`zsocket_connect()`)합니다.
@@ -2217,7 +2218,7 @@ SUB 소켓은 PUB 소켓에 메시지를 전송할 수 없지만, PUB 소켓은 
 
 ;And this is how we handle heartbeats to the queue:
 
-다음은 대기열 브로커가 작업자의 심박(worker-to-queue)을 처리하는 방식입니다.
+다음은 대기열 브로커가 작업자의 심박(worker->broker)을 처리하는 방식입니다.
 
 ;* We calculate when to send the next heartbeat; this is a single variable because we're talking to one peer, the queue.
 ;* In the zmq_poll loop, whenever we pass this time, we send a heartbeat to the queue.
@@ -2289,7 +2290,7 @@ while (true) {
 * `zmq_poll()` 혹은 반응자(`zloop`)를 응용프로그램의 주요 작업의 핵심으로 사용합니다.
 * 상대들 간에 심박을 구축하여, 장애 상황을 시뮬레이션 및 테스트 한 다음 나머지 메시지 흐름을 구축합니다. 나중에 심박을 추가하는 것은 다소 까다롭습니다.
 * 작업을 수행하면서 간단한 추적 기능을 사용하여, 명령어창에 출력하게 합니다. 상대들 간에 메시지 흐름을 추적하려면 `zmsg`가 제공하는 `zmsg_dump()` 기능을 사용하고 차이가 있는지 확인할 수 있도록 점차 메시지들에 번호를 지정합니다.
-* 실제 응용프로그램에서 심박은 구성 가능해야 하며 일반적으로 상대와 통신해야 합니다. 일부 상대들은 최소 10 msec의 간격의 공격적인 심박을 원하며, 멀리 떨어진 상대들은 최대 30초의 심박을 원합니다.
+* 실제 응용프로그램에서 심박을 구성해서 상대와 통신해야 합니다. 일부 상대들은 최소 10 msec의 간격의 공격적인 심박을 원하며, 멀리 떨어진 상대들은 최대 30초의 심박을 원합니다.
 * 각 상대들마다 다른 심박 간격이 있는 경우, 폴링 제한시간은 이들 중 가장 낮은(가장 짧은 시간) 것이어야 합니다. 무한한 제한시간을 사용하지 마십시오.
 * 메시지와 동일한 소켓에서 심박을 수행하면, 심박을 통해 네트워크 연결을 유지(keep-alive)하는 역할도 합니다(일부 불친절한 방화벽은 통신이 수행되지 않은 접속을 끊어 버리는 일이 있기 때문입니다).
 
@@ -2300,11 +2301,11 @@ while (true) {
 
 ;It's fun to experiment without specifications, but that's not a sensible basis for real applications. What happens if we want to write a worker in another language? Do we have to read code to see how things work? What if we want to change the protocol for some reason? Even a simple protocol will, if it's successful, evolve and become more complex.
 
-사양서(specifications) 없이 실험하는 것은 재미있지만, 실제 응용프로그램에서는 합리적인 기준이 아닙니다. 작업자를 다른 개발 언어로 작성하려면 어떻게 됩니까? 어떻게 동작하는지 보기 위해 소스 코드를 분석해야 하나요? 어떤 이유로 통신규약을 변경하려면 무엇을 해야 할까요? 원래는 간단한 통신규약도 통신규약이 보급에 따라 진화되어 복잡하게 됩니다.
+사양서(specifications) 없이 실험하는 것은 재미있지만, 실제 응용프로그램에서는 합리적인 기준이 아닙니다. 작업자를 다른 개발 언어로 작성하려면 어떻게 됩니까? 어떻게 동작하는지 보기 위해 소스 코드를 분석해야 하나요? 어떤 이유로 통신규약을 변경하려면 무엇을 해야 할까요? 원래는 간단한 통신규약도 점차 진화되어 복잡하게 됩니다.
 
 ;Lack of contracts is a sure sign of a disposable application. So let's write a contract for this protocol. How do we do that?
 
-계약의 부제은 일회용 응용프로그램의 전락하는 확실한 신호입니다. 통신규약에 대한 계약을 작성해 봅시다. 어떻게 하나요?
+계약의 부재은 일회용 응용프로그램의 전락하는 확실한 신호입니다. 통신규약에 대한 계약을 작성해 봅시다. 어떻게 하나요?
 
 ;There's a wiki at rfc.zeromq.org that we made especially as a home for public ØMQ contracts.
 ;To create a new specification, register on the wiki if needed, and follow the instructions. It's fairly straightforward, though writing technical texts is not everyone's cup of tea.
@@ -2314,7 +2315,7 @@ while (true) {
 
 ;It took me about fifteen minutes to draft the new Pirate Pattern Protocol. It's not a big specification, but it does capture enough to act as the basis for arguments ("your queue isn't PPP compatible; please fix it!").
 
-새로운 해적 패턴 통신규약을 작성하는 데 약 15분이 걸렸습니다. 큰 사양서는 아니지만 기본적인 행동 이해하는 데는 충실합니다. 예를 들어 편집증 해적 패턴 통신 규약에 대하여 다른 사람이 작성한 코드가 위배될 경우 "당신이 작성한 대기열 브로커는 편집증 해적 패턴과 호환되지 않습니다. 수정하십시오!"라고 말할 수 있습니다.
+새로운 해적 패턴 통신규약을 작성하는 데 약 15분이 걸렸습니다. 큰 사양서는 아니지만 기본적인 행동을 이해하는 데는 충실합니다. 예를 들어 편집증 해적 패턴 통신 규약에 대하여 다른 사람이 작성한 코드가 위배될 경우 "당신이 작성한 대기열 브로커는 편집증 해적 패턴과 호환되지 않습니다. 수정하십시오!"라고 말할 수 있습니다.
 
 ;Turning PPP into a real protocol would take more work:
 
@@ -2338,7 +2339,7 @@ while (true) {
 
 ;The Majordomo Protocol (MDP) extends and improves on PPP in one interesting way: it adds a "service name" to requests that the client sends, and asks workers to register for specific services. Adding service names turns our Paranoid Pirate queue into a service-oriented broker. The nice thing about MDP is that it came out of working code, a simpler ancestor protocol (PPP), and a precise set of improvements that each solved a clear problem. This made it easy to draft.
 
-MDP는 한 가지 흥미로운 방식으로 PPP를 확장하고 개선합니다: 클라이언트가 보내는 요청에 "서비스 이름"을 추가하고 작업자에게 특정 서비스에 등록하도록 요청합니다. 서비스 이름을 추가하면 편집증 해적 브로커가 서비스 지향 브로커로 바뀝니다. MDP의 좋은 점은 동작하는 코드가 있으며, 이전 통신규약(PPP)이 있으며, 명확한 문제를 해결한 정확한 일련의 개선 사례에서 나왔다는 것입니다. 이것으로 초안을 쉽게 작성할 수 있었습니다.
+MDP는 한 가지 흥미로운 방식으로 PPP를 확장하고 개선합니다: 클라이언트가 보내는 요청에 "서비스 이름"을 추가하고 작업자에게 특정 서비스를 등록하도록 요청합니다. 서비스 이름을 추가하면 편집증 해적 브로커가 서비스 지향 브로커로 바뀝니다. MDP의 좋은 점은 동작하는 코드가 있으며, 이전 통신규약(PPP)도 있어, 명확한 문제를 해결한 정확한 일련의 개선 사례에서 나왔다는 것입니다. 이것으로 초안을 쉽게 작성할 수 있었습니다.
 
 ;To implement Majordomo, we need to write a framework for clients and workers. It's really not sane to ask every application developer to read the spec and make it work, when they could be using a simpler API that does the work for them.
 
@@ -2372,7 +2373,7 @@ zmsg_t  *mdwrk_recv    (mdwrk_t *self, zmsg_t *reply);
 ;It's more or less symmetrical, but the worker dialog is a little different. The first time a worker does a recv(), it passes a null reply. Thereafter, it passes the current reply, and gets a new request.
 
 클라이언트와 다소 대칭적이지만 작업자 통신 방식은 약간 다릅니다. 
-작업자가 처음으로 `recv()`를 수행하면 null 응답이 전달되고 이후 현재 응답을 전달하고 새 요청을 받습니다.
+작업자가 처음으로 `recv()`를 수행하면 null 응답을 전달하고 요청을 받으면 요청을 응답(echo)으로 새 요청을 받습니다.
 
 ;The client and worker APIs were fairly simple to construct because they're heavily based on the Paranoid Pirate code we already developed. Here is the client API:
 
@@ -3439,7 +3440,7 @@ int main (int argc, char *argv [])
 
 ;Here are some things to note about the broker code:
 
-브로커 코드에서 주의한 몇 가지 사항은 다음과 같습니다.
+브로커 코드에서 주의할 몇 가지 사항은 다음과 같습니다.
 
 ;* The Majordomo Protocol lets us handle both clients and workers on a single socket. This is nicer for those deploying and managing the broker: it just sits on one ØMQ endpoint rather than the two that most proxies need.
 ;* The broker implements all of MDP/0.1 properly (as far as I know), including disconnection if the broker sends invalid commands, heartbeating, and the rest.
@@ -3447,7 +3448,7 @@ int main (int argc, char *argv [])
 ;* A primary/failover or live/live broker reliability model is easy, as the broker essentially has no state except service presence. It's up to clients and workers to choose another broker if their first choice isn't up and running.
 ;* The examples use five-second heartbeats, mainly to reduce the amount of output when you enable tracing. Realistic values would be lower for most LAN applications. However, any retry has to be slow enough to allow for a service to restart, say 10 seconds at least.
 
-* MDP는 단일 ROUTER 소켓에서 클라이언트들과 작업자들을 모두 처리할 수 ​​있습니다. 이는 브로커를 배포하고 관리하는 데는 좋습니다: 대부분의 프록시가 필요로 하는 2개가 아닌 하나의 ØMQ 단말에 있습니다.
+* MDP는 단일 ROUTER 소켓에서 클라이언트들과 작업자들을 모두 처리할 수 ​​있습니다. 이는 브로커를 배포하고 관리하는 데는 좋습니다: 대부분의 프록시가 필요로 하는 두 개가 아닌 하나의 ØMQ 단말에 있습니다.
 * 브로커는 모든 MDP/v0.1 사양을 구현하였으며,  브로커가 잘못된 명령을 보내는 경우에 연결 해제, 심박 및 나머지들을 포함합니다.
 * 멀티스레드로 실행하기 위해 확장될 수 있으며, 각각의 스레드는 하나의 소켓과 하나의 클라이언트 및 작업자 집합을 관리합니다. 이것은 대규모 아키텍처로 분할하기 위한 흥미로운 주제가 될 수 있습니다. C 코드는 작업을 쉽게 하기 위해 이미 브로커 클래스를 중심으로 구성되어 있습니다.
 * 기본(primary)/장애조치(failover) 또는 라이브(live)/라이브(live) 브로커 신뢰성 모델은 쉽지만, 브로커는 기본적으로 서비스 존재를 제외하고는 상태가 없기 때문에, 클라이언트들과 작업자들이 처음 선택한 브로커가 죽었을 경우 다른 브로커를 선택하는 것은 클라이언트들과 작업자들의 책임입니다.
@@ -3551,9 +3552,9 @@ D: 20-08-19 15:13:55 [011] Hello world
 ## 비동기 MDP 패턴
 ;The Majordomo implementation in the previous section is simple and stupid. The client is just the original Simple Pirate, wrapped up in a sexy API. When I fire up a client, broker, and worker on a test box, it can process 100,000 requests in about 14 seconds. That is partially due to the code, which cheerfully copies message frames around as if CPU cycles were free. But the real problem is that we're doing network round-trips. ØMQ disables Nagle's algorithm, but round-tripping is still slow.
 
-이전의 MDP 구현은 간단하지만 멍청합니다. 클라이언트는 섹시한 API로 감싼 단순한 해적 패턴입니다. 명령어창에서 클라이언트, 브로커 및 작업자를 실행하면 약 14초 내에 100,000개의 요청을 처리(`-v` 옵션 제거)할 수 있으며, 이는 CPU 리소스 있는 한도에서 메시지 프레임들을 주변으로 복사 가능하기 때문입니다. 그러나 진짜 문제는 우리가 네트워크 왕복(round-trips)입니다. ØMQ는 Nagle 알고리즘을 비활성화하지만 왕복은 여전히 느립니다.
+이전의 MDP 구현은 간단하지만 멍청합니다. 클라이언트는 섹시한 API로 감싼 단순한 해적 패턴입니다. 명령어창에서 클라이언트, 브로커 및 작업자를 실행하면 약 14초 내에 100,000개의 요청을 처리(`-v` 옵션 제거)할 수 있으며, 이는 CPU 리소스 있는 한도에서 메시지 프레임들을 주변으로 복사 가능하기 때문입니다. 그러나 진짜 문제는 우리가 네트워크 왕복(round-trips)입니다. ØMQ는 네이글 알고리즘을 비활성화하지만 왕복은 여전히 느립니다.
 
-> [옮긴이] Nagle 알고리즘은 TCP/IP 기반의 네트워크에서 특정 작은 인터넷 패킷 전송을 억제하는 알고리즘으로 작은 패킷을 가능한 모아서 큰 패킷으로 모아서 한 번에 전송합니다. 네트워크 전송의 효율을 높여주지만 실시간으로 운용해야 하는 응용프로그램에서는 오히려 지연을 발생시키게 됩니다.
+> [옮긴이] 네이글(Nagle) 알고리즘은 TCP/IP 기반의 네트워크에서 특정 작은 인터넷 패킷 전송을 억제하는 알고리즘으로 작은 패킷을 가능한 모아서 큰 패킷으로 모아서 한 번에 전송합니다. 네트워크 전송의 효율을 높여주지만 실시간으로 운용해야 하는 응용프로그램에서는 오히려 지연을 발생시키게 됩니다.
 
 ;Theory is great in theory, but in practice, practice is better. Let's measure the actual cost of round-tripping with a simple test program. This sends a bunch of messages, first waiting for a reply to each message, and second as a batch, reading all the replies back as a batch. Both approaches do the same work, but they give very different results. We mock up a client, broker, and worker:
 
@@ -4110,7 +4111,7 @@ Lookup echo service: 404
 
 "echo" 서비스로 등록된 작업자가 실행 혹은 실행되지 않는 상황에서 테스트하면  "200(OK)" 혹은 "404(Not found)"가 표시됩니다.
 예제에서 브로커에서 MMI를 구현한 것은 조잡합니다. 예를 들어, 작업자가 사라지더라도 서비스는 "현재"상태로 유지됩니다. 사실 브로커는 제한시간 후에 작업자가 없는 서비스를 제거해야합니다.
-> [옮긴이] "echo" 서비스로 브로커에 등록된 작업자를 중지시키고 "mmiecho"을 2 차례 수행하면 "200(OK)"가 나오나 3번째 부터는 "404(Not found)"가 출력됩니다.
+> [옮긴이] "echo" 서비스로 브로커에 등록된 작업자를 중지시키고 "mmiecho"을 두 차례 수행하면 "200(OK)"가 나오나 3번째 부터는 "404(Not found)"가 출력되는 것은 브로커에서 심박 수행시 "s_broker_purge()"을 통하여 대기중인 작업자들의 제한시간 초과(7.5초=2.5초(HEARTBEAT_INTERVAL) * 3(HEARTBEAT_LIVENESS))된 경우 삭제하기 때문입니다.
 
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./mmiecho -v  
@@ -4138,15 +4139,15 @@ Lookup echo service: 404
 ## 멱등성 서비스(Idempotent Services)
 ;Idempotency is not something you take a pill for. What it means is that it's safe to repeat an operation. Checking the clock is idempotent. Lending ones credit card to ones children is not. While many client-to-server use cases are idempotent, some are not. Examples of idempotent use cases include:
 
-멱등성은 약을 먹는 것이 아닙니다. 이것이 의미하는 바는 작업을 반복해도 안전하다는 것입니다. 시계의 시간을 확인하기는 멱등성입니다. 아이들에게 신용 카드를 빌려주기는 아닙니다(아이에 따라 결과가 달라짐). 많은 클라이언트-서버 사용 사례들은 멱등성이지만 일부는 그렇지 않습니다. 멱등성 사례의 다음과 같습니다.
+멱등성은 약으로 복용하는 것이 아닙니다. 이것이 의미하는 바는 작업을 반복해도 안전하다는 것입니다. 시계의 시간을 확인하기는 멱등성입니다. 아이들에게 신용 카드를 빌려주기는 아닙니다(아이에 따라 결과가 달라짐). 많은 클라이언트-서버 사용 사례들은 멱등성이지만 일부는 그렇지 않습니다. 멱등성 사례의 다음과 같습니다.
 > [옮긴이] 멱등성(冪等性)은 연산을 여러 번 적용하더라도 결과가 달라지지 않는 성질입니다.
  - 예) 절댓값 함수 - abs(abs(x)) = abs(x)
 
 ;* Stateless task distribution, i.e., a pipeline where the servers are stateless workers that compute a reply based purely on the state provided by a request. In such a case, it's safe (though inefficient) to execute the same request many times.
 ;* A name service that translates logical addresses into endpoints to bind or connect to. In such a case, it's safe to make the same lookup request many times.
 
-* 상태 비저장 작업 배포는 멱등성입니다. 서버들이 상태 비저장 작업자들로써 역할로 요청에 의해 제공되는 상태를 기반으로 응답하는 파이프라인을 수행합니다. 이러한 경우 동일한 요청을 여러 번 실행하는 것이 안전합니다(비효율적임).
-* 이름 서비스는 멱등성입니다. 이름 서비스는 논리적 주소를 바인딩하거나 연결할 단말들로 변환합니다. 이러한 경우 동일한 조회 요청을 여러 번 수행하는 것이 안전합니다.
+* 상태 비저장 작업 배포는 멱등성입니다. 서버들이 상태 비저장 작업자들로써 역할로 요청에 의해 제공되는 상태를 기반으로 응답하는 파이프라인을 수행합니다. 이 경우 동일한 요청을 여러 번 실행해도 안전합니다(비효율적임).
+* 이름 서비스는 멱등성입니다. 이름 서비스는 논리적 주소를 바인딩하거나 연결할 단말들로 변환합니다. 이러한 경우 동일한 조회 요청을 여러 번 수행해도 안전합니다.
 
 ;And here are examples of a non-idempotent use cases:
 
@@ -4162,7 +4163,7 @@ Lookup echo service: 404
 
 ;When our server applications are not idempotent, we have to think more carefully about when exactly they might crash. If an application dies when it's idle, or while it's processing a request, that's usually fine. We can use database transactions to make sure a debit and a credit are always done together, if at all. If the server dies while sending its reply, that's a problem, because as far as it's concerned, it has done its work.
 
-서버 응용프로그램들이 멱등성이 아닌 경우, 정확히 언제 충돌(종료)할 수 있는지 좀 더 신중하게 생각해야 합니다. 응용프로그램이 유휴 상태이거나 요청을 처리하는 동안 종료되는 경우는 그나마 괜찮지만, 금융권에서 클라이언트 요청에 의해 차변과 대변 처리 트랜잭션을 처리하다가 서버가 응답을 보내는 동안 죽는다면 문제입니다. 왜냐하면 서버에서 해당 트랜잭션을 처리했지만 클라이언트로 응답을 보내지 못했기 때문입니다.
+서버 응용프로그램들이 멱등성이 아닌 경우, 정확히 언제 충돌(종료)할 수 있는지 좀 더 신중하게 생각해야 합니다. 응용프로그램이 유휴 상태이거나 요청을 처리하는 동안 종료되는 경우는 그나마 괜찮지만, 금융권에서 클라이언트 요청에 의해 차변과 대변 처리 트랜잭션을 처리하다가 서버가 응답을 보내는 중에 죽는다면 문제입니다. 왜냐하면 서버에서 해당 트랜잭션을 처리했지만 클라이언트로 응답을 보내지 못했기 때문입니다.
 
 ;If the network dies just as the reply is making its way back to the client, the same problem arises. The client will think the server died and will resend the request, and the server will do the same work twice, which is not what we want.
 
@@ -4183,12 +4184,12 @@ Lookup echo service: 404
 ## 비연결 신뢰성(타이타닉 패턴)
 ;Once you realize that Majordomo is a "reliable" message broker, you might be tempted to add some spinning rust (that is, ferrous-based hard disk platters). After all, this works for all the enterprise messaging systems. It's such a tempting idea that it's a little sad to have to be negative toward it. But brutal cynicism is one of my specialties. So, some reasons you don't want rust-based brokers sitting in the center of your architecture are:
 
-MDP가 "신뢰할 수 있는" 메시지 브로커라는 사실을 알게 되면 하드디스크를 추가 할 수 있습니다. 결국 이것은 대부분의 기업 메시징 시스템에서 동작합니다. 이와 같이 유혹적인 생각은 다소 부정적일 수밖에 없는 것에 유감입니다. 하지만 냉소주의는 내 전문 분야 중 하나입니다. 그래서 아키텍처의 중심에 하드디스크를 배치하여 지속성을 유지하지 않는 이유는 다음과 같습니다.
+MDP가 "신뢰할 수 있는" 메시지 브로커라는 사실을 알게 되면 하드디스크를 추가 할 수 있습니다. 결국 이것은 대부분의 기업 메시징 시스템에서 동작합니다. 이와 같이 유혹적인 생각은 다소 부정적일 수밖에 없는 것에 유감입니다. 하지만 냉소주의는 내 전문 분야 중 하나입니다. 그래서 아키텍처의 중심에 하드디스크 기반 브로커를 배치하여 지속성을 유지하지 않는 이유는 다음과 같습니다.
 
 ;* As you've seen, the Lazy Pirate client performs surprisingly well. It works across a whole range of architectures, from direct client-to-server to distributed queue proxies. It does tend to assume that workers are stateless and idempotent. But we can work around that limitation without resorting to rust.
 ;* Rust brings a whole set of problems, from slow performance to additional pieces that you have to manage, repair, and handle 6 a.m. panics from, as they inevitably break at the start of daily operations. The beauty of the Pirate patterns in general is their simplicity. They won't crash. And if you're still worried about the hardware, you can move to a peer-to-peer pattern that has no broker at all. I'll explain later in this chapter.
 
-* 게으른 해적 클라이언트(LPP)는 잘 작동하였습니다. 클라이언트-서버 직접 연결(LPP)에서 분산 대기열 프록시(SPP)까지 전체 범위의 아키텍처에서 동작합니다. 게으른 해적 패턴의 작업자는 상태 비저장이며 멱등성이라고 가정하는 경향이 있지만, 지속성이 필요한 경우 한계가 있습니다.
+* 게으른 해적 클라이언트(LPP)는 잘 작동하였습니다. 클라이언트-서버 직접 연결(LPP)에서 부하 분산 브로커(SPP)까지 전체 범위의 아키텍처에서 동작합니다. 게으른 해적 패턴의 작업자는 상태 비저장이며 멱등성이라고 가정하는 경향이 있지만, 지속성이 필요한 경우 한계가 있습니다.
 * 하드디스크는 느린 성능에서 부가적인 관리(새벽 6시 장애, 일과 시작 시 필연적인 고장 등), 수리 등 많은 문제를 가져옵니다. 일반적으로 해적 패턴의 아름다움은 단순성입니다. 해적 패턴의 요소들(클라이언트, 브로커, 작업자)은 충돌하지 않지만, 여전히 하드웨어가 걱정된다면 브로커가 없는 P2P(Peer-To-Peer) 패턴으로 이동할 수 있습니다. 이장의 뒷부분에서 설명하겠습니다.
 
 ;Having said this, however, there is one sane use case for rust-based reliability, which is an asynchronous disconnected network. It solves a major problem with Pirate, namely that a client has to wait for an answer in real time. If clients and workers are only sporadically connected (think of email as an analogy), we can't use a stateless network between clients and workers. We have to put state in the middle.
@@ -4718,6 +4719,11 @@ s_service_success (char *uuid)
     return result;
 }
 ```
+> [옮긴이] CentOS7상에서 "uuid" 라이브러리 설치가 필요하며, 빌드시 "uuid" 라이브러리를 포함해야 합니다.
+~~~{.bash}
+[zedo@sook C]$ sudo yum install uuid uuid-devel libuuid-devel
+[zedo@sook C]$ cc -o ticlient ticlient.c -lzmq -lczmq -luuid
+~~~
 
 > [옮긴이] s_generate_uuid() 함수를 원도우에서 사용하기 위해 아래와 같이 변경합니다.
 
@@ -4797,8 +4803,9 @@ PS D:\git_store\zguide-kr\examples\C> ./tigen_uuid
 uuidstr : 8A8B898B8B8E028989078989048A8B8D
 ~~~
 
-> [옮긴이] 빌드 및 테스트
+> [옮긴이] 빌드 및 테스트 수행시 원도우 환경에 클라이언트에서 titanic.request 수행 후에 titanic.reply 수행시 titanic이 종료되는 현상 발생하였습니다(확인 진행중).
 
+* 원도우 환경에서 실행할 경우
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> ./mdbroker -v
 20-08-22 07:12:34 I: MDP broker/0.2.0 is active at tcp://*:5555
@@ -4835,6 +4842,189 @@ D: 20-08-22 06:58:17 [032] 03018C8B01008800008D880205888E06
 20-08-22 06:58:22 I: connecting to broker at tcp://localhost:5555...
 20-08-22 06:58:25 W: permanent error, abandoning
 ~~~
+
+* CentOS7 환경에서 실행할 경우
+~~~{.bash}
+[zedo@sook C]$ ./mdbroker -v
+20-09-25 08:53:29 I: MDP broker/0.2.0 is active at tcp://*:5555
+20-09-25 08:53:32 I: received message:
+D: 20-09-25 08:53:32 [005] 0080000029
+D: 20-09-25 08:53:32 [000]
+D: 20-09-25 08:53:32 [006] MDPW01
+D: 20-09-25 08:53:32 [001] 01
+D: 20-09-25 08:53:32 [013] titanic.reply
+20-09-25 08:53:32 I: registering new worker: 0080000029
+20-09-25 08:53:32 I: added service: titanic.reply
+20-09-25 08:53:32 I: received message:
+D: 20-09-25 08:53:32 [005] 008000002A
+D: 20-09-25 08:53:32 [000]
+D: 20-09-25 08:53:32 [006] MDPW01
+D: 20-09-25 08:53:32 [001] 01
+D: 20-09-25 08:53:32 [015] titanic.request
+20-09-25 08:53:32 I: registering new worker: 008000002A
+20-09-25 08:53:32 I: added service: titanic.request
+20-09-25 08:53:32 I: received message:
+D: 20-09-25 08:53:32 [005] 008000002B
+D: 20-09-25 08:53:32 [000]
+D: 20-09-25 08:53:32 [006] MDPW01
+D: 20-09-25 08:53:32 [001] 01
+D: 20-09-25 08:53:32 [013] titanic.close
+20-09-25 08:53:32 I: registering new worker: 008000002B
+...
+20-09-25 08:54:29 I: received message:                     --> [titanic.request] ticlient -> broker
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [015] titanic.request                 
+D: 20-09-25 08:54:29 [004] echo
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: sending REQUEST to worker             --> [REQUEST] broker -> titinic
+D: 20-09-25 08:54:29 [005] 006B8B456C
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 02
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [004] echo
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: received message:                     --> [REPLY] titanic -> broker(uuid)
+D: 20-09-25 08:54:29 [005] 006B8B456C
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 03
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [003] 200
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: received message:                     --> [mmi.service] ticlient -> broker
+D: 20-09-25 08:54:29 [005] 006B8B457B
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [011] mmi.service
+D: 20-09-25 08:54:29 [004] echo
+20-09-25 08:54:29 I: received message:                    --> [echo] ticlient -> broker
+D: 20-09-25 08:54:29 [005] 006B8B457B
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [004] echo
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: sending REQUEST to worker            --> [REQUEST] broker -> mdworker
+D: 20-09-25 08:54:29 [005] 006B8B456D
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 02
+D: 20-09-25 08:54:29 [005] 006B8B457B
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: received message:                    --> [REPLY] mdworker -> broker
+D: 20-09-25 08:54:29 [005] 006B8B456D
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 03
+D: 20-09-25 08:54:29 [005] 006B8B457B
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: received message:                 --> [titanic.reply] ticlient -> broker
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [013] titanic.reply
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: sending REQUEST to worker         --> [REQUEST] broker -> mdworker
+D: 20-09-25 08:54:29 [005] 006B8B456A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 02
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: received message:                 --> [REPLY] mdworker -> broker
+D: 20-09-25 08:54:29 [005] 006B8B456A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 03
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [003] 200
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: received message:                --> [titanic.close] ticlient -> broker
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [013] titanic.close
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: sending REQUEST to worker       --> [REQUEST] broker -> mdworker
+D: 20-09-25 08:54:29 [005] 006B8B4568
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 02
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: received message:               --> [REPLY] mdworker -> broker
+D: 20-09-25 08:54:29 [005] 006B8B4568
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 03
+D: 20-09-25 08:54:29 [005] 006B8B457A
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [003] 200
+
+[zedo@sook C]$ ./mdworker -v
+20-09-25 08:54:29 I: received message from broker:
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 02
+D: 20-09-25 08:54:29 [005] 006B8B457B
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: sending REPLY to broker
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [006] MDPW01
+D: 20-09-25 08:54:29 [001] 03
+D: 20-09-25 08:54:29 [005] 006B8B457B
+D: 20-09-25 08:54:29 [000] 
+D: 20-09-25 08:54:29 [011] Hello world
+
+[zedo@sook C]$ ./titanic -v
+20-09-25 08:54:29 I: received message:
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+I: processing request 79F1E824D1364A2F8D003A8D5868C1BC
+
+[zedo@sook C]$ ./ticlient -v
+20-09-25 08:54:29 I: connecting to broker at tcp://localhost:5555...
+20-09-25 08:54:29 I: send request to 'titanic.request' service:
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [015] titanic.request
+D: 20-09-25 08:54:29 [004] echo
+D: 20-09-25 08:54:29 [011] Hello world
+20-09-25 08:54:29 I: received reply:
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [015] titanic.request
+D: 20-09-25 08:54:29 [003] 200
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+D: 20-09-25 08:54:29 I: request UUID [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: send request to 'titanic.reply' service:
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [013] titanic.reply
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: received reply:
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [013] titanic.reply
+D: 20-09-25 08:54:29 [003] 200
+D: 20-09-25 08:54:29 [011] Hello world
+Reply: Hello world
+20-09-25 08:54:29 I: send request to 'titanic.close' service:
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [013] titanic.close
+D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
+20-09-25 08:54:29 I: received reply:
+D: 20-09-25 08:54:29 [006] MDPC01
+D: 20-09-25 08:54:29 [013] titanic.close
+D: 20-09-25 08:54:29 [003] 200
+
+~~~
+
 ;To test this, start mdbroker and titanic, and then run ticlient. Now start mdworker arbitrarily, and you should see the client getting a response and exiting happily.
 
 테스트를 위해 mdbroker 및 titanic을 시작한 다음, ticlient를 실행합니다. 그리고 mdworker를 시작하면 클라이언트(ticlient)가 응답을 받고 행복하게 종료되는 것을 볼 수 있습니다.
@@ -5093,7 +5283,7 @@ D: 20-08-22 06:58:17 [032] 03018C8B01008800008D880205888E06
 * 하나의 서버 프로세스는 하나의 바이너리 스타 쌍의 일부가 됩니다.
 * 기본 서버는 하나의 백업 서버만 가질 수 있습니다.
 * 비활성 서버는 특별한 작업을 수행하지 않습니다.
-* 백업 서버는 기본 서버에서 구동되는 전체 응용프로그램의 부하들을 처리해야 합니다.
+* 백업 서버는 기본 서버에서 구동되는 전체 응용프로그램의 부하들을 처리�����야 합니다.
 * 장애조치 구성은 응용프로그램 실행 중에는 변경 불가합니다.
 * 클라이언트 응용프로그램은 장애조치에 대응하기 위한 기능을 가지고 있어야 합니다.
 
@@ -5909,17 +6099,31 @@ I: server replied OK (59)
 ;It might seem ironic to focus so much on broker-based reliability, when we often explain ØMQ as "brokerless messaging". However, in messaging, as in real life, the middleman is both a burden and a benefit. In practice, most messaging architectures benefit from a mix of distributed and brokered messaging. You get the best results when you can decide freely what trade-offs you want to make. This is why I can drive twenty minutes to a wholesaler to buy five cases of wine for a party, but I can also walk ten minutes to a corner store to buy one bottle for a dinner. Our highly context-sensitive relative valuations of time, energy, and cost are essential to the real world economy. And they are essential to an optimal message-based architecture.
 
 ØMQ를 "브로커 없는 메시징"이라고 설명하면서, 브로커 기반 신뢰성에 너무 집중하는 것은 모순처럼 보입니다. 메시징에서 실생활에서와 같이 중개인(middleman)은 부담이자 장점입니다. 실제로 대부분의 메시징 아키텍처는 분산과 중개 메시징을 혼합하여 각 메시징의 장점을 얻을 수 있습니다. 각 메시징의 장단점을 자유롭게 선택할 수 있을 때 최상의 결과를 얻을 수 있습니다. 
-마치 저녁 식사를 위한 와인 1병을 사기 위해 10분 걸어서 편의점에 가는 것과, 파티를 위해 5종류의 와인을 사기 위해 20분 정도 운전해서 홈플러스까지 가는 이유와 같습니다.  
+마치 혼자서 저녁 식사를 위한 와인 1병을 사기 위해 10분 걸어서 편의점에 가는 것과, 친구들과의 파티를 위해 5종류의 와인을 사려 20분 정도 운전해서 홈플러스까지 가는 이유와 같습니다.  
 현실 세계 경제에 기본은 소요되는 시간, 에너지 및 비용에 민감하며 상대적 평가를 통해 선택되며, 최적의 메시지 기반 아키텍처에도 마찬가지입니다.
 
 ;This is why ØMQ does not impose a broker-centric architecture, though it does give you the tools to build brokers, aka proxies, and we've built a dozen or so different ones so far, just for practice.
 
-이것이 ØMQ가 브로커 중심 아키텍처를 강요하지 않는 이유입니다. ØMQ는 브로커(일명 프록시)를 구축할 수있 는 도구를 주어 지금까지 12개 정도 여러 패턴들을 구축했습니다.
+이것이 ØMQ가 브로커 중심 아키텍처를 강요하지 않는 이유입니다. ØMQ는 브로커(일명 프록시)를 구축할 수 있는 도구를 주어 지금까지 12개 정도 여러 패턴들을 구축했습니다.
+> [옮긴이] 이전에 학습한 메세지 패턴을 다음과 같습니다.
+  - REQ-REP
+  - PUB-SUB
+  - REQ-ROUTER
+  - DEALER-REP
+  - DEALER-ROUTER
+  - DEALER-DEALER
+  - ROUTER-ROUTER
+  - PUSH-PULL
+  - PAIR-PAIR
+  - LPP : Lazy Pirate Pattern
+  - SPP : Simple Pirate Pattern
+  - PPP : Paranoid Pirate Pattern
+  - MDP : Majordomo Pattern
 
 ;So we'll end this chapter by deconstructing the broker-based reliability we've built so far, and turning it back into a distributed peer-to-peer architecture I call the Freelance pattern. Our use case will be a name resolution service. This is a common problem with ØMQ architectures: how do we know the endpoint to connect to? Hard-coding TCP/IP addresses in code is insanely fragile. Using configuration files creates an administration nightmare. Imagine if you had to hand-configure your web browser, on every PC or mobile phone you used, to realize that "google.com" was "74.125.230.82".
 
 따라서 이장을 마무리하면서 우리는 지금까지 만들어온 브로커 기반 신뢰성을 해체하고 프리랜스 패턴이라고 불리는 분산형 P2P(peer-to-peer) 아키텍처로 돌아가겠습니다.
-P2P의 핵심 사용 사례는 이름 확인 서비스(name resolution service)입니다. 이것은 ØMQ 아키텍처의 공통적인 문제입니다 : 연결할 단말을 어떻게 아시나요? 코드상 하드 코딩된 TCP/IP 주소는 매우 취약하기 때문에 주소를 구성 파일에 넣도록 하면 다시 관리가 끔찍해집니다. 모든 PC 또는 휴대폰의 웹브라우저에서 "google.com"이 "74.125.230.82"라는 것을 알기 위해 구성 파일을 직접 만들어야 한다고 생각해 보십시오.
+P2P의 핵심 사용 사례는 이름 확인 서비스(name resolution service)입니다. 이것은 ØMQ 아키텍처의 공통적인 문제입니다 : 연결할 단말을 어떻게 아시나요? 코드상 하드 코딩된 TCP/IP 주소는 매우 취약하기 때문에 주소를 구성 파일에 넣게 되면 관리가 끔찍해집니다. 모든 PC 또는 휴대폰의 웹브라우저에서 "google.com"이 "74.125.230.82"라는 것을 알기 위해 구성 파일을 직접 만들어야 한다고 생각해 보십시오.
 > [옮긴이] DNS(domain name system)는 네트워크에서 도메인이나 호스트 네임을 숫자로 되어 있는 IP 주소로 해석해 주는 TCP/IP 네트워크 서비스입니다.
 
 ;A ØMQ name service (and we'll make a simple implementation) must do the following:
@@ -6281,7 +6485,7 @@ Service is running OK
 
 그러나 설계에는 단점이 있습니다.
 클라이언트에서 많은 소켓을 연결하고 기본 이름 서버가 죽으면 각 클라이언트는 고통스러운 제한시간으로 인한 지연을 경험합니다.
-> [옮긴이] 현실에서 클라이언트가 가용한 모든 서버들에 동일한 작업 요청을 하고 응답을 기다리는 것은 서버 자원에 대한 엄청난 낭비를 초래하고, 서버가 죽을 경우 제한시간 지연이 발생합니다. 
+> [옮긴이] 현실에서 클라이언트가 가용한 모든 서버들에 동일한 작업 요청을 하고 응답을 기다리는 것은 서버 자원에 대한 낭비를 초래하고, 서버가 죽을 경우 제한시간 지연이 발생합니다. 
 
 ### 모델 2: 잔인한 엽총 학살(Brutal Shotgun Massacre)
 ;Let's switch our client to using a DEALER socket. Our goal here is to make sure we get a reply back within the shortest possible time, no matter whether a particular server is up or down. Our client takes this approach:
@@ -6583,7 +6787,7 @@ Average round trip cost: 250 usec
 * 단점 : 불필요한 네트워크 트래픽을 생성합니다.
 * 단점 : 서버들에 대한 우선순위를 지정할 수 없습니다 (예 : Primary, Secondary).
 * 단점 : 서버는 한 번에 최대 하나의 요청을 수행할 수 있습니다.
-> [옮긴이] 모델 1(단순 응답 및 장애조치)에 이어 모델 2(샷건 살인)의 경우도 클라이언트가 가용한 모든 서버들에 동일한 작업 요청-응답 처리를 하고 있으며 서버 자원에 대한 엄청난 낭비가 발생합니다.
+> [옮긴이] 모델 1(단순 응답 및 장애조치)에 이어 모델 2(샷건 살인)의 경우도 클라이언트가 가용한 모든 서버들에 동일한 작업 요청-응답 처리를 하고 있으며 서버 자원에 대한 낭비가 발생합니다.
 현실 세계에서는 모델 1과 모델 2는 적절하지 않습니다.
 
 ### 모델 3: 복잡하고 불쾌한 방법(Complex and Nasty)
@@ -6598,7 +6802,7 @@ Average round trip cost: 250 usec
 ;But doing ROUTER to ROUTER between two anonymous sockets (which haven't set an identity) is not possible. Both sides generate an identity (for the other peer) only when they receive a first message, and thus neither can talk to the other until it has first received a message. The only way out of this conundrum is to cheat, and use hard-coded identities in one direction. The proper way to cheat, in a client/server case, is to let the client "know" the identity of the server. Doing it the other way around would be insane, on top of complex and nasty, because any number of clients should be able to arise independently. Insane, complex, and nasty are great attributes for a genocidal dictator, but terrible ones for software.
 
 그러나 2개의 익명 소켓들(식별자(ID)를 설정하지 않은) 사이에서 ROUTER와 ROUTER 통신을 수행하는 것은 불가능합니다. 
-양측은 첫 번째 메시지를 받을 때만 식별자(다른 피어에 대한)를 생성하므로, 처음 메시지를 받을 때까지 상대방과 통신을 할 수 없습니다. 
+양측은 첫 번째 메시지를 받을 때만 식별자(다른 상대에 대한)를 생성하므로, 처음 메시지를 받을 때까지 상대방과 통신을 할 수 없습니다. 
 이 수수께끼에서 벗어나는 유일한 방법은 메시지 수신 후 식별자 생성이 아닌 하드 코딩된 식별자를 한 방향으로 사용하는 것입니다. 
 클라이언트/서버의 경우 올바른 처리하는 방법은 클라이언트가 서버의 식별자를 미리 "알게"하는 것입니다. 
 다른 방법으로 수행하는 것은 복잡하고 불쾌하며 미쳐 버릴 것입니다. 많은 클라이언트가 개별적으로 실행되기 때문입니다. 미쳤고, 복잡하고, 불쾌한 것은 대량학살 독재자에게는 중요한 속성이지만 소프트웨어에게는 끔찍한 것입니다.
@@ -6633,7 +6837,7 @@ Average round trip cost: 250 usec
 ;This brings us to the realm of protocols again, so here's a short spec that defines how a Freelance client and server exchange ping-pong commands and request-reply commands.
 
 이것은 우리를 다시 통신규약 영역으로 가져와서, 프리랜서 클라이언트와 서버가 핑-퐁(ping-pong) 명령과 요청-응답을 수행하는 방법을 정의하는 사양서로 만들었습니다.
-[Freelance Protocol](https://rfc.zeromq.org/spec/10)
+- [Freelance Protocol](https://rfc.zeromq.org/spec/10)
 
 ;It is short and sweet to implement as a server. Here's our echo server, Model Three, now speaking FLP:
 
@@ -7098,6 +7302,7 @@ flcliapi_agent (void *args, zctx_t *ctx, void *pipe)
 }
 ```
 > [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc flserver3.c libzmq.lib czmq.lib
 PS D:\git_store\zguide-kr\examples\C> cl -EHsc flclient3.c libzmq.lib czmq.lib
