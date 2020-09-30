@@ -1,6 +1,7 @@
+
 # 후기 {-}
 
-## 라이센스 {-}
+## 라이센스
 ;I want people to reuse this text in their own work: in presentations, articles, and even other books. However, the deal is that if they remix my work, others can remix theirs. I'd like credit, and have no argument against others making money from their remixes. Thus, the text is licensed under cc-by-sa.
 
 나는 많은 사람들이 본 가이드의 텍스트를 자신들의 작업에서 재사용하기를 바랍니다 : 잡지, 책, 프레젠테이션 등. 

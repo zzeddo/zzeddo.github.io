@@ -1,4 +1,6 @@
-# 4장-신뢰할 수 있는 요청-응답 패턴(Reliable Request Reply Patterns)
+
+# 4장-신뢰할 수 있는 요청-응답 패턴 {-}
+
 ;Chapter 3 - Advanced Request-Reply Patterns covered advanced uses of ØMQ's request-reply pattern with working examples. This chapter looks at the general question of reliability and builds a set of reliable messaging patterns on top of ØMQ's core request-reply pattern.
 
 "3장-고급 요청-응답 패턴"은 ØMQ의 요청-응답 패턴의 고급 사용 방법을 예제와 함께 다루었습니다. 이 장에서는 신뢰성에 대한 일반적인 요구 사항을 보고 ØMQ의 핵심 요청-응답 패턴상에서 일련의 신뢰할 수 있는 메시징 패턴을 구축합니다.
@@ -23,7 +25,7 @@
 * 바이너리 스타 패턴 : 기본-백업 서버 장애조치
 * 프리랜서 패턴 : 브로커 없는 신뢰할 수 있는 요청 응답
 
-## 신뢰성이란 무엇인가?(What is "Reliability"?)
+## 신뢰성이란 무엇인가?
 ;Most people who speak of "reliability" don't really know what they mean. We can only define reliability in terms of failure. That is, if we can handle a certain set of well-defined and understood failures, then we are reliable with respect to those failures. No more, no less. So let's look at the possible causes of failure in a distributed ØMQ application, in roughly descending order of probability:
 
 "신뢰성"에 대해 말하는 대부분의 사람들은 의미하는 바를 모릅니다. 신뢰성은 장애의 관점에서만 정의할 수 있습니다. 즉, 일련의 잘 정의되고 이해된 장애를 다룰 수 있다면 이러한 장애의 관점에서 신뢰성이 있다고 할 수 있습니다. 그 이상도 이하도 아닙니다. 따라서 분산된 ØMQ 응용프로그램에서 가능한 장애 원인을 발생 확률에 따라 내림차순(확률이 높은 순)으로 보겠습니다.
@@ -50,7 +52,7 @@
 
 위 목록의 5개 사례는 대기업을 제외한 실제 요구사항의 99.9%를 해당됩니다(과학적 연구에 따르면 통계의 78%가 즉석해서 만들어진 것으며, 조작되지 않은 통계를 믿을 수 없게 합니다.). 대기업에 속해 있고 마지막 2가지 사안(네트워크, 데이터 센터)에 지출할 돈이 있다면 즉시 저희 회사(iMatix)에 연락 주시기 바랍니다. 저의 별장 뒷편의 공간을 호화로운 수영장으로 바꾸기를 기다리고 있습니다.
 
-## 신뢰성 설계(Designing Reliability)
+## 신뢰성 설계
 ;So to make things brutally simple, reliability is "keeping things working properly when code freezes or crashes", a situation we'll shorten to "dies". However, the things we want to keep working properly are more complex than just messages. We need to take each core ØMQ messaging pattern and see how to make it work (if we can) even when code dies.
 
 주제를 단순화하면, 신뢰성은 "코드가 멈추거나 충돌할 때 정상적으로 동작하게 유지"하는 것이며 이런 장애 상황을 "죽음"으로 줄여 이야기합니다. 그러나 우리가 정상적으로 동작하고 싶은 것은 단순한 메시지보다 더 복잡합니다. 우리는 각각의 핵심 ØMQ 메시징 패턴을 통해 코드가 죽더라도 동작하는 방법을 살펴보겠습니다.
@@ -67,9 +69,9 @@
 * 발행-구독 : 클라이언트가 죽으면(일부 데이터를 얻음) 서버는 클라이언트가 죽은 사실을 알지 못합니다. 발행-구독은 클라이언트에서 서버로 어떤 정보를 보내지 않기 때문입니다. 그러나 클라이언트는 새로운 경로(예 : 요청-응답)로 서버에 접속하여 "내가 놓친 모든 것을 재전송해주십시오"라고 요구할 수 있습니다. 서버가 죽는 것은 이 책의 범위가 아닙니다. 구독자는 자신이 너무 느리게 동작하지 않는지 검증하면서, 느릴 경우 시스템 관리자에게 경고를 보내거나 자살할 수 있습니다.
 * 파이프라인 : 작업자가(작업 중) 죽게 되면 호흡기(이전 예제 : ventilator, worker, sink)는 알지 못합니다.  파이프라인은 흐르는 시간처럼 한 방향으로만 동작합니다. 그러나 하류 수집기(sink)는 하나의 작업이 완료되지 않았음을 감지하고 호흡기에게 "이봐, 324 작업 다시 보내!"라는 메시지를 보낼 수 있습니다. 호흡기 또는 수집기가 죽으면, 상류 클라이언트(worker)가 보낸 작업 배치는 대기하는 데 지쳐서 전체 데이터를 재전송할 수 있습니다. 우아하지는 않지만 시스템 코드는 문제가 될 만큼 자주 죽지는 않습니다.
 
-> [옮긴이] 그림 5 - 병렬 파이프라인(parallel pipeline)
+* [옮긴이] 그림 5 - 병렬 파이프라인(parallel pipeline)
 
-![병렬 파이프라인](images/fig5.svg)
+![병렬 파이프라인](images/fig5.png)
 
 ;In this chapter we'll focus on just on request-reply, which is the low-hanging fruit of reliable messaging.
 
@@ -110,7 +112,7 @@ OMQ의 요청-응답 패턴은 TCP보다 훨씬 좋습니다. ØMQ는 자동으�
 
 각 접근 방식에는 장단점이 있으며 함께 사용하는 경우가 있습니다. 세 가지 모두 자세히 살펴보겠습니다.
 
-## 클라이언트 측면의 신뢰성(게으른 해적 패턴(Lazy Pirate Pattern))
+## 클라이언트 측면의 신뢰성(게으른 해적 패턴)
 ;We can get very simple reliable request-reply with some changes to the client. We call this the Lazy Pirate pattern. Rather than doing a blocking receive, we:
 
 클라이언트 코드의 일부 변경하여 매우 간단하고 신뢰성 있는 요청-응답을 얻을 수 있습니다. 우리는 이것을 게으른 해적 패턴이라고 부릅니다. 수신 차단을 수행하는 대신 다음을 수행합니다. : 
@@ -265,7 +267,7 @@ int main (void)
 ```
 그림 47 - 게으른 해적 패턴(The Lazy Pirate Pattern)
 
-![The Lazy Pirate Pattern](images/fig47.svg)
+![The Lazy Pirate Pattern](images/fig47.png)
 
 ;To run this test case, start the client and the server in two console windows. The server will randomly misbehave after a few messages. You can check the client's response. Here is typical output from the server:
 
@@ -296,13 +298,13 @@ I: connecting to server...
 E: server seems to be offline, abandoning
 ~~~
 
-> [옮긴이] 윈도우 환경에서 구동 가능하도록 일부 수정(`sleep() 함수`)하고 서버(lpserver)를 수행하고 클라이언트(lpclient)를 구동하면 클라이언트는 1회 응답을 받고 종료됩니다.
+* [옮긴이] 윈도우 환경에서 구동 가능하도록 일부 수정(`sleep() 함수`)하고 서버(lpserver)를 수행하고 클라이언트(lpclient)를 구동하면 클라이언트는 1회 응답을 받고 종료됩니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./lpserver
+ ./lpserver
 I: normal request (1)
 
-PS D:\git_store\zguide-kr\examples\C> ./lpclient
+ ./lpclient
 I: Connecting to server...
 Entering while loop...
 Expecting reply....
@@ -311,7 +313,7 @@ Polling Done..
 I: server replied OK (1)
 ~~~
 
-> [옮긴이] 원인은 "lpclient.c"에서 `while(retries_left)` 루프 내에서 소켓을 제거하기 때문이며 루프 밖으로 빼내어 프로그램 종료 시에 수행하도록 수정이 필요합니다.
+* [옮긴이] 원인은 "lpclient.c"에서 `while(retries_left)` 루프 내에서 소켓을 제거하기 때문이며 루프 밖으로 빼내어 프로그램 종료 시에 수행하도록 수정이 필요합니다.
 
 ```cpp
     while(retries_left){
@@ -320,7 +322,7 @@ I: server replied OK (1)
         return 0;
     }
 ```
-> [옮긴이] `zsock_destroy()` 함수의 수행 위치를 변경한 "lpclient.c"는 다음과 같습니다.
+* [옮긴이] `zsock_destroy()` 함수의 수행 위치를 변경한 "lpclient.c"는 다음과 같습니다.
 
 ```cpp
 #include <czmq.h>
@@ -400,16 +402,16 @@ int main()
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./lpserver
+ ./lpserver
 I: normal request (1)
 I: normal request (2)
 I: normal request (3)
 I: simulating a crash
 
-PS D:\git_store\zguide-kr\examples\C> ./lpclient
+ ./lpclient
 I: Connecting to server...
 Entering while loop...
 Expecting reply....
@@ -450,9 +452,9 @@ E: Server seems to be offline, abandoning
 
 클라이언트는 REQ 소켓의 엄격한 송/수신 주기를 지키기 위하여 무식한 강제 종료/재오픈을 수행합니다. REQ 소켓(sync) 대신에 DEALER 소켓(async)을 사용하고 싶겠지만 좋은 결정은 아닙니다. 첫째, 그것은 REQ 소켓 봉투들 모방하는 것이 복잡하고(그것이 무엇인지 잊었다면, 그것을 하고 싶지 않은 좋은 징조입니다), 둘째, 예상하지 못한 응답들을 받을 가능성이 있습니다.
 
-> [옮긴이] DEALER의 경우 멀티파트 메시지(multipart message) 형태로 첫 번째 파트는 공백 구분자(empty delimter), 두 번째 파트는 데이터(body)로 REP 소켓에 데이터 전송 필요합니다.
+* [옮긴이] DEALER의 경우 멀티파트 메시지(multipart message) 형태로 첫 번째 파트는 공백 구분자(empty delimter), 두 번째 파트는 데이터(body)로 REP 소켓에 데이터 전송 필요합니다.
 
-> [옮긴이] REP 대신에 DEALER 소켓을 사용하는 "hwclient2.c"는 다음과 같습니다.
+* [옮긴이] REP 대신에 DEALER 소켓을 사용하는 "hwclient2.c"는 다음과 같습니다.
 
 ```cpp
 /**
@@ -506,11 +508,11 @@ int main (void)
 	return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트 
+* [옮긴이] 빌드 및 테스트 
 - hwserver는 REP소켓을 사용하며 수정 없이 사용 가능합니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./hwserver
+ ./hwserver
 Received Hello
 Received Hello
 Received Hello
@@ -522,7 +524,7 @@ Received Hello
 Received Hello
 Received Hello
 
-PS D:\git_store\zguide-kr\examples\C> ./hwclient2
+ ./hwclient2
 Connecting to hello world server...
 Sending Hello 0...
 Received World 0
@@ -564,7 +566,7 @@ Received World 9
 * 장점 : ØMQ는 동작할 때까지 자동으로 재연결을 재시도합니다.
 * 단점 : 백업 또는 대체 서버들로 장애조치하지 않습니다.
 
-> [옮긴이] 하나의 프로세스에서 게으른 해적 클라이언트(lpclient)와 서버(lpserver)를 구동하기 위한 예제는 다음과 같습니다(lppattern.c).
+* [옮긴이] 하나의 프로세스에서 게으른 해적 클라이언트(lpclient)와 서버(lpserver)를 구동하기 위한 예제는 다음과 같습니다(lppattern.c).
 클라이언트와 서버의 숫자를 각각 1개로 하는 것에 주의 필요합니다.
 
 ```cpp
@@ -701,10 +703,10 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./lppattern
+ ./lppattern
 [C0] I: Connecting to server...
 [C0] Entering while loop...
 [C0] Expecting reply....
@@ -755,11 +757,11 @@ PS D:\git_store\zguide-kr\examples\C> ./lppattern
 
 단순한 해적 패턴에서 작업자들은 상태 비저장입니다. 응용프로그램은 데이터베이스와 같이 공유 상태가 필요하지만 메시징 프레임워크를 설계할 당시에는 인지하지 못할 수도 있습니다. 대기열 프록시가 있다는 것은 클라이언트가 작업자들이 오가는 것을 인지하지 못하는 것을 의미합니다. 한 작업자가 죽을 경우, 다른 작업자가 인계받습니다. 이것은 멋지고 간단한 전송 방식이지만 하나의 실제 약점으로, 중앙 대기열 자체가 단일 실패 지점으로 관리해야 할 문제가 됩니다.
 
-> [옮긴이] 상태 비저장(stateless)는 서버가 클라이언트의 이전 상태를 저장하지 않아 클라이언트의 이전 요청과도 무관한 각각의 요청을 독립적으로 처리하게 합니다.(예 : http)
+* [옮긴이] 상태 비저장(stateless)는 서버가 클라이언트의 이전 상태를 저장하지 않아 클라이언트의 이전 요청과도 무관한 각각의 요청을 독립적으로 처리하게 합니다.(예 : http)
 
 그림 48 - 단순한 해적 패턴(The Simple Pirate Pattern)
 
-![The Simple Pirate Pattern](images/fig48.svg)
+![The Simple Pirate Pattern](images/fig48.png)
 
 ;The basis for the queue proxy is the load balancing broker from Chapter 3 - Advanced Request-Reply Patterns. What is the very minimum we need to do to handle dead or blocked workers? Turns out, it's surprisingly little. We already have a retry mechanism in the client. So using the load balancing pattern will work pretty well. This fits with ØMQ's philosophy that we can extend a peer-to-peer pattern like request-reply by plugging naive proxies in the middle.
 
@@ -905,25 +907,25 @@ int main (void)
 
 이를 테스트하려면 순서에 관계없이 여러 개의 작업자들, 게으른 해적 클라이언트(lpclient) 및 대기열(spqueue)을 시작하십시오. 그러면 결국 작업자들이 모두 중단되는 것을 볼 수 있으며 클라이언트는 재시도(3회)를 수행한 후 포기합니다. 대기열은 멈추지 않으며 작업자들과 클라이언트들을 계속해서 재시작할 수 있습니다. 이 모델은 어떤 수량의 클라이언트들과 작업자라도 함께 작동합니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc spqueue.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc spworker.c libzmq.lib czmq.lib
+ cl -EHsc spqueue.c libzmq.lib czmq.lib
+ cl -EHsc spworker.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./spqueue
+ ./spqueue
 
-PS D:\git_store\zguide-kr\examples\C> ./spworker
+ ./spworker
 I: (7B44-8FFC) worker ready
 ...
 I: (7B44-8FFC) simulating a crash
 
-PS D:\git_store\zguide-kr\examples\C> ./spworker
+ ./spworker
 I: (DB7E-8FC8) worker ready
 ...
 I: (DB7E-8FC8) simulating CPU overload
 
-PS D:\git_store\zguide-kr\examples\C> ./lpclient
+ ./lpclient
 I: Connecting to server...
 Entering while loop...
 Expecting reply....
@@ -961,17 +963,17 @@ Polling Done..
 E: Server seems to be offline, abandoning
 ~~~
 
-> [옮긴이] 원도우 파워쉘(Powershell)에서 구동 중인 프로세스 검색 및 중지하는 방법은 다음과 같습니다.
+* [옮긴이] 원도우 파워쉘(Powershell)에서 구동 중인 프로세스 검색 및 중지하는 방법은 다음과 같습니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> tasklist | findstr spqueue
+ tasklist | findstr spqueue
 spqueue.exe                   9276 Console                    1      4,812 K
-PS D:\git_store\zguide-kr\examples\C> stop-process -name spqueue
+ stop-process -name spqueue
 ## "taskkill /F /IM" 사용할 수도 있음
-PS D:\git_store\zguide-kr\examples\C> tasklist | findstr spqueue
+ tasklist | findstr spqueue
 ~~~
 
-> [옮긴이] 하나의 프로세스에서 게으른 해적 클라이언트(lpclient)와 단순한 해적 브로커(spqueue), 단순한 해적 작업자(spworker)를 구동하기 위한 예제는 다음과 같습니다(sppattern.c).
+* [옮긴이] 하나의 프로세스에서 게으른 해적 클라이언트(lpclient)와 단순한 해적 브로커(spqueue), 단순한 해적 작업자(spworker)를 구동하기 위한 예제는 다음과 같습니다(sppattern.c).
 작업자 스레드 기동시 시간 간격을 없을 경우 ID가 모두 동일하게 생성되어 프로그램이 정상 동작하지 않습니다.
 
 ```cpp
@@ -1178,12 +1180,12 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc sppattern.c libzmq.lib czmq.lib
+ cl -EHsc sppattern.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./sppattern
+ ./sppattern
 [W0] I: (3B32-C588) worker ready
 [W1] I: (8F2A-C58E) worker ready
 [W2] I: (E324-C594) worker ready
@@ -1213,11 +1215,11 @@ PS D:\git_store\zguide-kr\examples\C> ./sppattern
 [C1] E: Server seems to be offline, abandoning
 ~~~
 
-## 튼튼한 큐잉(편집증 해적 패턴(Paranoid Pirate Pattern))
+## 튼튼한 큐잉(편집증 해적 패턴)
 
 그림 49 - 편집증 해적 패턴
 
-![Paranoid Pirate Pattern](images/fig49.svg)
+![Paranoid Pirate Pattern](images/fig49.png)
 
 ;The Simple Pirate Queue pattern works pretty well, especially because it's just a combination of two existing patterns. Still, it does have some weaknesses:
 
@@ -1609,15 +1611,15 @@ lpclient &
 
 작업자들이 중단되면서 하나씩 죽는 것을 볼 수 있으며 클라이언트는 결국 포기합니다. 대기열 프록시를 중지하고 재시작하면 클라이언트와 작업자들이 다시 연결하여 동작합니다. 그리고 당신이 대기열 프록시와 작업자들에 대하여 무엇을 하든 클라이언트는 요청 순서에 어긋나는 응답을 받지 않을 것입니다 : 전체 체인(workers-queue-client)이 동작하거나 클라이언트가 포기합니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc ppqueue.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc ppworker.c libzmq.lib czmq.lib
+ cl -EHsc ppqueue.c libzmq.lib czmq.lib
+ cl -EHsc ppworker.c libzmq.lib czmq.lib
 
 S D:\git_store\zguide-kr\examples\C> ./ppqueue
 
-PS D:\git_store\zguide-kr\examples\C> ./ppworker
+ ./ppworker
 I: worker ready
 I: worker heartbeat
 I: normal reply
@@ -1629,7 +1631,7 @@ I: normal reply
 I: worker heartbeat
 I: simulating a crash
 
-PS D:\git_store\zguide-kr\examples\C> ./lpclient
+ ./lpclient
 I: Connecting to server...
 Entering while loop...
 Expecting reply....
@@ -1670,7 +1672,7 @@ Polling Done..
 E: Server seems to be offline, abandoning
 ~~~
 
-> [옮긴이] 브로커(ppqueue)와 작업자(ppworker) 및 클라이언트(lpclient)를 하나의 프로세스에서 동작하도록 변경한 코드(pppattern.c)는 다음과 같습니다.
+* [옮긴이] 브로커(ppqueue)와 작업자(ppworker) 및 클라이언트(lpclient)를 하나의 프로세스에서 동작하도록 변경한 코드(pppattern.c)는 다음과 같습니다.
 
 ```cpp
 //  Simple Pirate Pattern
@@ -2078,12 +2080,12 @@ int main (void)
   return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc pppattern.c libzmq.lib czmq.lib
+ cl -EHsc pppattern.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./pppattern
+ ./pppattern
 I: worker ready
 I: worker ready
 [W0] I: worker heartbeat
@@ -2127,10 +2129,10 @@ I: worker ready
 [C0] Polling Done..
 [C0] E: Server seems to be offline, abandoning
 
-PS D:\git_store\zguide-kr\examples\C> stop-process -name pppattern
+ stop-process -name pppattern
 ~~~
 
-## 심박(Heartbeating)
+## 심박
 ;Heartbeating solves the problem of knowing whether a peer is alive or dead. This is not an issue specific to ØMQ. TCP has a long timeout (30 minutes or so), that means that it can be impossible to know whether a peer has died, been disconnected, or gone on a weekend to Prague with a case of vodka, a redhead, and a large expense account.
 
 심박은 상대가 살았는지 죽었는지 알기 위한 문제를 해결합니다. 이것은 ØMQ에 한정된 문제가 아니며, TCP는 오랜 제한시간(30 분 정도)이 있어, 상대가 죽었는지, 연결이 끊어졌는지,  주말에 빨간 머리 아가씨와 프라하에 가서 보드카 한잔하는지 알 수가 없습니다.
@@ -2143,7 +2145,7 @@ PS D:\git_store\zguide-kr\examples\C> stop-process -name pppattern
 
 사람들이 ØMQ에서 심박에 사용하는 3가지 주요 해결책을 살펴보겠습니다.
 
-### 무시하기(Shrugging It Off)
+### 무시하기
 ;The most common approach is to do no heartbeating at all and hope for the best. Many if not most ØMQ applications do this. ØMQ encourages this by hiding peers in many cases. What problems does this approach cause?
 
 가장 일반적인 방법은 심박을 전혀 하지 않는 것입니다. 대부분의 ØMQ 응용프로그램은 아니지만 많은 응용프로그램이 이와 같이 합니다. 대다수의 경우 ØMQ는 상대들을 숨김으로 이를 권장합니다. 이 접근법은 어떤 문제들이 있을까요?
@@ -2156,7 +2158,7 @@ PS D:\git_store\zguide-kr\examples\C> stop-process -name pppattern
 * SUB 혹은 DEALER 소켓 기반 데이터를 수신자들로 사용할 때, 우리는 좋은 침묵(데이터 없음)과 나쁜 침묵(상대방이 죽었음)의 차이를 구분할 수 없습니다. 수신자가 상대방이 죽었다는 것을 알게 되면 백업 경로로 전환하여 데이터 수신을 지속할 수 있습니다.
 * TCP 연결을 사용하는 경우 오랫동안 비활성화가 되면, 연결이 끊어지는 경우가 있습니다. 무언가를 보내면(기술적으로는 심박보다 "keep-alive") 네트워크가 살아 있게 됩니다.
 
-### 단방향 심박(One-Way Heartbeats)
+### 단방향 심박
 ;A second option is to send a heartbeat message from each node to its peers every second or so. When one node hears nothing from another within some timeout (several seconds, typically), it will treat that peer as dead. Sounds good, right? Sadly, no. This works in some cases but has nasty edge cases in others.
 
 두 번째 옵션은 각 노드에서 1초마다 상대 노드들로 심박 메시지를 보내는 것입니다. 한 노드가 제한시간(보통 몇 초) 내에 다른 노드로부터 심박을 받지 못한다면 해당 상대를 죽은 것으로 처리됩니다. 이제 정말 좋은 것일까요? 이것은 잘 작동할 수도 있지만, 잘되지 않는 경우도 있습니다.
@@ -2182,7 +2184,7 @@ SUB 소켓은 PUB 소켓에 메시지를 전송할 수 없지만, PUB 소켓은 
 * PUB-SUB 패턴에서 사라진 수신자에 대한 메시지를 유실되는 동안, PUSH 및 DEALER 소켓은 메시지를 대기열에 넣습니다. 심박을 수신받는 상대가 죽었다가 다시 살아날 경우 대기열에 저장된 심박을 모두 받을 수 있습니다.
 * 이 디자인은 심박 제한시간이 전체 네트워크에서 동일하다고 가정하지만 정확하진  않습니다. 일부 상대들은 장애를 신속하게 감지하기 위해 매우 공격적인 심박을 원할 것입니다. 그리고 일부는 네트워크를 수면 모드나 전력을 절약하기 위해서 매우 느슨한 심박을 원할 것입니다.
 
-### 양방향 심박(PING-PONG Heartbeats)
+### 양방향 심박
 ;The third option is to use a ping-pong dialog. One peer sends a ping command to the other, which replies with a pong command. Neither command has any payload. Pings and pongs are not correlated. Because the roles of "client" and "server" are arbitrary in some networks, we usually specify that either peer can in fact send a ping and expect a pong in response. However, because the timeouts depend on network topologies known best to dynamic clients, it is usually the client that pings the server.
 
 세 번째 옵션은 핑-퐁(ping-pong)처럼 대화하는 것입니다. 한 상대가 다른 상대에게 `ping` 명령을 보내면 `pong` 명령으로 응답합니다. 2개의 명령 모두 추가적인 데이터는 없으며, 핑(pings)과 퐁(pongs)은 상호 연관되지 않습니다. "클라이언트"와 "서버"의 역할은 일부 네트워크에서 임의적이므로 보통 상대들끼리 핑(ping)을 보내고 응답으로 퐁(pong)을 기대할 수 있습니다. 그러나 제한시간은 동적 클라이언트에 알려진 네트워크 전송 방식에 의존적이기 때문에, 일반적으로 클라이언트에서 서버에 `ping`명령을 수행합니다.
@@ -2191,7 +2193,7 @@ SUB 소켓은 PUB 소켓에 메시지를 전송할 수 없지만, PUB 소켓은 
 
 이것은 모든 ROUTER 기반 브로커에서 동작하며, 두 번째 모델과 동일한 최적화를 사용하면  작업이 더욱 향상됩니다. 클라이언트로 수신되는 모든 데이터를 퐁(pong)으로 취급하고, 클라이언트에서 제한시간 내에 송신해야 할 데이터가 없는 경우 핑(ping)을 보냅니다.
 
-### 편집증 해적 심박(Heartbeating for Paranoid Pirate)
+### 편집증 해적 심박
 ;For Paranoid Pirate, we chose the second approach. It might not have been the simplest option: if designing this today, I'd probably try a ping-pong approach instead. However the principles are similar. The heartbeat messages flow asynchronously in both directions, and either peer can decide the other is "dead" and stop talking to it.
 
 편집증 해적 패턴에게는 두 번째 접근 방식(단방향 심박)을 선택했습니다. 가장 간단한 옵션이 아닐 수도 있습니다: 오늘 이것을 설계한다면 아마 핑-퐁(ping-pong) 방식(양뱡향 심박)을 선택할 것 같습니다. 그러나 원칙들은 비슷합니다. 심박 메시지는 비동기적으로 양방향(quueu-to-worker, worker-to-queue)으로 흐르며, 어느 쪽 상대(queue 혹은 worker)도 다른 쪽이 "죽었다"고 판단하고 통신를 중지할 수 있습니다.
@@ -2294,7 +2296,7 @@ while (true) {
 * 각 상대들마다 다른 심박 간격이 있는 경우, 폴링 제한시간은 이들 중 가장 낮은(가장 짧은 시간) 것이어야 합니다. 무한한 제한시간을 사용하지 마십시오.
 * 메시지와 동일한 소켓에서 심박을 수행하면, 심박을 통해 네트워크 연결을 유지(keep-alive)하는 역할도 합니다(일부 불친절한 방화벽은 통신이 수행되지 않은 접속을 끊어 버리는 일이 있기 때문입니다).
 
-## 계약과 통신규약(Contracts and Protocols)
+## 계약과 통신규약
 ;If you're paying attention, you'll realize that Paranoid Pirate is not interoperable with Simple Pirate, because of the heartbeats. But how do we define "interoperable"? To guarantee interoperability, we need a kind of contract, an agreement that lets different teams in different times and places write code that is guaranteed to work together. We call this a "protocol".
 
 주의를 기울였다면 편집증 해적(PPP)은 단순한 해적 패턴(SPP)과 심박 때문에 상호 운영할 수 없다는 것을 알게 되었을 것입니다.  그러나 "상호 운용성(interoperability)"을 어떻게 정의할까요? 상호 운용성을 보장하려면, 일종의 계약(Contracts)이 필요하며 이러한 동의(agreement)를 통해 서로 다른 시간과 장소에 있는 서로 다른 팀들(사람들)이 동작이 보장되는 코드를 작성할 수 있게 합니다. 이를 "통신규약(Protocols)"이라고 합니다.
@@ -2327,11 +2329,11 @@ while (true) {
 * `READY` 명령에 통신규약 버전 번호가 있어야 다른 버전의 편집증 해적 패턴을 구별할 수 있습니다.
 * 현재 메시지들에서 `READY` 및 `HEARTBEAT`는 요청과 응답 메시지와 별 차이가 없습니다. 구별하기 위해 "메시지 유형" 부분에 포함하는 메시지 구조가 필요합니다.
 
-## 서비스기반 신뢰성 있는 큐잉(집사(majordomo) 패턴)
+## 서비스기반 신뢰성 있는 큐잉(MDP))
 
 그림 50 - 집사(majordomo) 패턴
 
-![majordomo](images/fig50.svg)
+![majordomo](images/fig50.png)
 
 ;The nice thing about progress is how fast it happens when lawyers and committees aren't involved. The one-page MDP specification turns PPP into something more solid. This is how we should design complex architectures: start by writing down the contracts, and only then write software to implement them.
 
@@ -2581,14 +2583,14 @@ int main (int argc, char *argv [])
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 테스트 수행 시 `-v` 옵션을 주게 되면 처리 현황에 대한 정보를 받을 수 있습니다. 
 제한시간 2.5초 동안 2회 응답이 없어 프로그램은 종료합니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc mdclient.c libzmq.lib czmq.lib
+ cl -EHsc mdclient.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./mdclient -v
+ ./mdclient -v
 20-08-19 09:50:10 I: connecting to broker at tcp://localhost:5555...
 20-08-19 09:50:10 I: send request to 'echo' service:
 D: 20-08-19 09:50:10 [006] MDPC01
@@ -2872,12 +2874,12 @@ int main (int argc, char *argv [])
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 - 작업자는 응답을 대기하며 제한시간에 응답이 없으면 활성(liveness)을 -1 감소하고 심박을 보내고, 활성(liveness)이 0 되면 재접속하고 계속 대기합니다(무한 반복).
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc mdworker.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./mdworker -v
+ cl -EHsc mdworker.c libzmq.lib czmq.lib
+ ./mdworker -v
 20-08-19 10:37:13 I: connecting to broker at tcp://localhost:5555...
 20-08-19 10:37:13 I: sending READY to broker
 D: 20-08-19 10:37:13 [000]
@@ -2916,14 +2918,14 @@ D: 20-08-19 10:37:26 [001] 04
 * 작업자 API는 지수 백-오프를 수행하지 않습니다. 복잡하게 할 필요가 없습니다.
 * API는 오류보고를 수행하지 않습니다. 예상과 다르면 어설션(혹은 개발 언어에 따라 예외 처리)이 발생합니다. 임시 참조 구현에서는 이상적이며, 모든 통신규약 오류는 즉시 보여주어야 합니다. 실제 응용프로그램의 경우 API는 잘못된 메시지에 대하여 오류를 발생하고 종료하는 것이 아니라 예외 상황으로 처리하고 다음 메시지 처리가 필요합니다.
 
-> [옮긴이] 지수 백 오프(exponential back-off)는 편집증 해적 패턴에서 작업자로 응답이 오지 않을 경우 활성(liveness)을 -1 감소시키면서 대기(sleep)하는 주기(interval)을 2^n으로 최대 32초까지 수행하는 기능입니다.
+* [옮긴이] 지수 백 오프(exponential back-off)는 편집증 해적 패턴에서 작업자로 응답이 오지 않을 경우 활성(liveness)을 -1 감소시키면서 대기(sleep)하는 주기(interval)을 2^n으로 최대 32초까지 수행하는 기능입니다.
 
 ;You might wonder why the worker API is manually closing its socket and opening a new one, when ØMQ will automatically reconnect a socket if the peer disappears and comes back. Look back at the Simple Pirate and Paranoid Pirate workers to understand. Although ØMQ will automatically reconnect workers if the broker dies and comes back up, this isn't sufficient to re-register the workers with the broker. I know of at least two solutions. The simplest, which we use here, is for the worker to monitor the connection using heartbeats, and if it decides the broker is dead, to close its socket and start afresh with a new socket. The alternative is for the broker to challenge unknown workers when it gets a heartbeat from the worker and ask them to re-register. That would require protocol support.
 
 ØMQ는 상대가 사라졌다가 돌아오면 자동으로 소켓을 재연결하지만, 작업자 API가 소켓을 수동으로 닫고 새 소켓을 여는 이유에 대하여 궁금할 것입니다.
 이해하기 위해 단순한 해적(SPP)과 편집증 해적(PPP) 작업자들을 되돌아보면, ØMQ는 브로커가 죽고 다시 돌아오면 자동으로 작업자를 다시 연결하지만, 브로커에 작업자들을 재등록하기에는 충분하지 않습니다. 
 
-> [옮긴이] 작업자에서 "READY" 신호를 통하여 브로커에 작업자를 등록하는 과정이 존재합니다.
+* [옮긴이] 작업자에서 "READY" 신호를 통하여 브로커에 작업자를 등록하는 과정이 존재합니다.
 
 적어도 두 가지 해결방안이 있습니다.
  - [작업자 측면] 여기서 사용하는 가장 간단한 방법은 작업자가 심박을 통하여 연결을 모니터링하다가 브로커가 죽었다고 판단되면 소켓을 닫고 새 소켓으로 시작하는 것입니다. 
@@ -3458,13 +3460,13 @@ int main (int argc, char *argv [])
 
 현재 MDP 구현과 통신규약은 개선하고 확장하였으며, 현재 자체 [Github 프로젝트](https://github.com/zeromq/majordomo)로 자리 잡았습니다. 적절하게 사용 가능한 MDP 스택을 원한다면 GitHub 프로젝트를 사용하십시오.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 - 브로커(mdbroker)와 작업자(mdworker)를 실행하고 나서 클라이언트(mdclient)를 수행합니다.
 - 클라이언트(mdclient)에서 루프를 100,000번 수행하는 것을 2로 변경합니다.
 - 작업자(mdworker)에 등록된 서비스 이름이 "echo"와 클라이언트에서 요청하는 서비스 이름인 "echo"가 일치해야만 정상 구동됩니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./mdbroker -v
+ ./mdbroker -v
 20-08-19 15:13:48 I: MDP broker/0.2.0 is active at tcp://*:5555
 20-08-19 15:13:49 I: received message:
 D: 20-08-19 15:13:49 [005] 0080000029   --> WID
@@ -3504,7 +3506,7 @@ D: 20-08-19 15:13:55 [000]
 D: 20-08-19 15:13:55 [011] Hello world
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./mdworker -v
+ ./mdworker -v
 20-08-19 15:13:49 I: connecting to broker at tcp://localhost:5555...
 20-08-19 15:13:49 I: sending READY to broker
 D: 20-08-19 15:13:49 [000]
@@ -3529,7 +3531,7 @@ D: 20-08-19 15:13:55 [000]
 D: 20-08-19 15:13:55 [011] Hello world
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./mdclient -v
+ ./mdclient -v
 20-08-19 15:13:55 I: connecting to broker at tcp://localhost:5555...
 20-08-19 15:13:55 I: send request to 'echo' service:
 D: 20-08-19 15:13:55 [006] MDPC01
@@ -3554,7 +3556,7 @@ D: 20-08-19 15:13:55 [011] Hello world
 
 이전의 MDP 구현은 간단하지만 멍청합니다. 클라이언트는 섹시한 API로 감싼 단순한 해적 패턴입니다. 명령어창에서 클라이언트, 브로커 및 작업자를 실행하면 약 14초 내에 100,000개의 요청을 처리(`-v` 옵션 제거)할 수 있으며, 이는 CPU 리소스 있는 한도에서 메시지 프레임들을 주변으로 복사 가능하기 때문입니다. 그러나 진짜 문제는 우리가 네트워크 왕복(round-trips)입니다. ØMQ는 네이글 알고리즘을 비활성화하지만 왕복은 여전히 느립니다.
 
-> [옮긴이] 네이글(Nagle) 알고리즘은 TCP/IP 기반의 네트워크에서 특정 작은 인터넷 패킷 전송을 억제하는 알고리즘으로 작은 패킷을 가능한 모아서 큰 패킷으로 모아서 한 번에 전송합니다. 네트워크 전송의 효율을 높여주지만 실시간으로 운용해야 하는 응용프로그램에서는 오히려 지연을 발생시키게 됩니다.
+* [옮긴이] 네이글(Nagle) 알고리즘은 TCP/IP 기반의 네트워크에서 특정 작은 인터넷 패킷 전송을 억제하는 알고리즘으로 작은 패킷을 가능한 모아서 큰 패킷으로 모아서 한 번에 전송합니다. 네트워크 전송의 효율을 높여주지만 실시간으로 운용해야 하는 응용프로그램에서는 오히려 지연을 발생시키게 됩니다.
 
 ;Theory is great in theory, but in practice, practice is better. Let's measure the actual cost of round-tripping with a simple test program. This sends a bunch of messages, first waiting for a reply to each message, and second as a batch, reading all the replies back as a batch. Both approaches do the same work, but they give very different results. We mock up a client, broker, and worker:
 
@@ -3679,11 +3681,11 @@ Asynchronous round-trip test...
  173010 calls/second
 ~~~
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc tripping.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./tripping
+ cl -EHsc tripping.c libzmq.lib czmq.lib
+ ./tripping
 Setting up test...
 Synchronous round-trip test...
  2359 calls/second
@@ -3967,18 +3969,18 @@ user    0m0.730s
 sys     0m0.470s
 ~~~
  
-> [옮긴이] 비동기식으로 개선된 클라이언트(mdclient2) 수행 결과 기존 동기식 보다 약 2배 정도 성능의 차이가 있었습니다.
+* [옮긴이] 비동기식으로 개선된 클라이언트(mdclient2) 수행 결과 기존 동기식 보다 약 2배 정도 성능의 차이가 있었습니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc mdclient2.c libzmq.lib czmq.lib
+ cl -EHsc mdclient2.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./mdbroker
+ ./mdbroker
 
-PS D:\git_store\zguide-kr\examples\C> ./mdworker
+ ./mdworker
 
-PS D:\git_store\zguide-kr\examples\C> ./mdclient2 -v
+ ./mdclient2 -v
 20-08-20 10:57:39 I: connecting to broker at tcp://localhost:5555...
 20-08-20 10:57:39 I: send request to 'echo' service:
 D: 20-08-20 10:57:39 [000]
@@ -4008,7 +4010,7 @@ D: 20-08-20 10:57:39 [011] Hello world
 
 핵심 구현 기준은 아니지만 성능의 대가는 복잡성이란 것을 의미합니다. MDP를 위해 구현할 가치가 있을까요? 수천 명의 클라이언트들을 지원하는 웹 프론트엔드의 경우 필요하겠지만, DNS와 같은 이름 조회 서비스의 경우 하나의 요청에서 세션이 완료되면 더 이상 필요하지 않습니다.
 
-## 서비스 검색(Service Discovery)
+## 서비스 검색
 ;So, we have a nice service-oriented broker, but we have no way of knowing whether a particular service is available or not. We know whether a request failed, but we don't know why. It is useful to be able to ask the broker, "is the echo service running?" The most obvious way would be to modify our MDP/Client protocol to add commands to ask this. But MDP/Client has the great charm of being simple. Adding service discovery to it would make it as complex as the MDP/Worker protocol.
 
 우리는 훌륭한 서비스 지향 브로커를 가지고 있지만, 특정 서비스를 사용할 수 있는지 여부를 알 수는 없습니다. 클라이언트에서 요청이 실패했는지 여부(제한시간 내에 응답이 오지 않음)는 알지만 이유는 알 수 없습니다. 브로커에게 "에코 서비스가 실행 중입니까?"라고 물을 수 있으면 유용합니다. 가장 확실한 방법은 MDP/클라이언트 통신규약을 수정하여 브로커에 서비스 실행 여부를 묻는 명령을 추가하는 것입니다. 그러나 MDP/클라이언트는 단순하다는 매력이 있지만 서비스 검색 기능을 추가하면 MDP/작업자 통신규약만큼 복잡해집니다.
@@ -4073,15 +4075,15 @@ int main (int argc, char *argv [])
 }
 
 ```
-> [옮긴이] 브로커(mdbroker)에 `s_broker_client_msg()`에 구현되어 있으며 "mmi.service"가 아닌 경우 작업자로 메시지를 전달(`s_service_dispatch()`)하게 한다.
+* [옮긴이] 브로커(mdbroker)에 `s_broker_client_msg()`에 구현되어 있으며 "mmi.service"가 아닌 경우 작업자로 메시지를 전달(`s_service_dispatch()`)하게 한다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc mmiecho.c libzmq.lib czmq.lib  
+ cl -EHsc mmiecho.c libzmq.lib czmq.lib  
 
 // 클라이언트에서 "echo" 서비스 등록 여부에 대하여 브로커에 "echo" 서비스가 등록된 경우
-PS D:\git_store\zguide-kr\examples\C> ./mmiecho -v 
+ ./mmiecho -v 
 20-08-20 11:40:46 I: connecting to broker at tcp://localhost:5555...
 20-08-20 11:40:46 I: send request to 'mmi.service' service:
 D: 20-08-20 11:40:46 [006] MDPC01
@@ -4094,7 +4096,7 @@ D: 20-08-20 11:40:46 [003] 200
 Lookup echo service: 200
 
 // 클라이언트에서 "nico" 서비스 등록 여부에 대하여 브로커에 "nico" 서비스가 미등록된 경우
-PS D:\git_store\zguide-kr\examples\C> ./mmiecho -v
+ ./mmiecho -v
 20-08-20 11:41:09 I: connecting to broker at tcp://localhost:5555...
 20-08-20 11:41:09 I: send request to 'mmi.service' service:
 D: 20-08-20 11:41:09 [006] MDPC01
@@ -4111,36 +4113,39 @@ Lookup echo service: 404
 
 "echo" 서비스로 등록된 작업자가 실행 혹은 실행되지 않는 상황에서 테스트하면  "200(OK)" 혹은 "404(Not found)"가 표시됩니다.
 예제에서 브로커에서 MMI를 구현한 것은 조잡합니다. 예를 들어, 작업자가 사라지더라도 서비스는 "현재"상태로 유지됩니다. 사실 브로커는 제한시간 후에 작업자가 없는 서비스를 제거해야합니다.
-> [옮긴이] "echo" 서비스로 브로커에 등록된 작업자를 중지시키고 "mmiecho"을 두 차례 수행하면 "200(OK)"가 나오나 3번째 부터는 "404(Not found)"가 출력되는 것은 브로커에서 심박 수행시 "s_broker_purge()"을 통하여 대기중인 작업자들의 제한시간 초과(7.5초=2.5초(HEARTBEAT_INTERVAL) * 3(HEARTBEAT_LIVENESS))된 경우 삭제하기 때문입니다.
+
+* [옮긴이] "echo" 서비스로 브로커에 등록된 작업자를 중지시키고 "mmiecho"을 두 차례 수행하면 "200(OK)"가 나오나 3번째 부터는 "404(Not found)"가 출력되는 것은 브로커에서 심박 수행시 "s_broker_purge()"을 통하여 대기중인 작업자들의 제한시간 초과(7.5초=2.5초(HEARTBEAT_INTERVAL) * 3(HEARTBEAT_LIVENESS))된 경우 삭제하기 때문입니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./mmiecho -v  
+ ./mmiecho -v  
 20-08-20 11:50:16 I: connecting to broker at tcp://localhost:5555...
 20-08-20 11:50:16 I: send request to 'mmi.service' service:
 ...
 Lookup echo service: 200
-PS D:\git_store\zguide-kr\examples\C> stop-process -name mdworker      
-PS D:\git_store\zguide-kr\examples\C> ./mmiecho -v 
+ stop-process -name mdworker      
+ ./mmiecho -v 
 20-08-20 11:50:28 I: connecting to broker at tcp://localhost:5555...
 20-08-20 11:50:28 I: send request to 'mmi.service' service:
 ...
 Lookup echo service: 200
-PS D:\git_store\zguide-kr\examples\C> ./mmiecho -v
+ ./mmiecho -v
 20-08-20 11:50:29 I: connecting to broker at tcp://localhost:5555...
 20-08-20 11:50:29 I: send request to 'mmi.service' service:
 ...
 Lookup echo service: 200
-PS D:\git_store\zguide-kr\examples\C> ./mmiecho -v 
+ ./mmiecho -v 
 20-08-20 11:50:30 I: connecting to broker at tcp://localhost:5555...
 20-08-20 11:50:30 I: send request to 'mmi.service' service:
 ...
 Lookup echo service: 404
 ~~~
-## 멱등성 서비스(Idempotent Services)
+
+## 멱등성 서비스
 ;Idempotency is not something you take a pill for. What it means is that it's safe to repeat an operation. Checking the clock is idempotent. Lending ones credit card to ones children is not. While many client-to-server use cases are idempotent, some are not. Examples of idempotent use cases include:
 
 멱등성은 약으로 복용하는 것이 아닙니다. 이것이 의미하는 바는 작업을 반복해도 안전하다는 것입니다. 시계의 시간을 확인하기는 멱등성입니다. 아이들에게 신용 카드를 빌려주기는 아닙니다(아이에 따라 결과가 달라짐). 많은 클라이언트-서버 사용 사례들은 멱등성이지만 일부는 그렇지 않습니다. 멱등성 사례의 다음과 같습니다.
-> [옮긴이] 멱등성(冪等性)은 연산을 여러 번 적용하더라도 결과가 달라지지 않는 성질입니다.
+
+* [옮긴이] 멱등성(冪等性)은 연산을 여러 번 적용하더라도 결과가 달라지지 않는 성질입니다.
  - 예) 절댓값 함수 - abs(abs(x)) = abs(x)
 
 ;* Stateless task distribution, i.e., a pipeline where the servers are stateless workers that compute a reply based purely on the state provided by a request. In such a case, it's safe (though inefficient) to execute the same request many times.
@@ -4217,7 +4222,7 @@ MDP가 "신뢰할 수 있는" 메시지 브로커라는 사실을 알게 되면 
 
 그림 51 - 타이타닉 패턴
 
-![The Titanic Pattern](images/fig51.svg)
+![The Titanic Pattern](images/fig51.png)
 
 ;Titanic is thus both a worker and a client. The dialog between client and Titanic goes along these lines:
 
@@ -4719,13 +4724,14 @@ s_service_success (char *uuid)
     return result;
 }
 ```
-> [옮긴이] CentOS7상에서 "uuid" 라이브러리 설치가 필요하며, 빌드시 "uuid" 라이브러리를 포함해야 합니다.
+* [옮긴이] CentOS7상에서 "uuid" 라이브러리 설치가 필요하며, 빌드시 "uuid" 라이브러리를 포함해야 합니다.
+
 ~~~{.bash}
 [zedo@sook C]$ sudo yum install uuid uuid-devel libuuid-devel
 [zedo@sook C]$ cc -o ticlient ticlient.c -lzmq -lczmq -luuid
 ~~~
 
-> [옮긴이] s_generate_uuid() 함수를 원도우에서 사용하기 위해 아래와 같이 변경합니다.
+* [옮긴이] s_generate_uuid() 함수를 원도우에서 사용하기 위해 아래와 같이 변경합니다.
 
 ```cpp
 #ifdef _WIN32
@@ -4763,7 +4769,7 @@ s_generate_uuid (void)
 }
 #endif
 ```
-> [옮긴이] 위에서 만든 UUID 생성함수를 테스트하기 위한 test_uuid.c 입니다.
+* [옮긴이] 위에서 만든 UUID 생성함수를 테스트하기 위한 test_uuid.c 입니다.
 
 ```cpp
 #include <czmq.h>
@@ -4794,32 +4800,33 @@ void main()
     printf("uuidstr : %s\n", uuidstr);
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc tigen_uuid.c libzmq.lib czmq.lib
+ cl -EHsc tigen_uuid.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./tigen_uuid
+ ./tigen_uuid
 uuidstr : 8A8B898B8B8E028989078989048A8B8D
 ~~~
 
-> [옮긴이] 빌드 및 테스트 수행시 원도우 환경에 클라이언트에서 titanic.request 수행 후에 titanic.reply 수행시 titanic이 종료되는 현상 발생하였습니다(확인 진행중).
+* [옮긴이] 빌드 및 테스트 수행시 원도우 환경에 클라이언트에서 titanic.request 수행 후에 titanic.reply 수행시 titanic이 종료되는 현상 발생하였습니다(확인 진행중).
 
 * 원도우 환경에서 실행할 경우
+
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./mdbroker -v
+ ./mdbroker -v
 20-08-22 07:12:34 I: MDP broker/0.2.0 is active at tcp://*:5555
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./titanic -v
+ ./titanic -v
 I: processing request 03018C8B01008800008D880205888E06
 
-PS D:\git_store\zguide-kr\examples\C> ./mdworker -v
+ ./mdworker -v
 20-08-22 07:12:56 I: connecting to broker at tcp://localhost:5555...
 20-08-22 07:12:56 I: sending READY to broker
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./ticlient -v
+ ./ticlient -v
 20-08-22 06:58:17 I: connecting to broker at tcp://localhost:5555...
 20-08-22 06:58:17 I: send request to 'titanic.request' service:
 D: 20-08-22 06:58:17 [006] MDPC01
@@ -4844,6 +4851,7 @@ D: 20-08-22 06:58:17 [032] 03018C8B01008800008D880205888E06
 ~~~
 
 * CentOS7 환경에서 실행할 경우
+
 ~~~{.bash}
 [zedo@sook C]$ ./mdbroker -v
 20-09-25 08:53:29 I: MDP broker/0.2.0 is active at tcp://*:5555
@@ -5022,7 +5030,6 @@ D: 20-09-25 08:54:29 [032] 79F1E824D1364A2F8D003A8D5868C1BC
 D: 20-09-25 08:54:29 [006] MDPC01
 D: 20-09-25 08:54:29 [013] titanic.close
 D: 20-09-25 08:54:29 [003] 200
-
 ~~~
 
 ;To test this, start mdbroker and titanic, and then run ticlient. Now start mdworker arbitrarily, and you should see the client getting a response and exiting happily.
@@ -5084,7 +5091,7 @@ D: 20-09-25 08:54:29 [003] 200
 
 그림 52 - 고가용성 쌍, 정상 동작
 
-![High-Availability Pair, Normal Operation](images/fig52.svg)
+![High-Availability Pair, Normal Operation](images/fig52.png)
 
 ;The Binary Star pattern puts two servers in a primary-backup high-availability pair. At any given time, one of these (the active) accepts connections from client applications. The other (the passive) does nothing, but the two servers monitor each other. If the active disappears from the network, after a certain time the passive takes over as active.
 
@@ -5117,7 +5124,7 @@ D: 20-09-25 08:54:29 [003] 200
 
 그림 53 -장애 시 고가용성 쌍
 
-![High-availability Pair During Failover](images/fig53.svg)
+![High-availability Pair During Failover](images/fig53.png)
 
 ;Recovery from failover works as follows:
 
@@ -5161,7 +5168,7 @@ D: 20-09-25 08:54:29 [003] 200
 
  활성(기본) 서버를 중지한 다음 비활성(백업) 서버를 중지 시, 장애조치 시간보다 지연되면  응용프로그램의 활성 서버에 연결이 해제 후 비활성 서버로 재연결되었다가, 비활성 서버가 중단되면 다시 연결 해제되어 사용자들에게 혼란을 야기합니다.
 
-### 상세 요구사항(Detailed Requirements)
+### 상세 요구사항
 ;Binary Star is as simple as it can be, while still working accurately. In fact, the current design is the third complete redesign. Each of the previous designs we found to be too complex, trying to do too much, and we stripped out functionality until we came to a design that was understandable, easy to use, and reliable enough to be worth using.
 
 바이너리 스타는 단순하며 정확하게 작동합니다. 실제로 현재 설계는 세 번째 개정판입니다. 이전의 설계들은 너무 복잡하고 너무 많은 작업을 시도하여, 이해하고 사용하기 쉽게 그리고 충분히 신뢰 가능하도록 기능을 보완하였습니다.
@@ -5283,11 +5290,11 @@ D: 20-09-25 08:54:29 [003] 200
 * 하나의 서버 프로세스는 하나의 바이너리 스타 쌍의 일부가 됩니다.
 * 기본 서버는 하나의 백업 서버만 가질 수 있습니다.
 * 비활성 서버는 특별한 작업을 수행하지 않습니다.
-* 백업 서버는 기본 서버에서 구동되는 전체 응용프로그램의 부하들을 처리�����야 합니다.
+* 백업 서버는 기본 서버에서 구동되는 전체 응용프로그램의 부하들을 처리할 수 있어야 합니다.
 * 장애조치 구성은 응용프로그램 실행 중에는 변경 불가합니다.
 * 클라이언트 응용프로그램은 장애조치에 대응하기 위한 기능을 가지고 있어야 합니다.
 
-### 정신분열증 방지(Preventing Split-Brain Syndrome)
+### 정신분열증 방지
 ;Split-brain syndrome occurs when different parts of a cluster think they are active at the same time. It causes applications to stop seeing each other. Binary Star has an algorithm for detecting and eliminating split brain, which is based on a three-way decision mechanism (a server will not decide to become active until it gets application connection requests and it cannot see its peer server).
 
 정신분열증은 기본-백업 서버가 동시에 활성이라고 생각할 때 발생합니다. 이로 인해 응용프로그램들은 서로 인식하지 못해 종료되게 됩니다. 바이너리 스타에는 정신분열을 감지하고 제거하는 알고리즘이 있으며, 3개의 방향 결정 메커니즘을 기반합니다(서버는 클라이언트 응용프로그램 연결 요청을 받고 상대 서버를 인식할 수 없을 때까지 활성 상태가 되지 않습니다).
@@ -5299,18 +5306,20 @@ D: 20-09-25 08:54:29 [003] 200
 ;To prevent split-brain situations, we must connect a Binary Star pair using a dedicated network link, which can be as simple as plugging them both into the same switch or, better, using a crossover cable directly between two machines.
 
 정신분열 상황을 방지하려면 바이너리 스타 쌍을 전용 네트워크 링크를 사용하여 연결해야 하며,  동일한 스위치에 두 대의 서버들을 연결하거나 두 대의 서버 간에 크로스오버 케이블로 직접 연결하는 것이 좀 더 좋습니다.
-> [옮긴이] 크로스오버 케이블은 스위치(혹은 허브)를 사용하지 않고 두 장비를 직접 연결 가능하도록 설계된 이더넷 케이블
+
+* [옮긴이] 크로스오버 케이블은 스위치(혹은 허브)를 사용하지 않고 두 장비를 직접 연결 가능하도록 설계된 이더넷 케이블
 
 ;We must not split a Binary Star architecture into two islands, each with a set of applications. While this may be a common type of network architecture, you should use federation, not high-availability failover, in such cases.
 
 바이너리 스타 아키텍처를 각각 응용프로그램 세트로 존재할 수 있는 2개의 섬으로 나누지 말아야 합니다. 이것은 네트워크 아키텍처의 공통적인 유형으로, 이러한 경우 고가용성 장애조치가 아닌 연합(federation) 모델을 사용해야 합니다.
-> [옮긴이] 페더레이션 모델은 다른 종류의 라우팅, 특히 부하 분산(load balancing)이나 라운드 로빈(round robin)보다는 서비스 이름 및 근접성에 따라 라우팅하는 서비스 지향 아키텍처(service-oriented architectures(SOAs))에 적합합니다.
+
+* [옮긴이] 페더레이션 모델은 다른 종류의 라우팅, 특히 부하 분산(load balancing)이나 라운드 로빈(round robin)보다는 서비스 이름 및 근접성에 따라 라우팅하는 서비스 지향 아키텍처(service-oriented architectures(SOAs))에 적합합니다.
 
 ;A suitably paranoid network configuration would use two private cluster interconnects, rather than a single one. Further, the network cards used for the cluster would be different from those used for message traffic, and possibly even on different paths on the server hardware. The goal is to separate possible failures in the network from possible failures in the cluster. Network ports can have a relatively high failure rate.
 
 적절한 편집증적인 네트워크 구성은 하나가 아닌 2개의 사설망으로 클러스터 연결을 사용합니다. 그리고 클러스터에 사용되는 네트워크 카드는 메시지 전송에 사용되는 네트워크 카드와 다르게 하며, 서버 하드웨어에서 다른 경로에 있습니다. 목표는 네트워크(데이터 통신)의 가능한 오류와 클러스터(장애조치)의 가능한 장애를 분리하는 것입니다. 네트워크 포트 장애는 상대적 높습니다.
 
-### 바이너리 스타 구현(Binary Star Implementation)
+### 바이너리 스타 구현
 ;Without further ado, here is a proof-of-concept implementation of the Binary Star server. The primary and backup servers run the same code, you choose their roles when you run the code:
 
 더 이상 고민하지 말고, 여기에 바이너리 스타 서버의 개념 구현(Proof-of-concept)을 하였으며, 기본 및 백업 서버는 동일한 코드로 역할(기본 혹은 백업)을 지정하여 실행합니다.
@@ -5622,23 +5631,23 @@ bstarsrv -b     # Start backup
 bstarcli
 ~~~
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc bstarsrv.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc bstarcli.c libzmq.lib czmq.lib
+ cl -EHsc bstarsrv.c libzmq.lib czmq.lib
+ cl -EHsc bstarcli.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./bstarsrv -p
+ ./bstarsrv -p
 I: Primary active, waiting for backup (passive)
 I: connected to backup (passive), ready active
 W: interrupted
 
-PS D:\git_store\zguide-kr\examples\C> ./bstarsrv -b
+ ./bstarsrv -b
 I: Backup passive, waiting for primary (active)
 I: connected to primary (active), ready passive
 I: failover successful, ready active
 
-PS D:\git_store\zguide-kr\examples\C> ./bstarcli
+ ./bstarcli
 I: connecting to server at tcp://localhost:5001...
 I: server replied OK (1)
 I: server replied OK (2)
@@ -5651,6 +5660,7 @@ I: server replied OK (6)
 I: server replied OK (7)
 ...
 ~~~
+
 ;You can then provoke failover by killing the primary server, and recovery by restarting the primary and killing the backup. Note how it's the client vote that triggers failover, and recovery.
 
 프로그램 실행 후에, 기본 서버를 종료하여 장애조치를 유발하고, 백업을 종료하여 기본 서버를 다시 시작함으로  복구할 수 있습니다. 장애조치 및 복구에 대응 및 반응하는 클라이언트에 주의해 주세요.
@@ -5665,9 +5675,9 @@ I: server replied OK (7)
 
 그림 54 - 바이너리 스타 유한 상태 머신
 
-![Binary Star Finite State Machine](images/fig54.svg)
+![Binary Star Finite State Machine](images/fig54.png)
 
-### 바이너리 스타 리엑터(Binary Star Reactor)
+### 바이너리 스타 리엑터
 
 ;Binary Star is useful and generic enough to package up as a reusable reactor class. The reactor then runs and calls our code whenever it has a message to process. This is much nicer than copying/pasting the Binary Star code into each server where we want that capability.
 
@@ -6048,32 +6058,32 @@ int main (int argc, char *argv [])
     return 0;
 }
 ```
-> [옮긴이] assert()에 지정한 조건식이 거짓(false) 일 때 프로그램을 중단하며 참(true) 일 때는 프로그램이 계속 실행합니다.
+* [옮긴이] assert()에 지정한 조건식이 거짓(false) 일 때 프로그램을 중단하며 참(true) 일 때는 프로그램이 계속 실행합니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bahs}
-PS D:\git_store\zguide-kr\examples\C> ./bstarsrv2 -p
+ ./bstarsrv2 -p
 I: Primary active, waiting for backup (passive)
 20-08-23 10:39:19 I: request from client, ready as active
-PS D:\git_store\zguide-kr\examples\C> ./bstarsrv2 -p
+ ./bstarsrv2 -p
 I: Primary active, waiting for backup (passive)
 20-08-23 10:39:38 I: connected to backup (passive), ready as active
-PS D:\git_store\zguide-kr\examples\C> ./bstarsrv2 -p
+ ./bstarsrv2 -p
 I: Primary active, waiting for backup (passive)
 20-08-23 10:39:58 I: connected to backup (active), ready as passive
 20-08-23 10:40:26 I: failover successful, ready as active
 
-PS D:\git_store\zguide-kr\examples\C> ./bstarsrv2 -b
+ ./bstarsrv2 -b
 I: Backup passive, waiting for primary (active)
 20-08-23 10:39:38 I: connected to primary (active), ready as passive
 20-08-23 10:39:48 I: failover successful, ready as active
-PS D:\git_store\zguide-kr\examples\C> ./bstarsrv2 -b
+ ./bstarsrv2 -b
 I: Backup passive, waiting for primary (active)
 20-08-23 10:40:38 I: connected to primary (active), ready as passive
 20-08-23 10:40:48 I: failover successful, ready as active
 
-PS D:\git_store\zguide-kr\examples\C> ./bstarcli
+ ./bstarcli
 I: connecting to server at tcp://localhost:5001...
 I: server replied OK (1)
 I: server replied OK (2)
@@ -6105,7 +6115,8 @@ I: server replied OK (59)
 ;This is why ØMQ does not impose a broker-centric architecture, though it does give you the tools to build brokers, aka proxies, and we've built a dozen or so different ones so far, just for practice.
 
 이것이 ØMQ가 브로커 중심 아키텍처를 강요하지 않는 이유입니다. ØMQ는 브로커(일명 프록시)를 구축할 수 있는 도구를 주어 지금까지 12개 정도 여러 패턴들을 구축했습니다.
-> [옮긴이] 이전에 학습한 메세지 패턴을 다음과 같습니다.
+
+* [옮긴이] 이전에 학습한 메세지 패턴을 다음과 같습니다.
   - REQ-REP
   - PUB-SUB
   - REQ-ROUTER
@@ -6124,7 +6135,8 @@ I: server replied OK (59)
 
 따라서 이장을 마무리하면서 우리는 지금까지 만들어온 브로커 기반 신뢰성을 해체하고 프리랜스 패턴이라고 불리는 분산형 P2P(peer-to-peer) 아키텍처로 돌아가겠습니다.
 P2P의 핵심 사용 사례는 이름 확인 서비스(name resolution service)입니다. 이것은 ØMQ 아키텍처의 공통적인 문제입니다 : 연결할 단말을 어떻게 아시나요? 코드상 하드 코딩된 TCP/IP 주소는 매우 취약하기 때문에 주소를 구성 파일에 넣게 되면 관리가 끔찍해집니다. 모든 PC 또는 휴대폰의 웹브라우저에서 "google.com"이 "74.125.230.82"라는 것을 알기 위해 구성 파일을 직접 만들어야 한다고 생각해 보십시오.
-> [옮긴이] DNS(domain name system)는 네트워크에서 도메인이나 호스트 네임을 숫자로 되어 있는 IP 주소로 해석해 주는 TCP/IP 네트워크 서비스입니다.
+
+* [옮긴이] DNS(domain name system)는 네트워크에서 도메인이나 호스트 네임을 숫자로 되어 있는 IP 주소로 해석해 주는 TCP/IP 네트워크 서비스입니다.
 
 ;A ØMQ name service (and we'll make a simple implementation) must do the following:
 
@@ -6144,12 +6156,13 @@ P2P의 핵심 사용 사례는 이름 확인 서비스(name resolution service)�
 
 그림 55 - 프리랜서 패턴
 
-![The Freelance Pattern](images/fig55.svg)
+![The Freelance Pattern](images/fig55.png)
 
 ;The types of failure we aim to handle are server crashes and restarts, server busy looping, server overload, and network issues. To get reliability, we'll create a pool of name servers so if one crashes or goes away, clients can connect to another, and so on. In practice, two would be enough. But for the example, we'll assume the pool can be any size.
 
 처리하려는 장애 유형은 서버 충돌 및 재시작, 서버의 과도한 루프, 서버 과부하, 네트워크 문제입니다. 안정성을 확보하기 위해 이름 서버들의 저장소를 생성하여 서버 하나가 충돌하거나 사라지면, 클라이언트가 다른 서버에 연결하게 합니다. 실제로는 저장소은 2개면 충분하지만 예제에서는 저장소의 크기는 제한이 없다고 가정합니다.
-> [옮긴이] 다중 서버 분산 아키텍처상에서 클라이언트 요청을 부하 분산하여 처리하기 위해 클라이언트에서 특정 서비스(서버) 접근을 지정할 경우 서비스를 제공하는 서버들 간에 부하 분산이 제대로 되지 않을 수도 있습니다. 부하 분산이 가능한 분산 처리를 클라이언트에서 구성할지 MDP와 같은 브로커를 통해 진행할지 고민이 필요합니다.
+
+* [옮긴이] 다중 서버 분산 아키텍처상에서 클라이언트 요청을 부하 분산하여 처리하기 위해 클라이언트에서 특정 서비스(서버) 접근을 지정할 경우 서비스를 제공하는 서버들 간에 부하 분산이 제대로 되지 않을 수도 있습니다. 부하 분산이 가능한 분산 처리를 클라이언트에서 구성할지 MDP와 같은 브로커를 통해 진행할지 고민이 필요합니다.
 
 ;In this architecture, a large set of clients connect to a small set of servers directly. The servers bind to their respective addresses. It's fundamentally different from a broker-based approach like Majordomo, where workers connect to the broker. Clients have a couple of options:
 
@@ -6167,7 +6180,7 @@ P2P의 핵심 사용 사례는 이름 확인 서비스(name resolution service)�
 
 다음 절부터는 구현을 위한 개별 방법 설명하겠습니다.
 
-### 모델 1: 간단한 재시도와 장애조치(Simple Retry and Failover)
+### 모델 1: 간단한 재시도와 장애조치
 ;So our menu appears to offer: simple, brutal, complex, or nasty. Let's start with simple and then work out the kinks. We take Lazy Pirate and rewrite it to work with multiple server endpoints.
 
 클라이언트가 선택 가능한 3가지 방법들은 단순하고 무식하고 복잡하고 귀찮게 나타납니다. 
@@ -6304,20 +6317,20 @@ flserver1 tcp://*:5556 &
 flclient1 tcp://localhost:5555 tcp://localhost:5556
 ~~~
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
 *** 1대의 서버에 대하여 테스트 수행하였을때
-PS D:\git_store\zguide-kr\examples\C> ./flserver1 tcp://*:5559
+ ./flserver1 tcp://*:5559
 I: echo service is ready at tcp://*:5559
 
-PS D:\git_store\zguide-kr\examples\C> ./flclient1 tcp://localhost:5559
+ ./flclient1 tcp://localhost:5559
 I: trying echo service at tcp://localhost:5559...
 Service is running OK
-PS D:\git_store\zguide-kr\examples\C> ./flclient1 tcp://localhost:5559
+ ./flclient1 tcp://localhost:5559
 
 *** 서버가 모두 없고 클라이언트만 실행했을때
-PS D:\git_store\zguide-kr\examples\C> ./flclient1 tcp://localhost:5559
+ ./flclient1 tcp://localhost:5559
 I: trying echo service at tcp://localhost:5559...
 W: no response from tcp://localhost:5559, retrying...
 I: trying echo service at tcp://localhost:5559...
@@ -6326,17 +6339,18 @@ I: trying echo service at tcp://localhost:5559...
 W: no response from tcp://localhost:5559, retrying...
 
 ** 2대의 서버에 대하여 테스트 수행하였을 때
-PS D:\git_store\zguide-kr\examples\C> ./flserver1 tcp://*:5559
+ ./flserver1 tcp://*:5559
 I: echo service is ready at tcp://*:5559
 
-PS D:\git_store\zguide-kr\examples\C> ./flserver1 tcp://*:5560
+ ./flserver1 tcp://*:5560
 I: echo service is ready at tcp://*:5559
 
-PS D:\git_store\zguide-kr\examples\C> ./flclient1 tcp://localhost:5559 tcp://localhost:5560
+ ./flclient1 tcp://localhost:5559 tcp://localhost:5560
 I: trying echo service at tcp://localhost:5559...
 Service is running OK
 ~~~
-> [옮긴이] 현재의 로직은 클라이언트는 여러 개의 서버들에 요청을 보내고 단 1개의 응답을 받으면 종료하도록 되어 있습니다. 서버들에 대하여 모두 응답을 받거나 혹은 제한 시간 만료에 따른 NULL 응답을 처리하고 싶다면 클라이언트(flclient1) main() 함수의 "break"를 변경해야 합니다.
+
+* [옮긴이] 현재의 로직은 클라이언트는 여러 개의 서버들에 요청을 보내고 단 1개의 응답을 받으면 종료하도록 되어 있습니다. 서버들에 대하여 모두 응답을 받거나 혹은 제한 시간 만료에 따른 NULL 응답을 처리하고 싶다면 클라이언트(flclient1) main() 함수의 "break"를 변경해야 합니다.
 - 서버들로부터 단 1개의 응답이 있을 경우 프로그램 종료
 
 ```cpp
@@ -6374,7 +6388,7 @@ Service is running OK
                 printf ("W: no response from %s\n", endpoint);
         }
 ```
-> [옮긴이] 수정된 클라이언트(flclient1)의 소스는 다음과 같습니다.
+* [옮긴이] 수정된 클라이언트(flclient1)의 소스는 다음과 같습니다.
 
 ```cpp
 //  Freelance client - Model 1
@@ -6452,16 +6466,16 @@ int main (int argc, char *argv [])
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./flserver1 tcp://*:5600
+ ./flserver1 tcp://*:5600
 I: echo service is ready at tcp://*:5600
 
-PS D:\git_store\zguide-kr\examples\C> ./flserver1 tcp://*:5601
+ ./flserver1 tcp://*:5601
 I: echo service is ready at tcp://*:5601
 
-PS D:\git_store\zguide-kr\examples\C> ./flclient1 tcp://localhost:5600 tcp://localhost:5601
+ ./flclient1 tcp://localhost:5600 tcp://localhost:5601
 I: trying echo service at tcp://localhost:5600...
 I: trying echo service at tcp://localhost:5601...
 Service is running OK
@@ -6485,9 +6499,10 @@ Service is running OK
 
 그러나 설계에는 단점이 있습니다.
 클라이언트에서 많은 소켓을 연결하고 기본 이름 서버가 죽으면 각 클라이언트는 고통스러운 제한시간으로 인한 지연을 경험합니다.
-> [옮긴이] 현실에서 클라이언트가 가용한 모든 서버들에 동일한 작업 요청을 하고 응답을 기다리는 것은 서버 자원에 대한 낭비를 초래하고, 서버가 죽을 경우 제한시간 지연이 발생합니다. 
 
-### 모델 2: 잔인한 엽총 학살(Brutal Shotgun Massacre)
+* [옮긴이] 현실에서 클라이언트가 가용한 모든 서버들에 동일한 작업 요청을 하고 응답을 기다리는 것은 서버 자원에 대한 낭비를 초래하고, 서버가 죽을 경우 제한시간 지연이 발생합니다. 
+
+### 모델 2: 잔인한 엽총 학살
 ;Let's switch our client to using a DEALER socket. Our goal here is to make sure we get a reply back within the shortest possible time, no matter whether a particular server is up or down. Our client takes this approach:
 
 두 번째 옵션으로 클라이언트를 DEALER 소켓을 사용하도록 전환하겠습니다. 
@@ -6727,26 +6742,26 @@ flclient_request (flclient_t *self, zmsg_t **request_p)
     return reply;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc flserver2.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc flclient2.c libzmq.lib czmq.lib
+ cl -EHsc flserver2.c libzmq.lib czmq.lib
+ cl -EHsc flclient2.c libzmq.lib czmq.lib
 
 *** 1대의 서버를 대상으로 한 경우
-PS D:\git_store\zguide-kr\examples\C> ./flserver2 tcp://*:5560
+ ./flserver2 tcp://*:5560
 I: service is ready at tcp://*:5560
 
-PS D:\git_store\zguide-kr\examples\C> ./flclient2 tcp://localhost:5560
+ ./flclient2 tcp://localhost:5560
 Average round trip cost: 151 usec
 
 *** 2대의 서버를 대상으로 한 경우
-PS D:\git_store\zguide-kr\examples\C> ./flserver2 tcp://*:5560
+ ./flserver2 tcp://*:5560
 I: service is ready at tcp://*:5560
-PS D:\git_store\zguide-kr\examples\C> ./flserver2 tcp://*:5561
+ ./flserver2 tcp://*:5561
 I: service is ready at tcp://*:5561
 
-PS D:\git_store\zguide-kr\examples\C> ./flclient2 tcp://localhost:5560 tcp://localhost:5561
+ ./flclient2 tcp://localhost:5560 tcp://localhost:5561
 Average round trip cost: 152 usec
 
 *** 모든 서버가 죽은 경우
@@ -6754,7 +6769,8 @@ S D:\git_store\zguide-kr\examples\C> ./flclient2 tcp://localhost:5560 tcp://loca
 E: name service not available, aborting
 Average round trip cost: 250 usec
 ~~~
-> [옮긴이] 클라이언트에서 1만 번의 요청-응답 처리 시간(round trip cost)에 대하여 모든 서버가 죽은 경우, 1만 번이 아닌 1회에 대한 요청-응답 처리 시간(round trip cost)이 산정됩니다. 즉 제한시간인 2.5초(2.5초/10,000=0.25 msec=250 usec)가 산정됩니다.
+
+* [옮긴이] 클라이언트에서 1만 번의 요청-응답 처리 시간(round trip cost)에 대하여 모든 서버가 죽은 경우, 1만 번이 아닌 1회에 대한 요청-응답 처리 시간(round trip cost)이 산정됩니다. 즉 제한시간인 2.5초(2.5초/10,000=0.25 msec=250 usec)가 산정됩니다.
 
 ;Here are some things to note about the client implementation:
 
@@ -6787,10 +6803,11 @@ Average round trip cost: 250 usec
 * 단점 : 불필요한 네트워크 트래픽을 생성합니다.
 * 단점 : 서버들에 대한 우선순위를 지정할 수 없습니다 (예 : Primary, Secondary).
 * 단점 : 서버는 한 번에 최대 하나의 요청을 수행할 수 있습니다.
-> [옮긴이] 모델 1(단순 응답 및 장애조치)에 이어 모델 2(샷건 살인)의 경우도 클라이언트가 가용한 모든 서버들에 동일한 작업 요청-응답 처리를 하고 있으며 서버 자원에 대한 낭비가 발생합니다.
+
+* [옮긴이] 모델 1(단순 응답 및 장애조치)에 이어 모델 2(샷건 살인)의 경우도 클라이언트가 가용한 모든 서버들에 동일한 작업 요청-응답 처리를 하고 있으며 서버 자원에 대한 낭비가 발생합니다.
 현실 세계에서는 모델 1과 모델 2는 적절하지 않습니다.
 
-### 모델 3: 복잡하고 불쾌한 방법(Complex and Nasty)
+### 모델 3: 복잡하고 불쾌한 방법
 ;The shotgun approach seems too good to be true. Let's be scientific and work through all the alternatives. We're going to explore the complex/nasty option, even if it's only to finally realize that we preferred brutal. Ah, the story of my life.
 
 샷건 접근 방식이 실현하기에 너무 좋은 것처럼 보입니다. 과학적으로 가능한 대안들을 보도록 하겠습니다. 모델 3(복잡하고 불쾌한 옵션)을 탐구하며, 마침내 실제 적용하기 위해서는 잔인하더라도 복잡하고 불쾌한 방법이 선호되는 것을 깨닫게 됩니다. 이것은 삶의 이야기와 같이 단순하거나 무식한 방법으로 살고 싶지만, 인생에서는 복잡하고 불쾌한 방법으로 해결해야 하는 경우가 많기 때문입니다.
@@ -6814,7 +6831,8 @@ Average round trip cost: 250 usec
 ;Remember how ØMQ identities work. The server ROUTER socket sets an identity before it binds its socket. When a client connects, they do a little handshake to exchange identities, before either side sends a real message. The client ROUTER socket, having not set an identity, sends a null identity to the server. The server generates a random UUID to designate the client for its own use. The server sends its identity (which we've agreed is going to be an endpoint string) to the client.
 
 ØMQ 식별자(ID)의 동작 방식은 서버 ROUTER 소켓은 식별자(ID)를 ROUTER 소켓에 바인딩하기 전에 설정합니다. 클라이언트가 연결되면 양쪽이 실제 메시지를 보내기 전에 식별자(ID) 교환을 위한 통신을 수행합니다.
-> [옮긴이] 클라이언트에서 `zmq_setsockopt()`, `zsocket_set_identity()`를 통해 식별자 지정 가능합니다.
+
+* [옮긴이] 클라이언트에서 `zmq_setsockopt()`, `zsocket_set_identity()`를 통해 식별자 지정 가능합니다.
 
 식별자(ID)를 설정하지 않은 클라이언트 ROUTER 소켓은 서버에 null 식별자를 보내면 서버는 임의의 UUID를 생성하여 자체적으로 사용할 클라이언트를 지정합니다. 
 서버는 자신의 식별자(우리가 사용하기로 한 단말 문자열(예 : tcp://localhost:5556))를 클라이언트에 보냅니다.
@@ -7301,13 +7319,13 @@ flcliapi_agent (void *args, zctx_t *ctx, void *pipe)
     agent_destroy (&self);
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc flserver3.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc flclient3.c libzmq.lib czmq.lib
+ cl -EHsc flserver3.c libzmq.lib czmq.lib
+ cl -EHsc flclient3.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./flserver3 -v
+ ./flserver3 -v
 I: service is ready at tcp://*:5555
 D: 20-08-25 14:42:43 [005] 0080000029
 D: 20-08-25 14:42:43 [004] PING
@@ -7327,7 +7345,7 @@ D: 20-08-25 14:45:00 [001] 2
 D: 20-08-25 14:45:00 [002] OK
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./flclient3 -v
+ ./flclient3 -v
 I: connecting to tcp://localhost:5555...
 I: connecting to tcp://localhost:5556...
 I: connecting to tcp://localhost:5557...
@@ -7347,12 +7365,13 @@ Average round trip cost: 152 usec
 * 무지연 폴링 타이머(Tickless poll timer) : 이전 폴링 루프에서 우리는 항상 일정한 시간 간격(예 : 1초)을 사용했는데, 이는 단순하지만 저전력 클라이언트(노트북 또는 휴대폰 등)에 적합하지 않습니다. 
 재미와 지구를 구하기 위해 에이전트가 무지연 타이머 사용하면, 무지연 타이머는 예상되는 다음 제한시간을 기준으로 폴링 지연을 계산합니다. 
 적절한 구현은 순서가 지정된 제한시간 목록을 유지하며, 모든 제한시간을 확인하고 다음 제한시간까지 폴링 지연을 수행합니다.
-> [옮긴이] 모델 1(단순 응답 및 장애조치), 모델 2(샷건 살인)에 이어 모델 3(복잡하고 불쾌한) 경우 기존 모델과 달리 클라이언트가 가용한 모든 서버들 중에서 가용한 서버 한 대로만 작업 요청-응답 처리를 수행하여, 서버 자원 부분에서 낭비는 발생하지 않지만 무수히 많은 클라이언트들이 요청을 수행할 경우 부하 분산을 불가한 구조입니다.
+
+* [옮긴이] 모델 1(단순 응답 및 장애조치), 모델 2(샷건 살인)에 이어 모델 3(복잡하고 불쾌한) 경우 기존 모델과 달리 클라이언트가 가용한 모든 서버들 중에서 가용한 서버 한 대로만 작업 요청-응답 처리를 수행하여, 서버 자원 부분에서 낭비는 발생하지 않지만 무수히 많은 클라이언트들이 요청을 수행할 경우 부하 분산을 불가한 구조입니다.
 현실 세계에서는 서버 자원 및 부하 분산 측면에서 모델 1, 모델 2, 모델 3도 적절하게 보이지 않습니다.
 분산 환경에서 브로커 없이 사용하기 위해서는 서버들(서비스들)의 존재를 클라이언트들에서 알기 위해 이름 확인 서비스(Naming Resoution)을 통해 특정 서버(서비스) 확인하고 접속하여 서비스를 수행하다가 서버(서비스)가 죽은 경우 다시 이름 확인 서비스를 통해 동일한 서비스를 제공하는 서버에 접속하여 처리 필요합니다. 하지만 이경우 부하 분산 문제가 있으며 잘못하면 특정 서버로 부하가 집중될 수 있기 때문에 주의가 필요합니다. 해결 방법으로 HAProxy와 같은 부하 분산 도구를 사용할 수 있지만 HAProxy의 장애가 발생할 경우 장애조치 시간이 문제가 될 수 있습니다.
 물론 MDP 형태도 가능하지만, 브로커 경유에 따른 성능 지연이 발생하며, 실시간 처리가 중요한 응용프로그램에서는 이슈가 될 수 있습니다.
 
-## 결론(Conclusion)
+## 결론
 ;In this chapter, we've seen a variety of reliable request-reply mechanisms, each with certain costs and benefits. The example code is largely ready for real use, though it is not optimized. Of all the different patterns, the two that stand out for production use are the Majordomo pattern, for broker-based reliability, and the Freelance pattern, for brokerless reliability.
 
 이 장에서는 다양한 신뢰성 있는 요청-응답 메커니즘을 보았으며, 각각의 특정 비용과 장점이 있었습니다.

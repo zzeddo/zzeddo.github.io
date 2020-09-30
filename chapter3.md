@@ -1,4 +1,6 @@
-# 3장-고급 요청-응답 패턴(Advanced Request Reply Patterns)
+
+# 3장-고급 요청-응답 패턴 {-}
+
 ;In Chapter 2 - Sockets and Patterns we worked through the basics of using ØMQ by developing a series of small applications, each time exploring new aspects of ØMQ. We'll continue this approach in this chapter as we explore advanced patterns built on top of ØMQ's core request-reply pattern.
 
 2장-소켓 및 패턴에서 우리는 ØMQ의 새로운 측면에 대하여 일련의 작은 응용프로그램을 개발하여 ØMQ 기본적인 사용 방법을 살펴보았습니다. 3장에서는 ØMQ의 핵심 요청-응답 패턴 위에 만들어진 고급 패턴을 알아보며 작은 응용프로그램을 개발해 보겠습니다.
@@ -25,12 +27,12 @@
 * 비동기 요청-응답 서버 구축
 * 상세한 브로커 간 라우팅 예제
 
-## 요청-응답 메커니즘(request-reply mechanisms)
+## 요청-응답 메커니즘
 ;We already looked briefly at multipart messages. Let's now look at a major use case, which is reply message envelopes. An envelope is a way of safely packaging up data with an address, without touching the data itself. By separating reply addresses into an envelope we make it possible to write general purpose intermediaries such as APIs and proxies that create, read, and remove addresses no matter what the message payload or structure is.
 
 이미 멀티파트 메시지를 간략히 알아보았습니다. 이제 주요 사용 사례인 응답 메시지 봉투를 알아보겠습니다. 봉투는 데이터 자체를 건드리지 않고 하나의 주소로 데이터를 안전하게 포장하는 방법입니다. 봉투에서 응답 주소를 분리하여 메시지 내용 또는 구조에 관계없이 주소를 생성, 읽기 및 제거하는 API 및 프록시와 같은 범용 중개자를 작성할 수 있습니다.
 
-> [옮긴이] 멀티파트 메시지는 여러 개의 프레임들로 하나의 메시지를 구성합니다.
+* [옮긴이] 멀티파트 메시지는 여러 개의 프레임들로 하나의 메시지를 구성합니다.
 
 ;In the request-reply pattern, the envelope holds the return address for replies. It is how a ØMQ network with no state can create round-trip request-reply dialogs.
 
@@ -40,7 +42,7 @@
 
 REQ 및 REP 소켓을 사용하면 봉투들을 볼 수 조차 없습니다. REQ/REP 소켓들은 자동으로 봉투를 처리하지만 대부분의 흥미로운 요청-응답 패턴의 경우 특히 ROUTER 소켓에서 봉투를 이해하고 싶을 것입니다. 우리는 단계적으로 작업해 나가겠습니다.
 
-### 간단한 응답 봉투(The Simple Reply Envelope)
+### 간단한 응답 봉투
 ;A request-reply exchange consists of a request message, and an eventual reply message. In the simple request-reply pattern, there's one reply for each request. In more advanced patterns, requests and replies can flow asynchronously. However, the reply envelope always works the same way.
 
 요청-응답 교환은 요청 메시지와 이에 따른 응답 메시지로 구성됩니다. 간단한 요청-응답 패턴에는 각 요청에 대해 하나의 응답이 있습니다. 고급 패턴에서는 요청과 응답이 비동기적으로 동작할 수 있지만 응답 봉투는 항상 동일한 방식으로 동작합니다.
@@ -55,7 +57,7 @@ REQ 소켓을 통해 "Hello"를 보내는 것으로 시작하겠습니다. REQ �
 
 그림 26 - 최소 봉투 요청(Request with Minimal Envelope)
 
-![최소 봉투 요청](images/fig26.svg)
+![최소 봉투 요청](images/fig26.png)
 
 ;The REP socket does the matching work: it strips off the envelope, up to and including the delimiter frame, saves the whole envelope, and passes the "Hello" string up the application. Thus our original Hello World example used request-reply envelopes internally, but the application never saw them.
 
@@ -65,18 +67,18 @@ REP 소켓은 일치하는 작업을 수행합니다. 봉투에서 공백 구분
 
 hwclient와 hwserver 사이에 흐르는 네트워크 데이터를 감시한다면,  보게 될 것은 다음과 같습니다. : 모든 요청과 모든 응답은 사실 두 개의 프레임으로 "하나의 공백 프레임"과 "본문"입니다. 간단한 REQ-REP 대화에는 별 의미가 없는 것 같지만 ROUTER와 DEALER가 봉투를 다루는 방법을 살펴보면 그 이유를 알 수 있습니다.
 
-> [옮긴이] 
+* [옮긴이] 
  - 요청시 : hwclient-["Hello"]->REQ->[""+"Hello"]->REP->["Hello"]->hwserver
  - 읃답시 : hwserver-["World"]->REP-[""+"World"]->REQ-["World"]->hwclient
 
-### 확장된 응답 봉투(The Extended Reply Envelope)
+### 확장된 응답 봉투
 ;Now let's extend the REQ-REP pair with a ROUTER-DEALER proxy in the middle and see how this affects the reply envelope. This is the extended request-reply pattern we already saw in Chapter 2 - Sockets and Patterns. We can, in fact, insert any number of proxy steps. The mechanics are the same.
 
 이제 REQ-REP 쌍 사이에 ROUTER-DEALER 프록시 두어 확장하고 이것이 응답 봉투에 어떤 영향을 주는지 알아보겠습니다. 이것은 확장된 요청-응답 패턴으로 "2장-소켓 및 패턴"에서 보았습니다. 실제로 프록시 단계를 원하는 만큼 삽입할 수 있습니다. 동작 방식은 동일합니다.
 
 그림 27 - 확장된 요청-응답 패턴
 
-![Extended Request-Reply Pattern](images/fig27.svg)
+![Extended Request-Reply Pattern](images/fig27.png)
 
 ;The proxy does this, in pseudo-code:
 
@@ -112,7 +114,7 @@ ROUTER 소켓은 다른 소켓과 달리 모든 연결을 추적하고 호출자
 이런 변화는 네트워크 성능을 개선하는 영향을 주지만, 다중 프록시 홉(hops)을 사용하는 경우는 영향은 미미한 것입니다.
 주목할만한 영향은 libzmq에서 UUID 생성에 필요한 라이브러리에 의존성을 제거한 것입니다.
 
-> [옮긴이] UUID(universally unique identifier)은 네트워크 상에서 서로 모르는 개체들을 식별하고 구별하기 위해서는 각각의 고유한 식별자로 32개의 십육진수(4bit)인 128 bits의 수로 표현됩니다(예 : 550e8400-e29b-41d4-a716-446655440000).
+* [옮긴이] UUID(universally unique identifier)은 네트워크 상에서 서로 모르는 개체들을 식별하고 구별하기 위해서는 각각의 고유한 식별자로 32개의 십육진수(4bit)인 128 bits의 수로 표현됩니다(예 : 550e8400-e29b-41d4-a716-446655440000).
 
 ;Identies are a difficult concept to understand, but it's essential if you want to become a ØMQ expert. The ROUTER socket invents a random identity for each connection with which it works. If there are three REQ sockets connected to a ROUTER socket, it will invent three random identities, one for each REQ socket.
 
@@ -128,7 +130,7 @@ ROUTER 소켓에서 메시지를 받으면 3개의 프레임을 얻습니다.
 
 그림 28 - 주소가 있는 요청(Request with One Address)
 
-![Request with One Address](images/fig28.svg)
+![Request with One Address](images/fig28.png)
 
 ;The core of the proxy loop is "read from one socket, write to the other", so we literally send these three frames out on the DEALER socket. If you now sniffed the network traffic, you would see these three frames flying from the DEALER socket to the REP socket. The REP socket does as before, strips off the whole envelope including the new reply address, and once again delivers the "Hello" to the caller.
 
@@ -144,7 +146,7 @@ ROUTER 소켓에서 메시지를 받으면 3개의 프레임을 얻습니다.
 
 그림 29 - 주소가 있는 응답
 
-![Reply with One Address](images/fig29.svg)
+![Reply with One Address](images/fig29.png)
 
 ;Now the DEALER reads these three frames, and sends all three out via the ROUTER socket. The ROUTER takes the first frame for the message, which is the ABC identity, and looks up the connection for this. If it finds that, it then pumps the next two frames out onto the wire.
 
@@ -153,17 +155,17 @@ ROUTER는 첫 번째 메시지 프레임을 읽고 ABC라는 ID에 해당하는 
 
 그림 30 - 최소 응답 봉투(Reply with Minimal Envelope)
 
-![Reply with Minimal Envelope](images/fig30.svg)
+![Reply with Minimal Envelope](images/fig30.png)
 
 ;The REQ socket picks this message up, and checks that the first frame is the empty delimiter, which it is. The REQ socket discards that frame and passes "World" to the calling application, which prints it out to the amazement of the younger us looking at ØMQ for the first time.
 
 REQ 소켓은 전달된 메시지를 받아 첫 번째 프레임이 공백 구분자인지 확인하고 맞으면 REQ 소켓은 공백 구분자 프레임을 버리고 "World"를 호출한  응용프로그램에 전달합니다. 그러면 ØMQ를 시작했을 때의 놀라움으로 응용프로그램에서 "World"가 출력됩니다.
 
-> [옮긴이] 송/수신시에 프레임 구성
-  - 송신 : APP-["Hello"]-REQ-[""+"Hello"]-ROUTER-[ID+""+"Hello"]-DEALER-[ID+""+"Hello"]-REP-["Hello"]-APP
-  - 수신 : APP-["World"]-REP-[ID+""+"World"]-DEALER-[ID+""+"World"]-ROUTER-[""+"World"]-REQ-["World"]-APP
+* [옮긴이] 송/수신시에 프레임 구성
+  - 송신 : APP -["Hello"]-> REQ -[""+"Hello"]-> ROUTER -[ID+""+"Hello"]-> DEALER -[ID+""+"Hello"]-> REP -["Hello"]-> APP
+  - 수신 : APP -["World"]-> REP -[ID+""+"World"]-> DEALER -[ID+""+"World"]-> ROUTER -[""+"World"]-> REQ -["World"]-> APP
 
-> [옮긴이] 송/수신 시에 프레임 전달에 대한 테스트를 위하여 "test_frame.c"을 작성하였으며 czmq 라이브러리를 사용합니다.
+* [옮긴이] 송/수신 시에 프레임 전달에 대한 테스트를 위하여 "test_frame.c"을 작성하였으며 czmq 라이브러리를 사용합니다.
 - test_frame.c Hello World 예제 프로그램의 프레임 흐름
 
 ```cpp
@@ -267,11 +269,11 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
 S D:\git_store\zguide-kr\examples\C> cl -EHsc test_frame.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./test_frame
+ ./test_frame
 [REQ-ROUTER]Received message:
 D: 20-09-04 16:20:48 [005] 0080000029     --> ID
 D: 20-09-04 16:20:48 [000]                --> 공백 구분자
@@ -287,7 +289,7 @@ D: 20-09-04 16:20:49 [005] World          --> 데이터
 ...
 ~~~
 
-### 이것이 좋은 이유는?(What's This Good For?)
+### 이것이 좋은 이유는?
 ;To be honest, the use cases for strict request-reply or extended request-reply are somewhat limited. For one thing, there's no easy way to recover from common failures like the server crashing due to buggy application code. We'll see more about this in Chapter 4 - Reliable Request-Reply Patterns. However once you grasp the way these four sockets deal with envelopes, and how they talk to each other, you can do very useful things. We saw how ROUTER uses the reply envelope to decide which client REQ socket to route a reply back to. Now let's express this another way:
 
 솔직하게 엄격한 요청-응답 또는 확장된 요청-응답을 사용하는 경우는 다소 제한적입니다. 첫째, 오류가 있는 응용프로그램 코드로 인한 서버 실패와 같은 일반적인 오류로부터 쉽게 복구할 수 있는 방법이 없습니다. "4장-신뢰할 수 있는 요청-응답 패턴"에서 자세히 다루겠습니다. 하지만 4개의 소켓(REQ-ROUTER-DEALER-REP)이 봉투를 처리하는 방식과 서로 대화하는 방식을 파악하면 매우 유용한 작업을 수행할 수 있습니다. ROUTER가 응답 봉투를 사용하여 응답을 다시 라우팅 할 클라이언트 REQ 소켓을 결정하는 것을 보았습니다. 이제 다른 방식으로 표현해 보겠습니다.
@@ -304,7 +306,7 @@ D: 20-09-04 16:20:49 [005] World          --> 데이터
 
 ROUTER 소켓은 전체 봉투를 관여하지 않으며 공백 구분자에 대해서도 모릅니다. ROUTER 소켓이 관심을 갖는 것은 식별자(ID) 프레임으로 메시지를 보낼 연결(connection)을 아는 것입니다.
 
-### 요청-응답 소켓 정리(Recap of Request-Reply Socket)
+### 요청-응답 소켓 정리
 ;Let's recap this:
 
 정리하면 다음과 같습니다.
@@ -387,9 +389,9 @@ DEALER를 사용하여 REP 소켓과 통신할 때, REQ 소켓이 보낸 봉투(
 
 REQ를 DEALER로 대체하는 것과 같이 REP를 ROUTER로 대체할 수 있습니다. 여러 REQ 클라이언트와 동시에 통신할 수 있는 비동기 서버를 제공합니다. ROUTER를 사용하여 "Hello World" 서버를 다시 작성하면 여러 "Hello" 요청을 병렬로 처리할 수 있습니다. 이것을 "2장-소켓 및 패턴"에서 mtserver 예제를 보았습니다.
 
-> [옮긴이] mtserver 예제는 여러 개(예 : 10개)의 hwclient 요청을 ROUTER 소켓(asynchronous server)에서 받아 프록시(zmq_proxy())로 DEALER 소켓으로 전달하면 5개의 worker 스레드들이 받아 응답하는 형태입니다.
+* [옮긴이] mtserver 예제는 여러 개(예 : 10개)의 hwclient 요청을 ROUTER 소켓(asynchronous server)에서 받아 프록시(zmq_proxy())로 DEALER 소켓으로 전달하면 5개의 worker 스레드들이 받아 응답하는 형태입니다.
 
-> [옮긴이] mtserver 예제에서는 worker에 대하여서만 스레드 구성하였으나, 다음 예제에서는 client도 스레드로 구성하여 테스트하였습니다.
+* [옮긴이] mtserver 예제에서는 worker에 대하여서만 스레드 구성하였으나, 다음 예제에서는 client도 스레드로 구성하여 테스트하였습니다.
 
 - mtserver_client.c : 다중 서버와 클라이언트 스레드를 통한 테스트
 
@@ -471,12 +473,12 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc mtserver_client.c libzmq.lib pthreadVC2.lib
+ cl -EHsc mtserver_client.c libzmq.lib pthreadVC2.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./mtserver_client
+ ./mtserver_client
 Received request: [Hello]
 Received request: [Hello]
 Received reply: [World]
@@ -527,7 +529,7 @@ REP를 DEALER로 교체하면 작업자가 갑자기 전체 비동기식으로 �
 
 이것은 N 대 N 연결에 완벽하게 들리지만 사용하기 가장 어려운 조합입니다. ØMQ에 익숙해질 때까지 피해야 합니다. "4장-신뢰할 수 있는 요청-응답 패턴"의 프리랜서 패턴에서 한 가지 예제를 보겠으며, "8장 - 분산 컴퓨팅을 위한 프레임워크"에서 P2P(peer-to-peer) 작업을 위한 ROUTER 설계를 대체하는 DEALER 설계를 보겠습니다.
 
-### 잘못된 조합(Invalid Combinations)
+### 잘못된 조합
 ;Mostly, trying to connect clients to clients, or servers to servers is a bad idea and won't work. However, rather than give general vague warnings, I'll explain in detail:
 
 대부분의 경우 클라이언트를 클라이언트에 연결하거나, 서버를 서버에 연결하는 것은 나쁜 생각이며 동작하지 않습니다. 그러나 일반적으로 모호한 경고를 하기보다는 자세히 설명하겠습니다.
@@ -549,12 +551,12 @@ REP를 DEALER로 교체하면 작업자가 갑자기 전체 비동기식으로 �
 "확실(정적)한 존재"임이 기대되는 측면이 바인딩을 실시하여 서버, 브로커, 발행자, 수집가가 되며, '희미(동적)한 존재'는 연결을 실시하여 클라이언트나 작업자가 될 것입니다.
 이를 기억해두면 더 좋은 ØMQ 아키텍처를 설계하는 데 도움이 됩니다.
 
-## ROUTER 소켓 알아보기(Exploring ROUTER Sockets)
+## ROUTER 소켓 알아보기
 ;Let's look at ROUTER sockets a little closer. We've already seen how they work by routing individual messages to specific connections. I'll explain in more detail how we identify those connections, and what a ROUTER socket does when it can't send a message.
 
 ROUTER 소켓을 좀 더 자세히 보겠습니다. ROUTER가 개별 메시지를 특정 연결들로 라우팅하는 것을 보았습니다. 이러한 연결들을 식별하는 방법과 메시지를 보낼 수 없는 경우 ROUTER 소켓이 수행하는 작업에 대해 자세히 설명하겠습니다.
 
-### 식별자(Identities)와 주소(addresses)
+### 식별자와 주소
 ;The identity concept in ØMQ refers specifically to ROUTER sockets and how they identify the connections they have to other sockets. More broadly, identities are used as addresses in the reply envelope. In most cases, the identity is arbitrary and local to the ROUTER socket: it's a lookup key in a hash table. Independently, a peer can have an address that is physical (a network endpoint like "tcp://192.168.55.117:5670") or logical (a UUID or email address or other unique key).
 
 ØMQ에서 식별자(ID)의 개념은 ROUTER 소켓이 다른 소켓에 대한 연결을 식별하는 방법입니다. 더 광범위하게, 식별자들(IDs)은 응답 봉투의 주소로 사용됩니다.
@@ -583,7 +585,7 @@ ROUTER 소켓을 사용하여 특정 상대와 통신하는 응용프로그램�
 * 이제 ROUTER 소켓은 해당 상대에서 들어오는 모든 메시지에 대하여 접두사 식별자 프레임으로 논리 주소를 응용프로그램에 제공합니다.
 * ROUTER는 모든 보내는 메시지에 대하여서도 접두사 식별자 프레임을 논리 주소로 사용됩니다.
 
-> [옮긴이] `zmq_setsockopt (client, ZMQ_IDENTITY, "PEER1", 5);`
+* [옮긴이] `zmq_setsockopt (client, ZMQ_IDENTITY, "PEER1", 5);`
 
 ;Here is a simple example of two peers that connect to a ROUTER socket, one that imposes a logical address "PEER2":
 
@@ -624,6 +626,7 @@ int main (void)
 ```
 
 수행 결과는 다음과 같습니다.
+
 ~~~{.bash}
 ----------------------------------------
 [005] 006B8B4567
@@ -635,7 +638,7 @@ int main (void)
 [038] ROUTER uses REQ's socket identity
 ~~~
 
-> [옮긴이] `s_dump()`는 `zhelpers.h`에 정의된 함수로 전달된 소켓에서 수신된 메시지의 내용을 멀티파트 메시지로 모두 출력하는 함수입니다.
+* [옮긴이] `s_dump()`는 `zhelpers.h`에 정의된 함수로 전달된 소켓에서 수신된 메시지의 내용을 멀티파트 메시지로 모두 출력하는 함수입니다.
 
 ```cpp
 //  Receives all message parts from socket, prints neatly
@@ -682,12 +685,12 @@ s_dump (void *socket)
     assert (rc == 0);
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc identity.c libzmq.lib
+ cl -EHsc identity.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./identity
+ ./identity
 ----------------------------------------
 [005] 0080000029
 [000]
@@ -707,7 +710,7 @@ ROUTER 소켓은 어디에도 보낼 수 없는 메시지들를 처리하는 다
 
 ØMQ v3.2부터는 소켓 옵션을 설정하여 오류를 잡을 수 있습니다 : `ZMQ_ROUTER_MANDATORY`. ROUTER 소켓에 설정한 다음 상대(REQ 혹은 DEALER)로 메시지를 전송(send) 시 라우팅할 수 없는 식별자를 만나면 ROUTER 소켓에서 `EHOSTUNREACH` 오류를 알립니다.
 
-## 부하 분산 패턴(The Load Balancing Pattern)
+## 부하 분산 패턴
 ;Now let's look at some code. We'll see how to connect a ROUTER socket to a REQ socket, and then to a DEALER socket. These two examples follow the same logic, which is a load balancing pattern. This pattern is our first exposure to using the ROUTER socket for deliberate routing, rather than simply acting as a reply channel.
 
 이제 몇 가지 코드를 살펴보겠습니다. ROUTER 소켓에 REQ 소켓을 연결 한 다음 DEALER 소켓에 연결하는 방법을 살펴보겠습니다(REQ-ROUTER-DEALER). 2개의 예제는 부하 분산 패턴과 동일한 처리 방법을 따릅니다. 이 패턴은 단순히 응답 채널 역할을 하는 것보다 계획적인 라우팅을 위해 ROUTER 소켓을 사용하는 첫 번째 사례입니다.
@@ -736,7 +739,7 @@ ROUTER 소켓은 어디에도 보낼 수 없는 메시지들를 처리하는 다
 
 브로커(ROUTER)에 연결된 작업자(DEALER 또는 REQ) 시나리오로 돌아가 보겠습니다. 브로커는 작업자가 언제 준비되었는지 알고 있어야 하며, 매번 최저사용빈도(LRU) 작업자를 선택할 수 있도록 작업자 목록을 유지해야 합니다.
 
-> [옮긴이] LRU(least recently used)는 최저사용빈도의 의미로 오랫동안 사용되지 않은 대상을 선택하는 알고리즘입니다.
+* [옮긴이] LRU(least recently used)는 최저사용빈도의 의미로 오랫동안 사용되지 않은 대상을 선택하는 알고리즘입니다.
 
 ;The solution is really simple, in fact: workers send a "ready" message when they start, and after they finish each task. The broker reads these messages one-by-one. Each time it reads a message, it is from the last used worker. And because we're using a ROUTER socket, we get an identity that we can then use to send a task back to the worker.
 
@@ -868,9 +871,9 @@ Completed: 19 tasks
 
 그림 31 - REQ에 대한 라우팅 봉투(Routing Envelope for REQ)
 
-![RRouting Envelope for REQ](images/fig31.svg)
+![RRouting Envelope for REQ](images/fig31.png)
 
-> [옮긴이] rtreq에 대하여 REQ 작업자에게 스레드 식별자(ID)를 출력하도록 수정하면 다음과 같습니다.
+* [옮긴이] rtreq에 대하여 REQ 작업자에게 스레드 식별자(ID)를 출력하도록 수정하면 다음과 같습니다.
 
 ```cpp
 // 2015-01-16T09:56+08:00
@@ -962,12 +965,12 @@ int main(void)
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc rtreq.c libzmq.lib pthreadVC2.lib
+ cl -EHsc rtreq.c libzmq.lib pthreadVC2.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./rtreq
+ ./rtreq
 [2] Completed: 22 tasks
 [8] Completed: 22 tasks
 [7] Completed: 22 tasks
@@ -980,7 +983,7 @@ PS D:\git_store\zguide-kr\examples\C> ./rtreq
 [3] Completed: 22 tasks
 ~~~
 
-> [옮긴이] mtserver_client 예제에서는 REQ 클라이언트 스레드들과 REP 작업자 스레드들과 ROUTER-DEALER 간에 `zmq_proxy()`을 통해 그대로 전달하여, 식별자(ID) 및 공백 구분자 프레임 없이 데이터만으로 통신이 가능했습니다.
+* [옮긴이] mtserver_client 예제에서는 REQ 클라이언트 스레드들과 REP 작업자 스레드들과 ROUTER-DEALER 간에 `zmq_proxy()`을 통해 그대로 전달하여, 식별자(ID) 및 공백 구분자 프레임 없이 데이터만으로 통신이 가능했습니다.
 위의 예제는 ROUTER 소켓에서 받은 데이터를 직접 다루기 때문에 3개의 프레임들(ID + empty delimiter + body) 처리가 필요합니다.
 
 ### ROUTER 브로커와 DEALER 작업자
@@ -1098,11 +1101,11 @@ int main(void)
 //  .until
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc rtdealer.c libzmq.lib pthreadVC2.lib
-PS D:\git_store\zguide-kr\examples\C> ./rtdealer
+ cl -EHsc rtdealer.c libzmq.lib pthreadVC2.lib
+ ./rtdealer
 [9] Completed: 22 tasks
 [7] Completed: 22 tasks
 [3] Completed: 22 tasks
@@ -1115,9 +1118,9 @@ PS D:\git_store\zguide-kr\examples\C> ./rtdealer
 [2] Completed: 22 tasks
 ~~~
 
-> [옮긴이] rtreq 예제에서 REQ 소켓을 사용한 작업자에서는 공백 구분자 없이 데이터만 송/수신하였지만, DEALER 사용한 작업자에서는 공백 구분자와 데이터 프레임을 송/수신하였습니다. main() 함수의 소스는 변경이 없지만 작업자 스레드에서 공백 구분자를 송/수신하도록 변경되었습니다.
+* [옮긴이] rtreq 예제에서 REQ 소켓을 사용한 작업자에서는 공백 구분자 없이 데이터만 송/수신하였지만, DEALER 사용한 작업자에서는 공백 구분자와 데이터 프레임을 송/수신하였습니다. main() 함수의 소스는 변경이 없지만 작업자 스레드에서 공백 구분자를 송/수신하도록 변경되었습니다.
 
-> [옮긴이] DEALER-ROUTER 송/수신시에 프레임 구성은 다음과 같습니다.
+* [옮긴이] DEALER-ROUTER 송/수신시에 프레임 구성은 다음과 같습니다.
   - 송신 : APP-[""+"Hello"]->DEALER-[""+"Hello"]->ROUTER-[ID+""+"Hello"]->APP
   - 수신 : APP-[ID+""+"World"]-ROUTER->[ID+""+"World"]->DEALER-[""+"World"]->APP
 
@@ -1129,17 +1132,18 @@ PS D:\git_store\zguide-kr\examples\C> ./rtdealer
 
 DEALER에서 공백 구분자 프레임을 넣은 이유를 기억하십시오. REP 소켓에서 종료되는 다중도약 네트워크 확장 요청을 허용하여 응답 봉투에서 공백 구분자를 분리하여 데이터 프레임을 응용프로그램에 전달할 수 있습니다.
 
-> [옮긴이] 다중도약 네트워크(multihop network)는 고정되어 있거나 이동하는 단말들을 도약해 무선통신 네트워크를 효율적으로 구성하는 기술입니다. 이 기술은 네트워크를 확장하지 않아도 가청 범위를 넓힐 수 있게 합니다.
+* [옮긴이] 다중도약 네트워크(multihop network)는 고정되어 있거나 이동하는 단말들을 도약해 무선통신 네트워크를 효율적으로 구성하는 기술입니다. 이 기술은 네트워크를 확장하지 않아도 가청 범위를 넓힐 수 있게 합니다.
 
 ;If we never need to pass the message along to a REP socket, we can simply drop the empty delimiter frame at both sides, which makes things simpler. This is usually the design I use for pure DEALER to ROUTER protocols.
 
 메시지가 REP 소켓을 경유하지 않는다면 양쪽에 공백 구분자 프레임을 생략할 수 있으며 이렇게 함으로 간단합니다. 이것은 순수한 DEALER와 ROUTER 프로토콜을 이용하고 싶은 경우에 일반적인 설계 방법입니다.
 
-> [옮긴이] DEALER-ROUTER 송/수신시에서 공백을 제거할 경우 프레임 구성은 다음과 같습니다.
+* [옮긴이] DEALER-ROUTER 송/수신시에서 공백을 제거할 경우 프레임 구성은 다음과 같습니다.
   - 송신 : APP-["Hello"]->DEALER-["Hello"]->ROUTER-[ID+"Hello"]->APP
   - 수신 : APP-[ID+"World"]-ROUTER->[ID+"World"]->DEALER-[World"]->APP
 
 rtdealer1.c : DEALER-ROUTER 송/수신에서 공백을 제거함
+
 ```cpp
 // 2015-02-27T11:40+08:00
 //  ROUTER-to-DEALER example
@@ -1228,11 +1232,11 @@ int main(void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc rtdealer1.c libzmq.lib pthreadVC2.lib
-PS D:\git_store\zguide-kr\examples\C> ./rtdealer1
+ cl -EHsc rtdealer1.c libzmq.lib pthreadVC2.lib
+ ./rtdealer1
 [0] Completed: 21 tasks
 [1] Completed: 21 tasks
 [5] Completed: 22 tasks
@@ -1245,14 +1249,14 @@ PS D:\git_store\zguide-kr\examples\C> ./rtdealer1
 [8] Completed: 19 tasks
 ~~~
 
-### 부하 분산 메시지 브로커(A Load Balancing Message Broker)
+### 부하 분산 메시지 브로커
 ;The previous example is half-complete. It can manage a set of workers with dummy requests and replies, but it has no way to talk to clients. If we add a second frontend ROUTER socket that accepts client requests, and turn our example into a proxy that can switch messages from frontend to backend, we get a useful and reusable tiny load balancing message broker.
 
 이전 예제까지 절반 정도 완성되었습니다. 일련의 작업자들을 더미 요청 및 응답으로 관리할 수 있지만 클라이언트와 통신할 방법은 없습니다. 클라이언트 요청을 수락하는 두 번째 프론트엔드 ROUTER 소켓을 추가하고 이전 예제를 프론트엔드에서 백엔드로 메시지를 전환할 수 있는 프록시로 바꾸면, 유용하고 재사용 가능한 작은 부하 분산 메시지 브로커을 가지게 됩니다.
 
 그림 32 - 부하 분산 브로커(Load Balancing Broker)
 
-![Load Balancing Broker](images/fig32.svg)
+![Load Balancing Broker](images/fig32.png)
 
 ;This broker does the following:
 
@@ -1487,12 +1491,12 @@ int main(void)
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc lbbroker.c libzmq.lib pthreadVC2.lib
+ cl -EHsc lbbroker.c libzmq.lib pthreadVC2.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./lbbroker
+ ./lbbroker
 Worker: HELLO
 Worker: HELLO
 Worker: HELLO
@@ -1515,22 +1519,22 @@ Client: OK
 Client: OK
 ~~~
 
-> [옮긴이] 송/수신 시 구조
+* [옮긴이] 송/수신 시 구조
   - 송신 : APP(client)->REQ->ROUTER(frontend)->ROUTER(backend)->REQ->APP(worker)
   - 수신 : APP(worker)->REQ->ROUTER(backend)->ROUTER(frontend)->REQ->APP(client)
 
-> [옮긴이] 송/수신 시에 멀티파트 메시지 구성
-  - 송신 : CLIENT-[“HELLO”]->REQ-[””+”HELLO”]->ROUTER-[CID+””+”HELLO”]-logic-[WID+”“+CID+””+”HELLO”]->ROUTER-[”“+CID+””+”HELLO”]->REQ-[CID+””+”HELLO”]->WORKER
-  - 수신 : WORKER-[CID+””+”OK”]->REQ-[”“+CID+””+”OK”]->ROUTER->[WID+""CID+””+”OK”]-logic[CID+””+”OK”]->ROUTER-[+””+”OK”]->REQ-[“OK”]-CLIENT
+* [옮긴이] 송/수신 시에 멀티파트 메시지 구성
+  - 송신 : CLIENT -["HELLO"]-> REQ -[""+"HELLO"]-> ROUTER -[CID+""+"HELLO"]-> logic -[WID+""+CID+""+"HELLO"]-> ROUTER -[""+CID+""+"HELLO"]-> REQ -[CID+""+"HELLO"]-> WORKER
+  - 수신 : WORKER -[CID+""+"OK"]-> REQ -[""+CID+""+"OK"]-> ROUTER ->[WID+""CID+""+"OK"]-> logic -[CID+""+"OK"]-> ROUTER -[+""+"OK"]-> REQ -["OK"]-> CLIENT
 
-> [옮긴이] dequeue 매크로에서 사용된 memmove() 함수는 source가 가리키는 곳부터 num 바이트만큼을 destination이 가리키는 곳으로 옮기는 역할을 수행하며, 큐(queue)의 q(0)에 q(1)부터 정해진 크기(sizeof(q)-sizeof(q[0]))의 데이터가 복사됩니다.
+* [옮긴이] dequeue 매크로에서 사용된 memmove() 함수는 source가 가리키는 곳부터 num 바이트만큼을 destination이 가리키는 곳으로 옮기는 역할을 수행하며, 큐(queue)의 q(0)에 q(1)부터 정해진 크기(sizeof(q)-sizeof(q[0]))의 데이터가 복사됩니다.
 
 ```cpp
 #include <string.h>  // C++ 에서는 <cstring>
 void* memmove(void* destination, const void* source, size_t num);
 ```
 
-> [옮긴이] 클라이언트와 작업자 스레드에서 식별자(ID)를 지정하지 않을 경우, ØMQ에서 ROUTER에서 자체 생성하고 바이너리 ID 형태로 `s_send()`, `s_recv()`에서 처리할 수 없습니다.
+* [옮긴이] 클라이언트와 작업자 스레드에서 식별자(ID)를 지정하지 않을 경우, ØMQ에서 ROUTER에서 자체 생성하고 바이너리 ID 형태로 `s_send()`, `s_recv()`에서 처리할 수 없습니다.
 
 ;The difficult part of this program is (a) the envelopes that each socket reads and writes, and (b) the load balancing algorithm. We'll take these in turn, starting with the message envelope formats.
 
@@ -1542,7 +1546,7 @@ void* memmove(void* destination, const void* source, size_t num);
 
 그림 33 - 클라이언트가 보낸 메시지(Message that Client Sends)
 
-![Message that Client Sends](images/fig33.svg)
+![Message that Client Sends](images/fig33.png)
 
 ;Because the REQ socket adds its empty delimiter frame and the ROUTER socket adds its connection identity, the proxy reads off the frontend ROUTER socket the client address, empty delimiter frame, and the data part.
 
@@ -1550,7 +1554,7 @@ REQ 소켓이 공백 구분자 프레임을 추가하고 ROUTER 소켓이 연결
 
 그림 34 -  프론트엔드가 받는 메시지(Message Coming in on Frontend)
 
-![Message Coming in on Frontend](images/fig34.svg)
+![Message Coming in on Frontend](images/fig34.png)
 
 ;The broker sends this to the worker, prefixed by the address of the chosen worker, plus an additional empty part to keep the REQ at the other end happy.
 
@@ -1558,7 +1562,7 @@ REQ 소켓이 공백 구분자 프레임을 추가하고 ROUTER 소켓이 연결
 
 그림 35 - 백엔드로 보내는 메시지(Message Send to Backend)
 
-![Message Send to Backend](images/fig35.svg)
+![Message Send to Backend](images/fig35.png)
 
 ;This complex envelope stack gets chewed up first by the backend ROUTER socket, which removes the first frame. Then the REQ socket in the worker removes the empty part, and provides the rest to the worker application.
 
@@ -1566,7 +1570,7 @@ REQ 소켓이 공백 구분자 프레임을 추가하고 ROUTER 소켓이 연결
 
 그림 36 - 작업자에게 전달되는 메시지(Message Delivered to Worker)
 
-![Message Delivered to Worker](images/fig36.svg)
+![Message Delivered to Worker](images/fig36.png)
 
 ;The worker has to save the envelope (which is all the parts up to and including the empty message frame) and then it can do what's needed with the data part. Note that a REP socket would do this automatically, but we're using the REQ-ROUTER pattern so that we can get proper load balancing.
 
@@ -1594,11 +1598,12 @@ REQ 소켓이 공백 구분자 프레임을 추가하고 ROUTER 소켓이 연결
 
 이제 작업자가 초기 "READY"메시지에서 제공하는 정보를 기반한 수정안으로 부하 분산 알고리즘을 재사용하고 확장할 수 있음을 알아야 합니다. 예를 들어 작업자는 시작하여 자체 성능 테스트를 수행하여 브로커에게 얼마나 빠른지 알려 줄 수 있습니다. 그러면 브로커는 가장 오래된 작업자가 아닌 가장 처리가 빠른 가용한 작업자를 선택할 수 있습니다.
 
-## ØMQ 고급 API(A High-Level API for ØMQ)
+## ØMQ 고급 API
 
 ;We're going to push request-reply onto the stack and open a different area, which is the ØMQ API itself. There's a reason for this detour: as we write more complex examples, the low-level ØMQ API starts to look increasingly clumsy. Look at the core of the worker thread from our load balancing broker:
 
 요청-응답을 패턴에 대한 화제를 벗어나 ØMQ API 자신에 대하여 보도록 하겠습니다. 이러한 우회하는 이유가 있습니다. 우리가 더 복잡한 예제를 작성함에 따라 저수준 ØMQ API가 점점 다루기 힘들기 시작합니다. 로드 밸런싱 브로커에서 작업자 스레드의 핵심 처리 방법은 다음과 같습니다.
+
 ```cpp
 while (true) {
     // Get one address frame and empty delimiter
@@ -1672,7 +1677,7 @@ while (true) {
 
 좋은 API를 만드는 문제는 모든 개발 언어에 영향을 미칩니다. 이 책에서의 사용 사례는 C 언어입니다. 어떤 개발 언어를 사용하든 언어 바인딩(binding)이 C 바인딩보다 좋게(또는 더 나은) 만들 수 있도록 고민이 필요합니다.
 
-### 고급 API의 특징(Features of Higher-Level API)
+### 고급 API의 특징
 ;My solution is to use three fairly natural and obvious concepts: string (already the basis for our s_send and s_recv) helpers, frame (a message frame), and message (a list of one or more frames). Here is the worker code, rewritten onto an API using these concepts:
 
 고급 API는 3개의 알기 쉬운 개념을 이용합니다 :
@@ -1717,7 +1722,7 @@ while (true) {
 
 요구 사항을 실제 C 언어에 구현하면 ØMQ 언어 바인딩인 CZMQ가 됩니다. 사실이 고급 바인딩(`zhelpers.h`)은 이전 버전의 예제에서도 개발되었습니다. ØMQ로 이식 가능한 계층을 통해 쉬운 사용과 해쉬 테이블 및 목록과 같은 자료 구조를 가진 컨테이너(C 개발언어)도 제공합니다. CZMQ는 또한 우아한 객체 모델 사용하여 멋진 코딩으로 이끌어줍니다.
 
-> [옮긴이] ØMQ 4.3.2에서 CZMQ API을 사용하기 위하여 CZMQ 4.0.2가 존재하지만 가이드의 예제를 수행하기에는 기능이 변경되어 사용하기 어렵습니다(예 : zthread가 zactor로 기능이 승계되었지만 사용 방법이 다름).
+* [옮긴이] ØMQ 4.3.2에서 CZMQ API을 사용하기 위하여 CZMQ 4.0.2가 존재하지만 가이드의 예제를 수행하기에는 기능이 변경되어 사용하기 어렵습니다(예 : zthread가 zactor로 기능이 승계되었지만 사용 방법이 다름).
 CZMQ 3.0.2를 설치할 경우 가이드 예제들 수행 가능합니다.
 CZMQ 3.0.2 소스는(https://github.com/zeromq/czmq/releases/tag/v3.0.2)에서 받을 수 있으며 Visual Studio 2017에서 빌드(czmq.dll, czmq.lib 생성)하여 테스트 수행합니다.
 
@@ -1917,7 +1922,7 @@ while (true) {
 if (zmq_poll (items, 2, 1000 * 1000) == -1)
     break; // Interrupted
 ```
-> [옮긴이] lbbroker2에서의 `zmq_poll()` 인터럽트 처리는 다음과 같습니다.
+* [옮긴이] lbbroker2에서의 `zmq_poll()` 인터럽트 처리는 다음과 같습니다.
 
 ```cpp
 		//  Poll frontend only if we have available workers
@@ -2124,7 +2129,7 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 위의 코드에서는 ipc(프로세스 간) 소켓을 사용하였지만 원도우 환경에서는 사용 불가하여 TCP 변경하고 `sleep()`함수도 `czmq.h`의 `zclock_sleep()`을 사용하도록 변경하였습니다.
+* [옮긴이] 위의 코드에서는 ipc(프로세스 간) 소켓을 사용하였지만 원도우 환경에서는 사용 불가하여 TCP 변경하고 `sleep()`함수도 `czmq.h`의 `zclock_sleep()`을 사용하도록 변경하였습니다.
 
 ```cpp
 //  Load-balancing broker
@@ -2286,11 +2291,11 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc lbbroker3.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./lbbroker3
+ cl -EHsc lbbroker3.c libzmq.lib czmq.lib
+ ./lbbroker3
 D: 20-08-11 16:06:07 Worker: [005] HELLO
 D: 20-08-11 16:06:07 Worker: [005] HELLO
 Client: OK
@@ -2320,14 +2325,14 @@ Client: OK
 * 자식 스레드들과 동일한 컨텍스트를 공유(예 : PAIR 소켓)하는 경우 컨텍스트를 파기합니다. 이 경우 대기중인 모든 차단 호출은 ETERM으로 끝납니다.
 * 자식 스레드들이 자신의 컨텍스트를 사용하는 경우 종료 메시지를 보냅니다. 이를 위해서는 소켓 간의 연결이 필요합니다.
 
-## 비동기 클라이언트/서버 패턴(The Asynchronous Client/Server Pattern)
+## 비동기 클라이언트/서버 패턴
 ;In the ROUTER to DEALER example, we saw a 1-to-N use case where one server talks asynchronously to multiple workers. We can turn this upside down to get a very useful N-to-1 architecture where various clients talk to a single server, and do this asynchronously.
 
 ROUTER에서 DEALER 예제에서 하나의 서버가 여러 작업자들과 비동기적으로 통신하는 1 대 N 사용 사례(mtserver와 hwclient(REQ) 사례)를 보았습니다. 역으로 다양한 클라이언트들이 단일 서버와 비동기식으로 통신하고 매우 유용한 N-to-1 아키텍처를 사용할 수 있습니다.
 
 그림 37 - 비동기 클라이언트/서버(Asynchronous Client/Server)
 
-![Asynchronous Client/Server](images/fig37.svg)
+![Asynchronous Client/Server](images/fig37.png)
 
 ;Here's how it works:
 
@@ -2470,15 +2475,15 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc asyncsrv.c libzmq.lib czmq.lib
+ cl -EHsc asyncsrv.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./asyncsrv
-PS D:\git_store\zguide-kr\examples\C>
+ ./asyncsrv
 ~~~
-> [옮긴이] 원도우 환경에서 테스트 수행 시 화면상에 아무것도 찍히지 않고 5초 후에 종료됩니다.
+
+* [옮긴이] 원도우 환경에서 테스트 수행 시 화면상에 아무것도 찍히지 않고 5초 후에 종료됩니다.
 원인은 `main()`에서 클라이언트 스레드 호출 시 동시에 호출하였기 때문입니다.
 
 ```cpp
@@ -2490,6 +2495,7 @@ int main (void)
     ...
 ```
 클라이언트의 아래 `randof()` 함수에서 ID가 동일하게 생성되었기 때문입니다.
+
 ```cpp
     ...
     //  Set random identity to make tracing easier
@@ -2498,13 +2504,16 @@ int main (void)
     printf("client_task[%s]\n", identity);
     ...
 ```
+
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./asyncsrv
+ ./asyncsrv
 client_task[9046-0052]
 client_task[9046-0052]
 client_task[9046-0052]
 ~~~
+
 위의 추가로 `srand()` 함수를 시간을 통하여 `randof()` 초기화를 수행하여도 클라이언트 스레드가 동시에 수행될 경우 같은 값이 되는 경우가 발생하였습니다.
+
 ```cpp
 #include "zhelpers.h"
     ...
@@ -2515,15 +2524,19 @@ client_task[9046-0052]
     printf("client_task[%s]\n", identity);
     ...
 ```
+
 아래 실행 결과에서는 2개의 스레드가 같은 ID가 되었습니다.
+
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./asyncsrv
+ ./asyncsrv
 client_task[C0B6-F58A]
 client_task[C0B6-F58A]
 client_task[14B0-F590]
 D: 20-08-12 14:31:24 C0B6-F58A[010] request #3
 ~~~
+
 이를 해결하기 위하여 client thread 실행 시에 100 msec의 시간 간격을 두고 시작하게 합니다.
+
 ```cpp
 int main (void)
 {
@@ -2535,9 +2548,11 @@ int main (void)
     s_sleep(100);
     ...
 ```
+
 테스트 수행 결과는 다음과 같습니다.
+
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./asyncsrv
+ ./asyncsrv
 client_task[BEC0-E8C8]
 client_task[87DC-EB6A]
 client_task[B95C-EDAE]
@@ -2548,7 +2563,7 @@ D: 20-08-12 14:37:24 87DC-EB6A[010] request #3
 D: 20-08-12 14:37:24 B95C-EDAE[010] request #3
 ~~~
 
-> [옮긴이] 수정된 전체 aysncsrv.c 전체 코드는 다음과 같습니다.
+* [옮긴이] 수정된 전체 aysncsrv.c 전체 코드는 다음과 같습니다.
 
 ```cpp
 //  Asynchronous client-to-server (DEALER to ROUTER)
@@ -2694,7 +2709,7 @@ int main (void)
 
 그림 38 - 비동기 서버 상세(Detail of Asynchronous Server)
 
-![Detail of Asynchronous Server](images/fig38.svg)
+![Detail of Asynchronous Server](images/fig38.png)
 
 ;Note that we're doing DEALER to ROUTER dialog between client and server, but internally between the server main thread and workers, we're doing DEALER to DEALER. If the workers were strictly synchronous, we'd use REP. However, because we want to send multiple replies, we need an async socket. We do not want to route replies, they always go to the single server thread that sent us the request.
 
@@ -2734,12 +2749,12 @@ int main (void)
 * 클라이언트 식별자(ID)를 키로 사용하여 상태를 저장합니다.
 * 클라이언트로부터 중단된 심박을 감지합니다. 클라이언트로부터 일정 시간(예 : 2초) 동안 요청이 없으면 서버는 이를 감지하고 해당 클라이언트에 대해 보유하고 있는 모든 상태를 폐기할 수 있습니다.
 
-## 동작 예제 : 브로커 간 라우팅(Inter-Broker Routing)
+## 동작 예제 : 브로커 간 라우팅
 ;Let's take everything we've seen so far, and scale things up to a real application. We'll build this step-by-step over several iterations. Our best client calls us urgently and asks for a design of a large cloud computing facility. He has this vision of a cloud that spans many data centers, each a cluster of clients and workers, and that works together as a whole. Because we're smart enough to know that practice always beats theory, we propose to make a working simulation using ØMQ. Our client, eager to lock down the budget before his own boss changes his mind, and having read great things about ØMQ on Twitter, agrees.
 
 지금까지 본 모든 것을 가져와 실제 응용프로그램으로 확장해 보겠습니다. 여러 번의 반복을 거처 단계별로 구축하겠습니다. 우량(VIP) 고객이 긴급하게 전화를 걸어 대규모 클라우드 컴퓨팅 시설의 설계를 요청합니다. 고객의 클라우드에 대한 비전은 많은 데이터 센터에 퍼져 있는 각 클라이언트들과 작업자들이 클러스터를 통해 하나로 동작하는 있습니다. 우리는 실전이 항상 이론을 능가한다는 것을 알만큼 똑똑하기 때문에 ØMQ를 사용하여 동작하는 시뮬레이션을 만들겠습니다. 우리의 고객은 자신의 상사가 마음을 바꾸기 전에 예산을 확정하기 바라며, 트위터에서 ØMQ에 대한 훌륭한 정보를 읽은 것 같습니다.
 
-### 상세한 요구 사항(Establishing the Details)
+### 상세한 요구 사항
 ;Several espressos later, we want to jump into writing code, but a little voice tells us to get more details before making a sensational solution to entirely the wrong problem. "What kind of work is the cloud doing?", we ask.
 
 몇 잔의 에스프레소를 마시고 코드 작성에 뛰어들고 싶지만, 전체적으로 잘못된 문제에 대한 놀라운 해결책을 제공하기 전에, 자세한 사항을 확인하라고 마음속에서 무언가의 속삭임 있습니다. 그래서 고객에서 "클라우드로 어떤 일을 하고 싶으시나요?"라고 묻습니다.
@@ -2780,7 +2795,7 @@ int main (void)
 
 이것은 간단한 문제로 특별한 하드웨어나 통신규약들이 필요하지 않고 다소 영리한 라우팅 알고리즘과 신중한 설계만 필요로 합니다. 먼저 하나의 클러스터(하나의 데이터 센터)를 설계하고 클러스터를 함께 연결하는 방법을 알아보겠습니다.
 
-### 단일 클러스터 아키텍처(Architecture of a Single Cluster)
+### 단일 클러스터 아키텍처
 ;Workers and clients are synchronous. We want to use the load balancing pattern to route tasks to workers. Workers are all identical; our facility has no notion of different services. Workers are anonymous; clients never address them directly. We make no attempt here to provide guaranteed delivery, retry, and so on.
 
 작업자들과 클라이언트들은 동기적으로 동작합니다. 부하 분산 패턴을 사용하여 작업들을 작업자들에게 전달하기 원하며 작업자들은 모두 동일한 기능을 수행합니다. 데이터센터에는 작업자는 익명이며 특정 서비스에 대한 개념이 없습니다. 클라이언트들은 직접 주소를 지정하지 않습니다.
@@ -2792,16 +2807,16 @@ int main (void)
 
 그림 39 - 클러스터 아키텍처
 
-![Cluster Architecture](images/fig39.svg)
+![Cluster Architecture](images/fig39.png)
 
-### 다중 클러스터로 확장(Scaling to Mutiple Clusters)
+### 다중 클러스터로 확장
 ;Now we scale this out to more than one cluster. Each cluster has a set of clients and workers, and a broker that joins these together.
 
 이제 하나 이상의 클러스터로 확장합니다. 각 클러스터에는 일련의 클라이언트들 및 작업자들이 있으며 이들을 함께 결합하는 브로커(broker)가 있습니다.
 
 그림 40 -  다중 클러스터
 
-![Multiple Clusters](images/fig40.svg)
+![Multiple Clusters](images/fig40.png)
 
 ;The question is: how do we get the clients of each cluster talking to the workers of the other cluster? There are a few possibilities, each with pros and cons:
 
@@ -2821,7 +2836,7 @@ int main (void)
 
 그림 41 - 아이디어#1 : 교차 연결된 작업자
 
-![Cross-connected Worker](images/fig41.svg)
+![Cross-connected Worker](images/fig41.png)
 
 ;It looks feasible. However, it doesn't provide what we wanted, which was that clients get local workers if possible and remote workers only if it's better than waiting. Also workers will signal "ready" to both brokers and can get two jobs at once, while other workers remain idle. It seems this design fails because again we're putting routing logic at the edges.
 
@@ -2833,7 +2848,7 @@ int main (void)
 
 그림 42 - 상호 통신하는 브로커(Broker Talking to Each Other)
 
-![Broker Talking to Each Other](images/fig42.svg)
+![Broker Talking to Each Other](images/fig42.png)
 
 ;This design is appealing because the problem is solved in one place, invisible to the rest of the world. Basically, brokers open secret channels to each other and whisper, like camel traders, "Hey, I've got some spare capacity. If you have too many clients, give me a shout and we'll deal".
 
@@ -2867,7 +2882,7 @@ int main (void)
 * REQ 작업자 스레드들은 작업부하들을 처리하고 결과들을 브로커(ROUTER)로 반환합니다.
 * 브로커는 부하 분산 패턴을 사용하여 작업부하들을 대기열에 넣고 분배합니다.
 
-### 페더레이션 및 상대 연결(Federation Versus Peering))
+### 페더레이션 및 상대 연결
 ;There are several possible ways to interconnect brokers. What we want is to be able to tell other brokers, "we have capacity", and then receive multiple tasks. We also need to be able to tell other brokers, "stop, we're full". It doesn't need to be perfect; sometimes we may accept jobs we can't process immediately, then we'll do them as soon as possible.
 
 브로커들을 상호 연결하는 방법에는 여러 가지가 있습니다. 우리가 원하는 것은 다른 브로커들에게 "우리는 여유 용량이 있어"라고 말한 다음 여러 작업들을 받는 것입니다. 또한 우리는 다른 브로커들에게 "그만, 우리는 여유 용량이 없어"라고 말할 수 있어야 합니다. 완벽할 필요는 없으며, 때로는 즉시 처리할 수 없는 작업들을 받은 다음 가능한 한 빨리 처리합니다.
@@ -2878,13 +2893,13 @@ int main (void)
 
 그럼 43 - 연합 모델에서 교차 연결된 브로커들
 
-![Cross-connected Brokers in Federation Model](images/fig43.svg)
+![Cross-connected Brokers in Federation Model](images/fig43.png)
 
 ;This would give us simple logic in both brokers and a reasonably good mechanism: when there are no clients, tell the other broker "ready", and accept one job from it. The problem is also that it is too simple for this problem. A federated broker would be able to handle only one task at a time. If the broker emulates a lock-step client and worker, it is by definition also going to be lock-step, and if it has lots of available workers they won't be used. Our brokers need to be connected in a fully asynchronous fashion.
 
 연합은 브로커들과 타당하고 좋은 처리 방식을 가진 단순한 로직을 제공합니다. 클라이언트들이 없을 때 다른 브로커에게 "준비(READY)"라고 알리고 하나의 작업을 받아들입니다. 유일한 문제는 이것이 너무 단순하다는 것입니다. 연합된 브로커는 한 번에 하나의 작업만 처리할 수 있습니다. 브로커가 잠금 단계 클라이언트와 작업자로 하게 되면 정의상 잠금 단계가 되며, 비록 많은 작업자들이 있어도 동시에 사용할 수 없습니다. 우리의 브로커들은 완전히 비동기적으로 연결되어야 합니다.
 
-> [옮긴이] 잠근 단계 통신규약(lock-step protocol)은 동기식 요청-응답과 같이 클라이언트가 하나의 요청을 하면, 작업자가 요청을 받아 처리하고 응답할 때까지 대기하는 방식입니다. 특정 작업자들에 대하여 응답이 지연되는 현상이 발생하면 시스템의 자원 활용도 및 성능은 저하됩니다. 해결 방법으로는 요청에 대한 응답 지연 시 제한시간을 두거나, 비동기 요청-응답 처리가 있습니다.
+* [옮긴이] 잠근 단계 통신규약(lock-step protocol)은 동기식 요청-응답과 같이 클라이언트가 하나의 요청을 하면, 작업자가 요청을 받아 처리하고 응답할 때까지 대기하는 방식입니다. 특정 작업자들에 대하여 응답이 지연되는 현상이 발생하면 시스템의 자원 활용도 및 성능은 저하됩니다. 해결 방법으로는 요청에 대한 응답 지연 시 제한시간을 두거나, 비동기 요청-응답 처리가 있습니다.
 
 ;The federation model is perfect for other kinds of routing, especially service-oriented architectures (SOAs), which route by service name and proximity rather than load balancing or round robin. So don't dismiss it as useless, it's just not right for all use cases.
 
@@ -2904,7 +2919,7 @@ int main (void)
 
 그리고 클러스터에는 브로커와 클라이언트들 및 작업자들 간에 정보 흐름이 있습니다.
 
-### 명명식(The Naming Ceremony)
+### 명명식
 ;Three flows x two sockets for each flow = six sockets that we have to manage in the broker. Choosing good names is vital to keeping a multisocket juggling act reasonably coherent in our minds. Sockets do something and what they do should form the basis for their names. It's about being able to read the code several weeks later on a cold Monday morning before coffee, and not feel any pain.
 
 2개의 소켓들 x 3개의 흐름들 = 6개의 소켓으로 브로커에서 관리해야 합니다. 다중 소켓으로 다양한 소켓 유형이 섞여 있는 브로커에서 좋은 이름을 선정하는 것은 우리의 마음을 일관성 있게 유지하는 데 중요합니다. 소켓은 그들의 이름을 통해 무엇을 하는지 알 수 있어야 합니다. 몇 주 후에 추운 월요일 아침 커피를 마시기 전에, 코드를 읽으며 고통을 느끼지 않기 위해서입니다.
@@ -2913,7 +2928,7 @@ int main (void)
 
 소켓에 대한 샤머니즘적인 명명식을 하겠습니다. 세 가지 흐름은 다음과 같습니다.
 
-> [옮긴이] 샤머니즘(shamanism)은 초자연적인 존재와 직접적으로 소통하는 샤먼을 중심으로 하는 주술이나 종교입니다.
+* [옮긴이] 샤머니즘(shamanism)은 초자연적인 존재와 직접적으로 소통하는 샤먼을 중심으로 하는 주술이나 종교입니다.
 
 ;* A local request-reply flow between the broker and its clients and workers.
 ;* A cloud request-reply flow between the broker and its peer brokers.
@@ -2949,20 +2964,20 @@ int main (void)
 
 그림 44 - 브로커 소켓 배열(피어링)
 
-![Broker Socket Arrangement(Peering)](images/fig44.svg)
+![Broker Socket Arrangement(Peering)](images/fig44.png)
 
 ;Note that we connect the cloudbe in each broker to the cloudfe in every other broker, and likewise we connect the statebe in each broker to the statefe in every other broker.
 
 각 브로커의 cloudbe을 다른 모든 브로커들의 cloudfe에 연결하고 마찬가지로 각 브로커의 statebe에 다른 모든 브로커들의 statefe을 연결합니다.
 
-### 상태 흐름에 대한 기본 작업(Prototyping the State Flow)
+### 상태 흐름에 대한 기본 작업
 ;Because each socket flow has its own little traps for the unwary, we will test them in real code one-by-one, rather than try to throw the whole lot into code in one go. When we're happy with each flow, we can put them together into a full program. We'll start with the state flow.
 
 각 소켓 흐름은 방심한 사람들이 빠지기 쉬운 고유의 함정들이 있기 때문에, 한 번에 전체를 코드로 구축하기보다는 각 소켓에 대하여 하나씩 실제 코드로 테스트합니다. 각 흐름이 만족스러우면 전체 프로그램으로 통합할 수 있습니다. 상태 흐름(state flow)부터 시작하겠습니다.
 
 그림 45 - 상태 흐름(The State Flow)
 
-![The State Flow](images/fig45.svg)
+![The State Flow](images/fig45.png)
 
 ;Here is how this works in code:
 상태 흐름이 코드상에서 동작하는 방식입니다.
@@ -3072,7 +3087,7 @@ peering1 DC3 DC1 DC2  #  Start DC3 and connect to DC1 and DC2
 
 정확한 시간 간격으로 상태 메시지들을 보내려면 자식 스레드를 만들고 자식 스레드에서 statebe 소켓을 열어 메인 스레드에서 자식 스레드로 가용한 작업자의 변경 정보를 보내고 자식 스레드는 정기적인 메시지와 함께 상대 클러스터들에게 보내도록 합니다. 
 
-> [옮긴이] 원도우 환경에서는 ipc를 사용할 수 없기 때문에 inproc나 tcp로 코드를 변경하여 테스트가 필요합니다.
+* [옮긴이] 원도우 환경에서는 ipc를 사용할 수 없기 때문에 inproc나 tcp로 코드를 변경하여 테스트가 필요합니다.
 peering1의 경우 여러 개의 프로세스들을 실행하여 프로세스 간 통신(ipc)하도록 설계되어 있어 프로세스 내(inproc)로 변경할 경우 각 스레드들 간에 컨텍스트가 공유될 수 있도록 수정 필요합니다.
  - 프로세스 간 통신이 가능하도록 tcp로 변경하여 테스트를 수행합니다.
 tcp 소켓을 사용하도록 변경된 `peering1_tcp.c`입니다.
@@ -3142,12 +3157,12 @@ int main (int argc, char *argv [])
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering1_tcp.c libzmq.lib czmq.lib
+ cl -EHsc peering1_tcp.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./peering1_tcp 5555 5556 5557
+ ./peering1_tcp 5555 5556 5557
 I: preparing broker at 5555...
 I: connecting to state backend at '5556'
 I: connecting to state backend at '5557'
@@ -3156,7 +3171,7 @@ I: connecting to state backend at '5557'
 5556 - 9 workers free
 5556 - 2 workers free
 ...
-PS D:\git_store\zguide-kr\examples\C> ./peering1_tcp 5556 5555 5557
+ ./peering1_tcp 5556 5555 5557
 I: preparing broker at 5556...
 I: connecting to state backend at '5555'
 I: connecting to state backend at '5557'
@@ -3166,7 +3181,7 @@ I: connecting to state backend at '5557'
 5555 - 0 workers free
 5555 - 1 workers free
 ...
-PS D:\git_store\zguide-kr\examples\C> ./peering1_tcp 5557 5556 5555
+ ./peering1_tcp 5557 5556 5555
 I: preparing broker at 5557...
 I: connecting to state backend at '5556'
 I: connecting to state backend at '5555'
@@ -3269,12 +3284,12 @@ int main (int argc, char *argv [])
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering1_inproc.c libzmq.lib czmq.lib
+ cl -EHsc peering1_inproc.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./peering1_inproc me cat dog
+ ./peering1_inproc me cat dog
 I: preparing broker at me...
 I: connecting to state backend at 'cat'
 I: connecting to state backend at 'dog'
@@ -3301,7 +3316,7 @@ cat - 3 workers free
 
 그림 46 - 작업들의 흐름
 
-![The Flow of Tasks](images/fig46.svg)
+![The Flow of Tasks](images/fig46.png)
 
 ;Before we jump into the code, which is getting a little complex, let's sketch the core routing logic and break it down into a simple yet robust design.
 
@@ -3309,13 +3324,13 @@ cat - 3 workers free
 
 ;We need two queues, one for requests from local clients and one for requests from cloud clients. One option would be to pull messages off the local and cloud frontends, and pump these onto their respective queues. But this is kind of pointless because ØMQ sockets are queues already. So let's use the ØMQ socket buffers as queues.
 
-2개의 대��열이 필요합니다. 하나는 로컬 클라이언트들의 요청을 위한 것이고 다른 하나는 클라우드 클라이언트들의 요청을 위한 것입니다. 한 가지 옵션은 로컬 및 클라우드 프론트엔드에서 메시지를 가져와서 각각의 대기열들에서 퍼내는 것이지만  ØMQ 소켓은 이미 대기열이 존재하여 무의미합니다. 따라서 ØMQ 소켓 버퍼들을 대기열들로 사용합니다.
+2개의 대기열이 필요합니다. 하나는 로컬 클라이언트들의 요청을 위한 것이고 다른 하나는 클라우드 클라이언트들의 요청을 위한 것입니다. 한 가지 옵션은 로컬 및 클라우드 프론트엔드에서 메시지를 가져와서 각각의 대기열들에서 퍼내는 것이지만  ØMQ 소켓은 이미 대기열이 존재하여 무의미합니다. 따라서 ØMQ 소켓 버퍼들을 대기열들로 사용합니다.
 
 ;This was the technique we used in the load balancing broker, and it worked nicely. We only read from the two frontends when there is somewhere to send the requests. We can always read from the backends, as they give us replies to route back. As long as the backends aren't talking to us, there's no point in even looking at the frontends.
 
 이것이 우리가 부하 분산 브로커(lbbroker)에서 사용한 기술이며 멋지게 동작했습니다. 요청을 보낼 곳(작업자들 혹은 상대 브로커들)이 있을 때만 2개의 프론트엔드들에서 읽습니다. 백엔드에서 요청에 대한 응답을 반환하므로 항상 백엔드 소켓을 읽을 수 있습니다. 백엔드가 우리와 통신하지 않는 한 프론트엔드를 감시할 필요가 없습니다.
 
-> [옮긴이] 백엔드에서 처리 가능한 경우 프론트엔드로부터 요청을 받아 전달하며, 이전 예제(lbbroker)에서 처럼 작업자 대기열의 대기 상태를 보고 요청 처리할 수 있습니다.
+* [옮긴이] 백엔드에서 처리 가능한 경우 프론트엔드로부터 요청을 받아 전달하며, 이전 예제(lbbroker)에서 처럼 작업자 대기열의 대기 상태를 보고 요청 처리할 수 있습니다.
 
 ;So our main loop becomes:
 
@@ -3336,7 +3351,7 @@ cat - 3 workers free
 ;We use broker identities to route messages between brokers. Each broker has a name that we provide on the command line in this simple prototype. As long as these names don't overlap with the ØMQ-generated UUIDs used for client nodes, we can figure out whether to route a reply back to a client or to a broker.
 
 
-브로커 식별자(ID)를 사용하여 브로커들 간에 메시지를 전달합니다. 각 브로커에 있는 식별자(ID)는 단순한 프로그램 실행 명령에서 매개변수로 제공하는 이��입니다. 이러한 식별자(ID)는 클라이언트 노드들의 식별자(ID)와 중복되지 말아야 하며, 중복될 경우 응답을 클라이언트들 혹은 브로커로 반환할지 알 수 없습니다.
+브로커 식별자(ID)를 사용하여 브로커들 간에 메시지를 전달합니다. 각 브로커에 있는 식별자(ID)는 단순한 프로그램 실행 명령에서 매개변수로 제공하는 이름입니다. 이러한 식별자(ID)는 클라이언트 노드들의 식별자(ID)와 중복되지 말아야 하며, 중복될 경우 응답을 클라이언트들 혹은 브로커로 반환할지 알 수 없습니다.
 
 ;Here is how this works in code. The interesting part starts around the comment "Interesting part".
 
@@ -3603,7 +3618,7 @@ peering2 you me
 정상적으로 실행되는 코드를 보면서 만족시킬 수 있습니다. 잘못 전달 된 메시지가 있는 경우 클라이언트는 결국 차단되고 브로커는 추적 정보 출력을 중지하며 브로커들을 중단함으로 확인할 수 있습니다.
 다른 브로커가 클라우드에 요청을 보내고 클라이언트들은 하나씩 응답이 되돌아올 때까지 기다립니다.
 
-> [옮긴이] 위의 프로그램을 TCP에서 구동할 수 있게 변경하였습니다.
+* [옮긴이] 위의 프로그램을 TCP에서 구동할 수 있게 변경하였습니다.
 
 ```cpp
     static void *
@@ -3636,6 +3651,7 @@ peering2 you me
 * localbe : atoi(self) + 1
 * couldfe : atoi(self) + 2
 * couldbe : peer + 2
+
 ```cpp
     static void *
     client_task (void *args){
@@ -3664,6 +3680,7 @@ peering2 you me
 ```
 
 TCP 전송 방식으로 수정된 peering2_tcp.c 코드는 아래와 같습니다.
+
 ```cpp
 //  Broker peering simulation (part 2)
 //  Prototypes the request-reply flow
@@ -3905,13 +3922,13 @@ int main (int argc, char *argv [])
     return EXIT_SUCCESS;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 - 수행시 각 포트 번호 간의 간격을 주고 실행합니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering2_tcp.c libzmq.lib czmq.lib
+ cl -EHsc peering2_tcp.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./peering2_tcp 5560 5570
+ ./peering2_tcp 5560 5570
 I: preparing broker at 5560...
 cloudfe : tcp://*:5562
 I: connecting to cloud frontend at '5572'
@@ -3935,7 +3952,7 @@ D: 20-08-14 17:17:52 Worker: [002] OK
 Client: OK
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./peering2_tcp 5570 5560
+ ./peering2_tcp 5570 5560
 I: preparing broker at 5570...
 cloudfe : tcp://*:5572
 I: connecting to cloud frontend at '5562'
@@ -3963,7 +3980,7 @@ D: 20-08-14 17:17:54 Worker: [005] HELLO
 Client: OK
 ~~~
 
-> [옮긴이] inproc 전송 방식으로 수정된 peering2_inproc.c 코드는 아래와 같습니다.
+* [옮긴이] inproc 전송 방식으로 수정된 peering2_inproc.c 코드는 아래와 같습니다.
 peering2_inproc.c : inproc로 스레드간 통신으로 변경된 로컬 및 클라우드 작업 분배합니다.
 
 ```cpp
@@ -4215,12 +4232,12 @@ int main (int argc, char *argv [])
     return EXIT_SUCCESS;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering2_inproc.c libzmq.lib czmq.lib
+ cl -EHsc peering2_inproc.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./peering2_inproc dog cat
+ ./peering2_inproc dog cat
 I: preparing broker at dog...
 I: connecting to cloud frontend at 'cat'
 D: 20-09-07 11:11:32 [dog] Workers : [005] HELLO
@@ -4262,7 +4279,7 @@ D: 20-09-07 11:11:32 [cat] Workers : [005] HELLO
 [cat]Client: OK
 ~~~
 
-### 결합하기(Putting it All Together)
+### 결합하기
 ;Let's put this together into a single package. As before, we'll run an entire cluster as one process. We're going to take the two previous examples and merge them into one properly working design that lets you simulate any number of clusters.
 
 위의 예제들을 하나의 패키지로 합치겠습니다. 이전에는 전체 클러스터를 하나의 프로세스로 실행합니다. 2가지 예제를 가져와서 하나로 병합하여 원하는 수의 클러스터들을 시뮬레이션할 수 있도록 하겠습니다.
@@ -4609,7 +4626,7 @@ int main (int argc, char *argv [])
 
 이 시뮬레이션은 클라스터 상대의 사라짐을 감지하지 않습니다. 여러 클러스터 상대들을 시작하고 하나(다른 상대들에게 작업자 수를 브로드캐스팅 수행함)를 중지하면, 다른 상대들은 사라진 상대에게 계속해서 작업을 보냅니다. 당신은 이것을 시도할 경우 분실된 요청들에 대해 불평(10초 대기 동안 응답이 오지 않으면 오류 메시지 출력)하는 클라이언트들을 확인할 수 있습니다. 해결책은 2개입니다. 첫째, 용량 정보(작업자 수)를 잠시 동안만 유지하여 상대가 사라지면 용량이 빠르게 0으로 설정합니다. 둘째, 요청-응답 체인에 신뢰성을 추가합니다. 다음 장에서 안정성에 대하여 설명하겠습니다.
 
-> [옮긴이] peering3.c는 ipc 전송 방식을 사용하여 원도우에서 사용 가능한 tcp 전송 방식으로 변경하겠습니다. 변경을 위하여 바인드와 연결에 사용되는 포트 번호를 지정합니다.
+* [옮긴이] peering3.c는 ipc 전송 방식을 사용하여 원도우에서 사용 가능한 tcp 전송 방식으로 변경하겠습니다. 변경을 위하여 바인드와 연결에 사용되는 포트 번호를 지정합니다.
 * localfe : self
 * localbe : atoi(self)+1
 * cloudfe : atoi(self)+2
@@ -4933,12 +4950,12 @@ int main (int argc, char *argv [])
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
 PS C:\Users\zzedd>  cd D:\git_store\zguide-kr\examples\C
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc peering3_tcp.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./peering3_tcp 5560 5570
+ cl -EHsc peering3_tcp.c libzmq.lib czmq.lib
+ ./peering3_tcp 5560 5570
 I: preparing broker at 5560...
 [d]localfe : tcp://*:5560
 [d]localbe : tcp://*:5561
@@ -4965,7 +4982,7 @@ CLIENT recived reply : 317C
 CLIENT recived reply : CF08
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./peering3_tcp 5570 5560
+ ./peering3_tcp 5570 5560
 I: preparing broker at 5570...
 [d]localfe : tcp://*:5570
 [d]localbe : tcp://*:5571
@@ -4990,7 +5007,7 @@ CLIENT recived reply : 317C
 CLIENT recived reply : 317C
 ~~~
 
-> [옮긴이] Inproc를 사용할 수 있도록 변경된 코드(peering3_inproc.c)는 다음과 같습니다.
+* [옮긴이] Inproc를 사용할 수 있도록 변경된 코드(peering3_inproc.c)는 다음과 같습니다.
 
 ```cpp
 //  Broker peering simulation (part 3)
@@ -5316,10 +5333,10 @@ int main (int argc, char *argv [])
 }
 ```
 
-> [옮긴이] 빌드 및 테스트(peering3_inproc.c)
+* [옮긴이] 빌드 및 테스트(peering3_inproc.c)
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./peering3_inproc dog cat fox
+ ./peering3_inproc dog cat fox
 I: preparing broker at dog...
 [dog] I: connecting to cloud frontend at 'cat'
 [dog] I: connecting to cloud frontend at 'fox'
@@ -5342,3 +5359,5 @@ I: preparing broker at fox...
 [fox] I: connecting to state backend at 'cat'
 ...
 ~~~
+
+3개의 스레드(dog, cat, fox)들이 컨텍스트를 공유하며 실행하는 것을 확인할 수 있습니다.

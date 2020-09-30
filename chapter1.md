@@ -1,26 +1,30 @@
-# 1장-기본(Basics)
+
+# 1장-기본 {-}
 
 ## 세상을 구원하라
 ;How to explain ØMQ? Some of us start by saying all the wonderful things it does. It's sockets on steroids. It's like mailboxes with routing. It's fast! Others try to share their moment of enlightenment, that zap-pow-kaboom satori paradigm-shift moment when it all became obvious. Things just become simpler. Complexity goes away. It opens the mind. Others try to explain by comparison. It's smaller, simpler, but still looks familiar. Personally, I like to remember why we made ØMQ at all, because that's most likely where you, the reader, still are today.
 
 ØMQ를 어떻게 설명할 것인가?  우리 중 일부는 ØMQ가 하는 놀라운 것들을 말하는 것으로 시작합니다.
+
 * 스테로이드를 먹은 스켓입니다.
 * 라우팅 기능이 있는 우편함과 같습니다.
 * 빠릅니다.
 
 어떤 사람들은 깨달음의 순간을 공유하려 합니다.
+
 * 모든 것이 분명해졌을 때 번쩍-우르릉-쾅쾅 깨달음(zap-pow-kaboom satori) 패러다임 전환의 순간을 느낍니다.
 * 사물은 단순해지고 복잡성이 사라집니다
 * 마음을 열게 합니다.
 
 어떤 사람들은 다른 것과 비교하여 ØMQ를 설명하려고 합니다.
+
 *  더 작고 단순하지만 여전히 익숙해 보입니다
 
 개인적으로 저는 왜 우리가 ØMQ를 만들었는지를 기억하고 싶으며, 독자 여러분은 우리가 처음 길을 접어든 근처에 머물고 있을지 모르기 때문입니다.
 
-> [옮긴이] 번쩍-우르릉-쾅쾅 깨달음(zap-pow-kaboom satori)에서 사토리는 불교의 용어로 해달의 경지인 깨달음 의미합니다. 일본에서 돈버는 것에도 출세에도 관심이 없는 젊은 세대를 "사토리 세대"라고 부릅니다.
+* [옮긴이] 번쩍-우르릉-쾅쾅 깨달음(zap-pow-kaboom satori)에서 사토리는 불교의 용어로 해달의 경지인 깨달음 의미합니다. 일본에서 돈버는 것에도 출세에도 관심이 없는 젊은 세대를 "사토리 세대"라고 부릅니다.
 
-![zap-pow-kaboom satori](images/fig0_satori.jpg)
+![zap-pow-kaboom satori](images/fig0_satori.png)
 
 ;Programming is science dressed up as art because most of us don't understand the physics of software and it's rarely, if ever, taught. The physics of software is not algorithms, data structures, languages and abstractions. These are just tools we make, use, throw away. The real physics of software is the physics of people—specifically, our limitations when it comes to complexity, and our desire to work together to solve large problems in pieces. This is the science of programming: make building blocks that people can understand and use easily, and people will work together to solve the very largest problems.
 
@@ -48,7 +52,7 @@
 
 우리는 이런 정치철학을 「[문명과 제국, 디지털 혁명](http://cultureandempire.com/)」에서 다루고 있습니다 여기서 말하고자 하는 건, 인터넷이 대규모 연결된 프로그램에 잠재력을 제공하고 있음에도 불구하고, 현실은 이것을 충분히 이용할 수 있는 사람들은 극히 드물다는 점입니다. 그러므로 거대하고 흥미로운 문제들(건강, 의료, 교육, 경제, 물류 등의 분야들)을 해결되지 못하고 있으며 원인은 우리가 코드을 효과적으로 연결 못하고 개개인이 함께 협력하여 이러한 문제를 해결할 방법이 없었기 때문입니다.
 
-> [옮긴이] 문화와 제국, 디지털 혁명은 피터 힌트젠스가 지은 책입니다. 링크 내 무료로 읽을 수 있고 PDF나 전자책 포맷으로 다운로드할 수 있습니다.
+* [옮긴이] 문화와 제국, 디지털 혁명은 피터 힌트젠스가 지은 책입니다. 링크 내 무료로 읽을 수 있고 PDF나 전자책 포맷으로 다운로드할 수 있습니다.
 
 ;There have been many attempts to solve the challenge of connected code. There are thousands of IETF specifications, each solving part of the puzzle. For application developers, HTTP is perhaps the one solution to have been simple enough to work, but it arguably makes the problem worse by encouraging developers and architects to think in terms of big servers and thin, stupid clients.
 
@@ -60,7 +64,8 @@
 
 ;Which brings us back to the science of programming. To fix the world, we needed to do two things. One, to solve the general problem of "how to connect any code to any code, anywhere". Two, to wrap that up in the simplest possible building blocks that people could understand and use easily.
 
-이 모든 현실은 다시 우리를 최초의 프로그래밍 과학에 대한 문제로 되돌려 보냅니다. 세상을 구원하기 위해 우리는 두 가지 일을 해야 합니다 :
+이 모든 현실은 다시 우리를 최초의 프로그래밍 과학에 대한 문제로 되돌려 보냅니다. 세상을 구원하기 위해 우리는 두 가지 일을 해야 합니다.
+
 * 첫째, 일반적인 문제인 “어디서나, 코드와 코드 간에 연결시키기”
 * 둘째, 모든 대책을 최대한 간단한 구성요소로 만들어 사람들이 쉽게 이해하고 사용하게 하기
 
@@ -73,7 +78,7 @@
 
 ØMQ 3.2 버전을 사용하고 리눅스와 유사한 운영체제를 사용한다고 가정합니다. 이 책의 기본 예제는 C 언어로 구성되어 있어 C 코드를 읽을 수 있어야 합니다. PUSH와 SUBSCRIBE와 같은 상수를 사용할 때 실제 프로그래밍 언어에서는 ZMQ_PUSH, ZMQ_SUBSCRIBE가 호출된다고 생각할 수 있습니다.
 
-> [옮긴이] C 예제들을 원도우 운영체제에서도 사용 가능하도록 변경하였습니다.
+* [옮긴이] C 예제들을 원도우 운영체제에서도 사용 가능하도록 변경하였습니다.
 
 ## 예제 받기
 ;The examples live in a public GitHub repository. The simplest way to get all the examples is to clone this repository:
@@ -84,13 +89,14 @@
 git clone --depth=1 git://github.com/imatix/zguide.git
 ~~~
 
-## 물으면 얻을 것이다(Aak and Ye Shall Receive).
+## 물으면 얻을 것이다.
 ;So let's start with some code. We start of course with a Hello World example. We'll make a client and a server. The client sends "Hello" to the server, which replies with "World". Here's the server in C, which opens a ØMQ socket on port 5555, reads requests on it, and replies with "World" to each request:
 
 Hello World 예제로 시작하며, 클라이언트와 서버 프로그램을 만들도록 하겠습니다.
 클라이언트에서 서버로 "Hello"을 보내면 서버에서 "World"를 클라이언트에게 응답합니다. 예제에서 ØMQ 소켓을 5555 포트로 오픈하여 요청에 대응합니다.
 
 hwserver.c: Hello World 서버
+
 ```cpp
 //  Hello World server
 #include <zmq.h>
@@ -124,7 +130,7 @@ int main (void)
 ```
 그림 2 - 요청-응답
 
-![Request-Reply](images/fig2.svg)
+![Request-Reply](images/fig2.png)
 
 ;The REQ-REP socket pair is in lockstep. The client issues zmq_send() and then zmq_recv(), in a loop (or once if that's all it needs). Doing any other sequence (e.g., sending two messages in a row) will result in a return code of -1 from the send or recv call. Similarly, the service issues zmq_recv() and then zmq_send() in that order, as often as it needs to.
 
@@ -137,6 +143,7 @@ REQ-REP 소켓 쌍은 진행 순서가 고정되어 REQ 클라이언트는 루�
 여기에서는 C++ 서버 코드를 보고 비교하겠습니다.
 
 hwserver.cpp: Hello World 서버
+
 ```cpp
 //
 //  Hello World server in C++
@@ -177,7 +184,7 @@ int main () {
     return 0;
 }
 ```
-> [옮긴이] C++ 바인딩의 경우 두 개의 헤더 파일("zmq.hpp", "zmq_addon.hpp")로 구성되어 있습니다.
+* [옮긴이] C++ 바인딩의 경우 두 개의 헤더 파일("zmq.hpp", "zmq_addon.hpp")로 구성되어 있습니다.
 
 ;You can see that the ØMQ API is similar in C and C++. In a language like PHP or Java, we can hide even more and the code becomes even easier to read:
 
@@ -250,14 +257,15 @@ public class hwserver
     }
 }
 ```
-> [옮긴이] Java의 경우 jzmq 바인딩으로 빌드 수행 시 오류가 발생하며, 해당 예제는 jeromq(ØMQ의 Java 구현) 라이브러리를 통하여 수행 필요합니다.
-Maven 레파지토리(https://mvnrepository.com/artifact/org.zeromq/jeromq)에서 원하는 버전의 jar 파일을 받을 수 있으며, 사용을 위해서는 "CLASSPATH" 환경 변수에 등록 필요합니다.
+* [옮긴이] Java의 경우 jzmq 바인딩으로 빌드 수행 시 오류가 발생하며, 해당 예제는 jeromq(ØMQ의 Java 구현) 라이브러리를 통하여 수행 필요합니다.
+[Maven 레파지토리](https://mvnrepository.com/artifact/org.zeromq/jeromq)에서 원하는 버전의 jar 파일을 받을 수 있으며, 사용을 위해서는 "CLASSPATH" 환경 변수에 등록 필요합니다.
 
 ;Here's the client code:
 
 다음은 클라이언트 코드입니다.
 
 hwclient.c: Hello World 클라이언트
+
 ```cpp
 //  Hello World client
 #include <zmq.h>
@@ -296,7 +304,7 @@ int main (void)
 ØMQ 소켓을 가졌지만 실제 구현이 단순하며, 이전에 보았듯이 초능력을 가지고 있습니다.
 서버는 동시에 수천 개의 클라이언트들을 가질 수 있으며 작업을 쉽고 빠르게 할 수 있게 되었습니다. 재미를 위해 클라이언트를 시작한 다음 서버를 시작하시기 바랍니다. 모든 것이 여전히 작동하는지 확인한 다음 이것이 의미하는 바를 잠시 생각해보십시오.
 
-> [옮긴이] 서버, 클라이언트 구동 순서에 관계없이 정상적으로 동작합니다.
+* [옮긴이] 서버, 클라이언트 구동 순서에 관계없이 정상적으로 동작합니다.
 
 ;Let us explain briefly what these two programs are actually doing. They create a ØMQ context to work with, and a socket. Don't worry what the words mean. You'll pick it up. The server binds its REP (reply) socket to port 5555. The server waits for a request in a loop, and responds each time with a reply. The client sends a request and reads the reply back from the server.
 
@@ -305,12 +313,12 @@ int main (void)
 서버는 REP 소켓을 포트 5555번으로 바인딩하여 매번 루프에서 요청을 기다리고 각 요청에 응답합니다.
 클라이언트는 REQ 소켓을 포트 5555번에 연결하여 요청을 보내고 서버의 응답을 받습니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc hwserver.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc hwclient.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./hwserver
+> cl -EHsc hwserver.c libzmq.lib
+> cl -EHsc hwclient.c libzmq.lib
+> ./hwserver
 Received Hello
 Received Hello
 Received Hello
@@ -322,7 +330,7 @@ Received Hello
 Received Hello
 Received Hello
 
-PS D:\git_store\zguide-kr\examples\C> ./hwclient
+> ./hwclient
 Connecting to hello world server...
 Sending Hello 0...
 Received World 0
@@ -362,18 +370,15 @@ Received World 9
 
 ;In C and some other languages, strings are terminated with a null byte. We could send a string like "HELLO" with that extra null byte:
 
-C 언어와 일부 다른 언어들에서 문자열은 한 개의 널(\0) 바이트로 끝이 나며 "Hello"와 같은 경우 추가 널(\0) 바이트를 추가합니다.
+C 언어와 일부 다른 언어들에서 문자열은 한 개의 널(NULL(0)) 바이트로 끝이 나며 "Hello"와 같은 경우 추가 널(NULL(0)) 바이트를 추가합니다.
 
 ```cpp
 zmq_send (requester, "Hello", 6, 0);
 ```
-> [옮긴이] 아스키(ASCII) 문자 테이블
-
-![ASCII Table](images/fig0_ascii.svg)
 
 ;However, if you send a string from another language, it probably will not include that null byte. For example, when we send that same string in Python, we do this:
 
-다른 언어에서 문자열을 보내면 해당 널(\0) 바이트를 포함하지 않을 것입니다. Python 언어에서는 널(\0) 바이트를 포함하지 않고 아래와 같이 보낼 수 있습니다.
+다른 언어에서 문자열을 보내면 해당 널(NULL(0)) 바이트를 포함하지 않을 것입니다. Python 언어에서는 널(NULL(0)) 바이트를 포함하지 않고 아래와 같이 보낼 수 있습니다.
 
 ```python
 socket.send ("Hello")
@@ -385,25 +390,26 @@ socket.send ("Hello")
 
 그림 3 - ØMQ 문자열(길이 + 개별문자)
 
-![ØMQ문자열](images/fig3.svg)
+![ØMQ문자열](images/fig3.png)
 
 ;And if you read this from a C program, you will get something that looks like a string, and might by accident act like a string (if by luck the five bytes find themselves followed by an innocently lurking null), but isn't a proper string. When your client and server don't agree on the string format, you will get weird results.
 
-C 언어를 통해 코드를 본다면 문자열과 비슷한 것을 확인할 수 있으며 우연히 문자열처럼 동작할 수 있지만(운이 좋아 5 바이트(Hello)에 널(\0) 뒤따르는 경우) 적절한 문자열이 아닙니다. 클라이언트와 서버가 문자열 형식에 동의하지 않는다면 이상한 결과를 가져오게 됩니다.
+C 언어를 통해 코드를 본다면 문자열과 비슷한 것을 확인할 수 있으며 우연히 문자열처럼 동작할 수 있지만(운이 좋아 5 바이트(Hello)에 널(NULL(0)) 뒤따르는 경우) 적절한 문자열이 아닙니다. 클라이언트와 서버가 문자열 형식에 동의하지 않는다면 이상한 결과를 가져오게 됩니다.
 
 ;When you receive string data from ØMQ in C, you simply cannot trust that it's safely terminated. Every single time you read a string, you should allocate a new buffer with space for an extra byte, copy the string, and terminate it properly with a null.
 
-ØMQ에서 C 언어로 문자열 데이터를 받는다면 안전하게 끝났는지(널(\0) 문자 포함) 보장할 수 없기 때문에 매번 여분의 공간을 가지고 공백으로 채워진 새로운 버퍼에 할당하여 문자열을 복사한 다음 널(\0)로 올바르게 종료해야 합니다.
+ØMQ에서 C 언어로 문자열 데이터를 받는다면 안전하게 끝났는지(널(NULL(0)) 문자 포함) 보장할 수 없기 때문에 매번 여분의 공간을 가지고 공백으로 채워진 새로운 버퍼에 할당하여 문자열을 복사한 다음 널(NULL(0))로 올바르게 종료해야 합니다.
 
 ;So let's establish the rule that ØMQ strings are length-specified and are sent on the wire without a trailing null. In the simplest case (and we'll do this in our examples), a ØMQ string maps neatly to a ØMQ message frame, which looks like the above figure—a length and some bytes.
 
-따라서 ØMQ 문자열은 길이가 지정되고 후행 널(\0) 없이 네트워크로 전송된다는 규칙을 설정하였습니다. 가장 간단한 경우(예제에서 작업 수행), ØMQ 문자열은 위의 그림과 같은 ØMQ 메시지 프레임에 매핑됩니다(길이와 일부 바이트들).
+따라서 ØMQ 문자열은 길이가 지정되고 후행 널(NULL(0)) 없이 네트워크로 전송된다는 규칙을 설정하였습니다. 가장 간단한 경우(예제에서 작업 수행), ØMQ 문자열은 위의 그림과 같은 ØMQ 메시지 프레임에 매핑됩니다(길이와 일부 바이트들).
 
 ;Here is what we need to do, in C, to receive a ØMQ string and deliver it to the application as a valid C string:
 
 C 언어에서 ØMQ 문자열을 받아 유효한 C 문자열로 변환하는 함수를 정의하겠습니다.
 
 255 문자열 길이 제한이 있는  s_recv() 함수
+
 ```cpp
 //  Receive ØMQ string from socket and convert into C string
 //  Caller must free returned string. Returns NULL if the context
@@ -423,7 +429,7 @@ s_recv (void *socket) {
 #endif
 }
 ```
-> [옮긴이] 256 바이트 문자열 길이 제약을 제거한 s_recv() 함수
+* [옮긴이] 256 바이트 문자열 길이 제약을 제거한 s_recv() 함수
 
 ```cpp
 //  Receive ØMQ string from socket and convert into C string
@@ -448,6 +454,7 @@ s_recv(void *socket, int flags = 0) {
 
 아래는 편리한 재사용 가능한 도우미 함수를 작성하였습니다.
 `s_send()`는 C 문자열을 받아 ØMQ 형식 문자열을 보내는 함수이며 재사용할 수 있도록 헤더 파일(zhelpers.h)에 포함합니다.
+
 ```cpp
 //  Convert C string to ØMQ string and send to socket
 static int
@@ -479,10 +486,10 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc version.c libzmq.lib
+> cl -EHsc version.c libzmq.lib
 Microsoft (R) C/C++ 최적화 컴파일러 버전 19.16.27035(x64)
 Copyright (c) Microsoft Corporation. All rights reserved.
 
@@ -493,7 +500,7 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 /out:version.exe
 version.obj
 libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./version
+> ./version
 Current ØMQ version is 4.3.2
 ~~~
 
@@ -596,7 +603,7 @@ int main (int argc, char *argv [])
 ```
 그림 4 - 발행-구독
 
-![Publish-Subscribe](images/fig4.svg)
+![Publish-Subscribe](images/fig4.png)
 
 ;Note that when you use a SUB socket you must set a subscription using zmq_setsockopt() and SUBSCRIBE, as in this code. If you don't set any subscription, you won't get any messages. It's a common mistake for beginners. The subscriber can set many subscriptions, which are added together. That is, if an update matches ANY subscription, the subscriber receives it. The subscriber can also cancel specific subscriptions. A subscription is often, but not necessarily a printable string. See zmq_setsockopt() for how this works.
 
@@ -613,7 +620,7 @@ SUB 소켓에 메시지를 보내려고 하면 오류가 발생합니다.
 
 이론적으로는 클라이언트, 서버에서 누가 `bind()`를 하던 `connect()`를 하는지는 문제가 되지 않지만 실제로는 PUB 소켓일 경우 `bind()`, SUB 소켓일 경우 `connect()`를 수행합니다.
 
-> [옮긴이] 일반적으로 1:N 통신을 경우 1에 해당하는 단말은 'bind()', N에 해당하는 단말은 'connect()"을 수행합니다.
+* [옮긴이] 일반적으로 1:N 통신을 경우 1에 해당하는 단말은 'bind()', N에 해당하는 단말은 'connect()"을 수행합니다.
 
 ;There is one more important thing to know about PUB-SUB sockets: you do not know precisely when a subscriber starts to get messages. Even if you start a subscriber, wait a while, and then start the publisher, the subscriber will always miss the first messages that the publisher sends. This is because as the subscriber connects to the publisher (something that takes a small but non-zero time), the publisher may already be sending messages out.
 
@@ -639,9 +646,7 @@ PUB-SUB 소켓에 대한 한 가지 중요한 사항으로 구독자가 메시�
 TCP 연결 생성은 네트워크와 연결 대상들 간의 경유 단계(hops)에 따라 몇 밀리초(milliseconds) 지연을 발생시키며, 그 시간 동안 ØMQ는 많은 메시지를 보낼 수 있습니다.
 편의상 연결 설정에 5밀리초가 소요되고, 발행자가 초당 100만 메시지를 송신할 수 있다면 발행자와 연결에 필요한 5밀리초 사이에 5000개 메시지를 전송할 수 있습니다.
 
-> [옮긴이] 홉(hops)은 컴퓨터 네트워크에서 출발지와 목적지 사이에 위치한 경로의 한 부분이다. 데이터 패킷은 브리지, 라우터, 게이트웨이를 거치면서 출발지에서 목적지로 경유한다. 패킷이 다음 네트워크 장비로 이동할 때마다 홉이 하나 발생한다. 홉 카운트는 데이터가 출발지와 목적지 사이에서 통과해야 하는 중간 장치들의 개수를 가리킨다.
-
-![hops_count](images/fig0_hops.jpg)
+* [옮긴이] 홉(hops)은 컴퓨터 네트워크에서 출발지와 목적지 사이에 위치한 경로의 한 부분이다. 데이터 패킷은 브리지, 라우터, 게이트웨이를 거치면서 출발지에서 목적지로 경유한다. 패킷이 다음 네트워크 장비로 이동할 때마다 홉이 하나 발생한다. 홉 카운트는 데이터가 출발지와 목적지 사이에서 통과해야 하는 중간 장치들의 개수를 가리킨다.
 
 ;In Chapter 2 - Sockets and Patterns we'll explain how to synchronize a publisher and subscribers so that you don't start to publish data until the subscribers really are connected and ready. There is a simple and stupid way to delay the publisher, which is to sleep. Don't do this in a real application, though, because it is extremely fragile as well as inelegant and slow. Use sleeps to prove to yourself what's happening, and then wait for Chapter 2 - Sockets and Patterns to see how to do this right.
 
@@ -659,15 +664,15 @@ TCP 연결 생성은 네트워크와 연결 대상들 간의 경유 단계(hops)
 서버를 중지하고 재시작해도 클라이언트는 계속 작동합니다.
 클라이언트가 100의 변경정보들을 수집하면 평균을 계산하여 화면에 출력하고 종료합니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc wuserver.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc wuclient.c libzmq.lib
+> cl -EHsc wuserver.c libzmq.lib
+> cl -EHsc wuclient.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./wuserver
+> ./wuserver
 
-PS D:\git_store\zguide-kr\examples\C> ./wuclient
+> ./wuclient
 Collecting updates from weather server...
 Average temperature for zipcode '10001' was 35F
 ~~~
@@ -700,11 +705,11 @@ user    0m0.000s
 sys     0m0.008s
 ~~~
 
-## 나누어서 정복하라(Divide and Conqure)
+## 나누어서 정복하라
 
 그림 5 - 병렬 파이프라인(parallel pipeline)
 
-![병렬 파이프라인](images/fig5.svg)
+![병렬 파이프라인](images/fig5.png)
 
 ;As a final example (you are surely getting tired of juicy code and want to delve back into philological discussions about comparative abstractive norms), let's do a little supercomputing. Then coffee. Our supercomputing application is a fairly typical parallel processing model. We have:
 
@@ -878,35 +883,44 @@ int main (void)
  * 2 worker: total elapsed time: 2421 msecs.
  * 4 worker: total elapsed time: 1018 msecs.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc taskvent.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc taskwork.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc tasksink.c libzmq.lib
+> cl -EHsc taskvent.c libzmq.lib
+> cl -EHsc taskwork.c libzmq.lib
+> cl -EHsc tasksink.c libzmq.lib
 
 // 1개의 worker로 작업할 경우
-PS D:\git_store\zguide-kr\examples\C> ./taskvent
+> ./taskvent
 Press Enter when the workers are ready:
 Sending tasks to workers...
 Total expected cost: 4994 msec
-PS D:\git_store\zguide-kr\examples\C> ./taskwork
-86.42.46.52.23.51.69.75.37.93.4.67.41.23.35.65.16.77.74.26.53.52.74.10.60.96.23.14.37.94.47.54.78.87.17.83.86.25.63.46.77.72.94.36.57.90.39.82.38.4.96.18.84.66.12.56.59.42.70.29.54.31.21.22.70.28.25.44.46.56.44.75.92.79.53.42.27.100.5.38.74.92.20.58.20.24.39.63.88.64.7.36.29.11.20.48.84.21.20.2.
-PS D:\git_store\zguide-kr\examples\C> ./tasksink
-:.........:.........:.........:.........:.........:.........:.........:.........:.........:.........
+> ./taskwork
+86.42.46.52.23.51.69.75.37.93.4.67.41.23.35.65.16.77.74.26.53.52.74.10.60.96.
+23.14.37.94.47.54.78.87.17.83.86.25.63.46.77.72.94.36.57.90.39.82.38.4.96.18.
+84.66.12.56.59.42.70.29.54.31.21.22.70.28.25.44.46.56.44.75.92.79.53.42.27.
+100.5.38.74.92.20.58.20.24.39.63.88.64.7.36.29.11.20.48.84.21.20.2.
+> ./tasksink
+:.........:.........:.........:.........
+:.........:.........:.........:.........
+:.........:.........
 Total elapsed time: 5091 msec
 
 // 2개의 worker로 작업할 경우
-PS D:\git_store\zguide-kr\examples\C> ./taskvent
+> ./taskvent
 Press Enter when the workers are ready:
 Sending tasks to workers...
 Total expected cost: 5045 msec
-PS D:\git_store\zguide-kr\examples\C> ./taskwork
-87.79.38.90.83.51.13.26.74.33.64.81.18.96.36.28.95.2.27.12.79.10.43.94.83.49.24.45.61.44.26.14.77.16.67.51.27.34.41.92.38.37.88.18.16.14.28.57.63.49.
-PS D:\git_store\zguide-kr\examples\C> ./taskwork
-12.17.65.21.79.83.82.9.12.97.27.36.78.47.34.65.49.6.51.96.70.18.57.55.32.84.98.91.66.72.33.88.43.33.91.89.87.29.42.32.2.79.80.99.16.13.21.76.27.38.
-PS D:\git_store\zguide-kr\examples\C> ./tasksink
-:.........:.........:.........:.........:.........:.........:.........:.........:.........:.........
+> ./taskwork
+87.79.38.90.83.51.13.26.74.33.64.81.18.96.36.28.95.2.27.12.79.10.43.94.83.49.
+24.45.61.44.26.14.77.16.67.51.27.34.41.92.38.37.88.18.16.14.28.57.63.49.
+> ./taskwork
+12.17.65.21.79.83.82.9.12.97.27.36.78.47.34.65.49.6.51.96.70.18.57.55.32.84.
+98.91.66.72.33.88.43.33.91.89.87.29.42.32.2.79.80.99.16.13.21.76.27.38.
+> ./tasksink
+:.........:.........:.........:.........
+:.........:.........:.........:.........
+:.........:.........
 Total elapsed time: 2675 msec
 ~~~
 
@@ -925,7 +939,8 @@ Total elapsed time: 2675 msec
 * 수집기의 PULL 소켓은 작업자들의 결과를 균등하게 수집하여 이를 "공정-대기열(fair-queuing)"이라고 합니다.
 
 그림 6 - 공정 대기열
-![Fair Queuing](images/fig6.svg)
+
+![Fair Queuing](images/fig6.png)
 
 ;The pipeline pattern also exhibits the "slow joiner" syndrome, leading to accusations that PUSH sockets don't load balance properly. If you are using PUSH and PULL, and one of your workers gets way more messages than the others, it's because that PULL socket has joined faster than the others, and grabs a lot of messages before the others manage to connect. If you want proper load balancing, you probably want to look at the The load balancing pattern in Chapter 3 - Advanced Request-Reply Patterns.
 
@@ -948,22 +963,22 @@ Total elapsed time: 2675 msec
 * 무엇인가 바라는 대로 동작하지 않을 때, 코드를 작은 조작으로 쪼개어 각각에 대하여 테스트를 하면 동작하지 않는 부분을 찾을 수 있습니다. ØMQ는 기본적으로 모듈라 코드로 만들 수 있게 하며 이것을 이용하십시오.
 * 필요하다면 추상화(클래스, 메서드 등 무엇이든지)하십시오. 만약 단순히 복사/붙여 넣기를 한다면 이것은 오류도 복사/붙여 넣기를 하는 것입니다.
 
-### 컨텍스트 권한 얻기(Getting the Context Right)
-;ØMQ applications always start by creating a context, and then using that for creating sockets. In C, it's the zmq_ctx_new() call. You should create and use exactly one context in your process. Technically, the context is the container for all sockets in a single process, and acts as the transport for inproc sockets, which are the fastest way to connect threads in one process. If at runtime a process has two contexts, these are like separate ØMQ instances. If that's explicitly what you want, OK, but otherwise remember:
-Do one zmq_ctx_new() at the start of your main code, and one zmq_ctx_destroy() at
-the end.
+### 컨텍스트 권한 얻기
+;ØMQ applications always start by creating a context, and then using that for creating sockets. In C, it's the zmq_ctx_new() call. You should create and use exactly one context in your process. Technically, the context is the container for all sockets in a single process, and acts as the transport for inproc sockets, which are the fastest way to connect threads in one process. If at runtime a process has two contexts, these are like separate ØMQ instances. If that's explicitly what you want, OK, but otherwise remember: Do one zmq_ctx_new() at the start of your main code, and one zmq_ctx_destroy() at the end.
 
 ØMQ 응용프로그램은 컨텍스트를 생성하여 시작하고, 컨텍스트를 소켓을 생성하는데 사용합니다. C 언어에서는 `zmq_ctx_new()` 호출을 통해 컨텍스트를 생성합니다. 프로세스에서 정확히 하나의 컨텍스트를 생성하고 사용해야 합니다. 기능적으로 컨텍스트는 단일 프로세스 내의 모든 소켓들에 대한 컨테이너이며, inproc 소켓을 통하여 프로세스 내의 스레드들 간에 빠른 연결을 하게 합니다. 
 
-> [옮긴이] 컨텍스트 및 소켓의 생성
+* [옮긴이] 컨텍스트 및 소켓의 생성
 
 C 언어의 경우
+
 ```cpp
     void *context = zmq_ctx_new ();
     void *responder = zmq_socket (context, ZMQ_REP);
     int rc = zmq_bind (responder, "tcp://*:5555");
 ```
 C++ 언어의 경우
+
 ```cpp
     zmq::context_t context (1);
     zmq::socket_t socket (context, ZMQ_REP);
@@ -977,7 +992,7 @@ C++ 언어의 경우
 `fork()`시스템 호출을 사용하는 경우, 각 프로세스는 자신의 컨텍스트를 필요로 합니다.
 메인 프로세스에서 `zmq_ctx_new()`를 호출한 후`fork()`하면 자식 프로세스는 자신의 컨텍스트를 얻습니다. 일반적으로 주요 처리는 자식 프로세스에서 수행하고 부모 프로세스는 자식 프로세스를 관리하도록 합니다.
 
-### 깨끗하게 종료하기(Making a Clean Exit)
+### 깨끗하게 종료하기
 ;Classy programmers share the same motto as classy hit men: always clean-up when you finish the job. When you use ØMQ in a language like Python, stuff gets automatically freed for you. But when using C, you have to carefully free objects when you're finished with them or else you get memory leaks, unstable applications, and generally bad karma.
 
 세련된 프로그래머는 세련된 암살자와 같은 모토를 공유합니다. : 항상 일이 끝나면 깨끗하게 정리하기. 
@@ -988,7 +1003,7 @@ C++ 언어의 경우
 메모리 누수도 그중 하나이며 ØMQ를 사용하는 응용프로그램을 종료 시에 주의해야 합니다. 그 이유는  만약 소켓을 오픈한 상태로 `zmq_ctx_destroy()` 함수를 호출하면 영구적으로 응용프로그램은 중단(hang)되게 됩니다.
 그리고 모든 소켓을 닫은 후에 `zmq_ctx_destroy()` 호출 시 소켓을 닫기 전에 LINGER를 0으로 설정하지 않는 한 보류 중인 연결 또는 전송이 있으면 기본적으로 영원히 기다립니다.
 
-> [옮긴이] 지연(LINGER)은 TCP 소켓의 단절 상태에 대응하기 위한 옵션으로 0일 경우 연결 상태를 종료하고 소켓 버퍼에 남아있는 데이터를 버리는 비정상 종료를 수행합니다.
+* [옮긴이] 지연(LINGER)은 TCP 소켓의 단절 상태에 대응하기 위한 옵션으로 0일 경우 연결 상태를 종료하고 소켓 버퍼에 남아있는 데이터를 버리는 비정상 종료를 수행합니다.
 
 ;The ØMQ objects we need to worry about are messages, sockets, and contexts. Luckily it's quite simple, at least in simple programs:
 
@@ -1028,7 +1043,7 @@ C++ 언어의 경우
 
 끝났습니다. 이것은 매우 복잡하고 고통을 수반하지만 개발 언어별 ØMQ 바인딩을 개발하는 사람이 피땀을 흘려 자동으로 소켓을 닫아 주는 경우도 있어 반드시 이렇게 할 필요는 없을 수도 있습니다.
 
-## 왜 ØMQ가 필요한가(Why We Needed ØMQ)
+## 왜 ØMQ가 필요한가
 ;Now that you've seen ØMQ in action, let's go back to the "why".
 
 ØMQ 동작 방식을 보았으며, 다시 "왜(why)"로 돌아가 보겠습니다.
@@ -1091,11 +1106,11 @@ C++ 언어의 경우
 그래서 상용 메세징 제품이 복잡하고 고비용이고 유연하지 못하고 예민한가에 대한 이유입니다.
 2006년 "iMatix"는 AMQP를 설계하여 FOSS 개발자들에서 공유하였으며 아마도 메세징 시스템에 대한 첫 번째 재사용 방법을 제공하였습니다. AMQP는 다른 많은 설계들보다 잘 동작하지만 상대적으로 복잡하고 고비용이고 예민하여, 사용하기 위해서는 몇 주나 몇 달의 학습 기간이 필요합니다.
 
-> [옮긴이] AMQP(Advanced Message Queuing Protocol)는 메시지 지향 미들웨어를 위한 개방형 표준 응용 계층 통신규약이며 AMQP 기반 제품은 RabbitMQ, ActiveMQ, ØMQ가 있습니다.
+* [옮긴이] AMQP(Advanced Message Queuing Protocol)는 메시지 지향 미들웨어를 위한 개방형 표준 응용 계층 통신규약이며 AMQP 기반 제품은 RabbitMQ, ActiveMQ, ØMQ가 있습니다.
 
 그림 7 - 태초의 메세징(Messaging as it Starts)
 
-![태초의 메세징](images/fig7.svg)
+![태초의 메세징](images/fig7.png)
 
 ;Most messaging projects, like AMQP, that try to solve this long list of problems in a reusable way do so by inventing a new concept, the "broker", that does addressing, routing, and queuing. This results in a client/server protocol or a set of APIs on top of some undocumented protocol that allows applications to speak to this broker. Brokers are an excellent thing in reducing the complexity of large networks. But adding broker-based messaging to a product like Zookeeper would make it worse, not better. It would mean adding an additional big box, and a new single point of failure. A broker rapidly becomes a bottleneck and a new risk to manage. If the software supports it, we can add a second, third, and fourth broker and make some failover scheme. People do this. It creates more moving pieces, more complexity, and more things to break.
 
@@ -1109,7 +1124,7 @@ C++ 언어의 경우
 
 그림 8 - 변화된 메세징(Messaging as it Becomes)
 
-![Messaging as it Becomes](images/fig8.svg)
+![Messaging as it Becomes](images/fig8.png)
 
 ;So small to medium application developers are trapped. Either they avoid network programming and make monolithic applications that do not scale. Or they jump into network programming and make brittle, complex applications that are hard to maintain. Or they bet on a messaging product, and end up with scalable applications that depend on expensive, easily broken technology. There has been no really good choice, which is maybe why messaging is largely stuck in the last century and stirs strong emotions: negative ones for users, gleeful joy for those selling support and licenses.
 
@@ -1166,7 +1181,7 @@ C++ 언어의 경우
 사실 ØMQ는 나열한 것 이상의 것을 하며 네트워크 지원 응용프로그램 개발에 파괴적인 영향을 줄 수 있습니다.
 표면적으로 소켓과 같은 API(`zmq_recv()`, `zmq_send()`)이지만 메시지 처리 절차는 내부적으로 일련의 메시지 처리 작업들로 쪼개져서 처리됩니다. 이것은 우아하고 자연스럽고 규모를 조정할 수 있으며 각각의 작업들은 임의의 전송계층에서 하나의 노드, 여러 개의 노드들과 매핑되어 처리됩니다. 2개의 노드들이 하나의 프로세스(노드는 스레드)에서, 2개의 노드들이 하나의 머신(노드는 프로세스)에서, 2개의 노드들이 하나의 네트워크(노드는 머신)에서 처리되며 응용프로그램 소스는 모두 동일합니다.
 
-## 소켓 확장성(Socket Scalability)
+## 소켓 확장성
 ;Let's see ØMQ's scalability in action. Here is a shell script that starts the weather server and then a bunch of clients in parallel:
 
 ØMQ의 확장성을 보기 위하여, 아래의 쉘 스크립터를 통하여 날씨 서버와 일련의 클라이언트들을 병렬로 시작해 보겠습니다.
@@ -1183,6 +1198,7 @@ wuclient 56789 &
 ;As the clients run, we take a look at the active processes using the top command', and we see something like (on a 4-core box):
 
 클라이언트들을 실행하여 "top"  명령을 통하여 활성화된 프로세스를 볼 수 있으며 다음과 같이 보입니다(CPU 4 코어 머신).
+
 ~~~
 PID  USER  PR  NI  VIRT  RES  SHR S %CPU %MEM   TIME+  COMMAND
 7136  ph   20   0 1040m 959m 1156 R  157 12.0 16:25.47 wuserver
@@ -1199,6 +1215,7 @@ PID  USER  PR  NI  VIRT  RES  SHR S %CPU %MEM   TIME+  COMMAND
 이것이 ØMQ 소켓이 하나의 조그만 서버처럼 동작하는 것이며 조용히 클라이언트 요청들을 접수하여 네트워크에서 처리할 수 있을 만큼 빠르게 데이터를 전달합니다. 이것은 멀티스레드 서버로 CPU 자원을 최대한 쥐어짜도록 합니다.
 
 ## ØMQ v2.2에서 ØMQ v3.2 업그레이드
+
 ### 호환되는 변경
 ;These changes don't impact existing application code directly:
 

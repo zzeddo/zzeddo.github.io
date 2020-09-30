@@ -1,4 +1,6 @@
-# 2장-소켓 및 패턴(Sockets and Patterns)
+
+# 2장-소켓 및 패턴 {-}
+
 ;In Chapter 1 - Basics we took ØMQ for a drive, with some basic examples of the main ØMQ patterns: request-reply, pub-sub, and pipeline. In this chapter, we're going to get our hands dirty and start to learn how to use these tools in real programs.
 
 1장 - 기본에서 몇 가지 ØMQ 패턴의 기본 예제로 ØMQ의 세계로 뛰어들었습니다 : 요청-응답, 발행-구독, 파이프라인. 이장에서는 우리의 손을 더럽히면서 실제 프로그램에서 이러한 도구들을 어떻게 사용하는지 배우게 될 것입니다.
@@ -41,13 +43,13 @@
 * 발행-구독에서 메시지 봉투 생성하고 사용하기
 * 메모리 오버플로우에 대비하여 최고수위 표시(HWM,high-water mark) 사용하기
 
-## 소켓 API(The Socket API)
+## 소켓 API
 ;To be perfectly honest, ØMQ does a kind of switch-and-bait on you, for which we don't apologize. It's for your own good and it hurts us more than it hurts you. ØMQ presents a familiar socket-based API, which requires great effort for us to hide a bunch of message-processing engines. However, the result will slowly fix your world view about how to design and write distributed software.
 
 솔직히 말하자면, ØMQ는 당신에게 일종의 유인 상술을 쓰는데, 그것에 대하여 사과하지 않겠습니다.
 ØMQ는 익숙한 소켓 기반 API를 제공하고 내부에 일련의 메시지 처리 엔진을 가지고 있으며 당신이 어떻게 분산 소프트웨어를 설계하고 개발하는지에 따라 점차 당신의 세계관으로 만들 수 있습니다.
 
-> [옮긴이] 유인 상술(switch and bait)은  값싼 상품을 광고해서 소비자를 끌어들인 뒤 비싼 상품을 사게 하는 상술입니다.
+* [옮긴이] 유인 상술(switch and bait)은  값싼 상품을 광고해서 소비자를 끌어들인 뒤 비싼 상품을 사게 하는 상술입니다.
 
 ;Sockets are the de facto standard API for network programming, as well as being useful for stopping your eyes from falling onto your cheeks. One thing that makes ØMQ especially tasty to developers is that it uses sockets and messages instead of some other arbitrary set of concepts. Kudos to Martin Sustrik for pulling this off. It turns "Message Oriented Middleware", a phrase guaranteed to send the whole room off to Catatonia, into "Extra Spicy Sockets!", which leaves us with a strange craving for pizza and a desire to know more.
 
@@ -83,7 +85,7 @@
 
 소켓 생성, 소멸 및 구성은 모든 객체에 대해 예상대로 동작하지만, ØMQ는 비동기식이며 소켓을 네트워크 토폴로지에 연결하는 방법에 따라 소켓을 사용하는데 영향을 미칩니다.
 
-### 네트워크상에 소켓 넣기(Plugging Sockets into the Topology)
+### 네트워크상에 소켓 넣기
 ;To create a connection between two nodes, you use zmq_bind() in one node and zmq_connect() in the other. As a general rule of thumb, the node that does zmq_bind() is a "server", sitting on a well-known network address, and the node which does zmq_connect() is a "client", with unknown or arbitrary network addresses. Thus we say that we "bind a socket to an endpoint" and "connect a socket to an endpoint", the endpoint being that well-known network address.
 
 2개의 노드 간의 연결을 생성하기 위하여, 한쪽 노드에 `zmq_bind()`를  그리고 다른 쪽 노드에 `zmq_connect()`를 사용할 수 있습니다. 일반적으로 `zmq_bind()`를 수행하는 노드를 서버(네트워크 주소가 고정됨)라고 하며 `zmq_connect()`를 수행하는 노드를 클라이언트(네트워크 주소가 모르거나 임시)라고 합니다.
@@ -143,14 +145,14 @@ UDP를 제외하고 대부분의 전송방식에서 동일한 단말을 두 번 
 
 ØMQ는 다양한 형태로 소켓을 연결할 수 있으며 메시징 대기열 시스템으로써 기본 역량을 제공합니다. 근본적으로 ØMQ는 다양한 구성 요소(소켓, 연결, 프록시 등)들을 필요에 따라 끼워 맞추어 필요한 네트워크 아키텍처를 정의할 수 있게 합니다.
 
-### 메시지 송/수신(Sending and Receiving Messages)
+### 메시지 송/수신
 ;To send and receive messages you use the zmq_msg_send() and zmq_msg_recv() methods. The names are conventional, but ØMQ's I/O model is different enough from the classic TCP model that you will need time to get your head around it.
 
 메시지 송/수신을 위하여 `zmq_msg_send()`와 `zmq_msg_recv()` 함수를 사용할 수 있습니다. 전통적인 방식의 명칭이지만 ØMQ I/O 모델은 기존 TCP 모델과는 확연히 차이가 있습니다.
 
 Figure 9 - 1:1 TCP 소켓(TCP sockets are 1 to 1)
 
-![1:1 TCP 소켓](images/fig9.svg)
+![1:1 TCP 소켓](images/fig9.png)
 
 ;Let's look at the main differences between TCP sockets and ØMQ sockets when it comes to working with data:
 
@@ -170,7 +172,7 @@ TCP 소켓과 ØMQ 소켓의 주요 차이는 데이터 처리 방식입니다.
 
 `zmq_send()` 함수는 실제 메시지를 소켓 연결에서 전송하지 않고 메시지를 대기열에 쌓아 I/O 스레드가 비동기로 전송할 수 있게 합니다. 이러한 동작은 일부 예외 상황을 제외하고는 차단되지 않습니다. 그래서 메시지를 `zmq_send()`로 전송할 때 반환값이 필요 없습니다.
 
-### 유니케스트 전송방식(Unicast Transports)
+### 유니케스트 전송방식
 ;ØMQ provides a set of unicast transports (inproc, ipc, and tcp) and multicast transports (epgm, pgm). Multicast is an advanced technique that we'll come to later. Don't even start using it unless you know that your fan-out ratios will make 1-to-N unicast impossible.
 
 ØMQ는 일련의 유니케스트 전송방식(inproc, ipc, tcp)과 멀티캐스트 통신방식(epgm, pgm)을 제공합니다. 멀티캐스트는 진보된 기술로 나중에 다루지만 전개 비율에 따라 1:N 유니케스트가 불가하다는 것을 모른다면 시작조차 하지 마시기 바랍니다.
@@ -187,7 +189,7 @@ TCP 소켓과 ØMQ 소켓의 주요 차이는 데이터 처리 방식입니다.
 
 스레드 간 inproc 전송방식은  "연결된 신호 전송계층"이며 tcp 혹은 ipc 보다 훨씬 빠르지만 tcp나 ipc와 비교했을 때 특정 제약을 가지고 있습니다 : 서버는 반드시 클라이언트가 연결을 요청하기 전에 바인딩이 되어야 한다. 이것은 미래의 ØMQ 버전에서 개선되겠지만 현재는 어떻게 inproc 소켓을 사용해야 하는지를 정의합니다. 우리는 부모 스레드에서 소켓을 생성하고 바인딩하고 자식 스레드를 시작하여 소켓을 생성하고 연결하게 합니다.
 
-### ØMQ는 중립적인 전송수단이 아니다(ØMQ is Not a Neutral Carrier).
+### ØMQ는 중립적인 전송수단이 아니다.
 ;A common question that newcomers to ØMQ ask (it's one I've asked myself) is, "how do I write an XYZ server in ØMQ?" For example, "how do I write an HTTP server in ØMQ?" The implication is that if we use normal sockets to carry HTTP requests and responses, we should be able to use ØMQ sockets to do the same, only much faster and better.
 
 ØMQ을 처음 접하는 사람들의 공통적인 질문(이것은 나 스스로에게도 한 것임)은 "ØMQ로 XYZ 서버를 개발하는 방법은 무엇이지?"입니다. 예를 들면 "ØMQ로 HTTP 서버를 개발하는 방법은 무엇이지?"와 같으며 이는 HTTP 요청과 응답을 일반 소켓을 사용하는 것처럼, ØMQ 소켓을 통하여 더 빠르고 좋게 동일한 작업을 수행할 수 있어야 합니다.
@@ -196,11 +198,11 @@ TCP 소켓과 ØMQ 소켓의 주요 차이는 데이터 처리 방식입니다.
 
 예전에는 ØMQ는 "그렇게 동작하지 않는다"라며 ØMQ는 중립적인 전송수단(Neutral carrier)이 아니다고 했습니다 : 이것은 전송방식 통신규약(OSI 7 계층)에 프레이임을 부가하기 때문입니다. ØMQ의 프레이임은 기존의 통신규약들과 호환되지 않습니다. 예를 들어 HTTP 요청과 ØMQ 요청을 비교하면 둘 다 TCP/IP상에서 동작하지만 자신의 프레이임을 사용하는 경향이 있습니다.
 
-> [옮긴이] 프레이임(framing)은 OSI 7 계층에서 데이터링크에서 정의하고 있으며 메시지 데이터 구성 방식으로 다양한 통신규약들에 의해 교환되고 운반되는 데이터 단위입니다
+* [옮긴이] 프레이임(framing)은 OSI 7 계층에서 데이터링크에서 정의하고 있으며 메시지 데이터 구성 방식으로 다양한 통신규약들에 의해 교환되고 운반되는 데이터 단위입니다
 
 그림 10 - 네트워크상 HTTP
 
-![네트워크상 HTTP](images/fig10.svg)
+![네트워크상 HTTP](images/fig10.png)
 
 ;The HTTP request uses CR-LF as its simplest framing delimiter, whereas ØMQ uses a length-specified frame. So you could write an HTTP-like protocol using ØMQ, using for example the request-reply socket pattern. But it would not be HTTP.
 
@@ -208,16 +210,16 @@ HTTP 요청은 CR(0x0D)-LF(0x0A)을 프레이임 구분자로 사용하지만 Ø
 
 그림 11 - 네트워크상 ØMQ
 
-![네트워크상 ØMQ](images/fig11.svg)
+![네트워크상 ØMQ](images/fig11.png)
 
 ;Since v3.3, however, ØMQ has a socket option called ZMQ_ROUTER_RAW that lets you read and write data without the ØMQ framing. You could use this to read and write proper HTTP requests and responses. Hardeep Singh contributed this change so that he could connect to Telnet servers from his ØMQ application. At time of writing this is still somewhat experimental, but it shows how ØMQ keeps evolving to solve new problems. Maybe the next patch will be yours.
 
 
 v3.3 버전 이후로 ØMQ는 "ZMQ_ROUTER_RAW"라는 새로운 소켓 옵션을 가지고 ØMQ 프레이밍이 없이도 데이터를 읽고 쓸 수 있게 되었습니다. 즉 적절한 HTTP 요청과 응답을 읽고 쓸수 있게 되었다. "하딥 싱(Hardeep Singh)"은 자신의 ØMQ 응용프로그램에서 텔넷 서버에 연결할 수 있도록 이러한 변경에 기여했습니다. 글을 쓰는 시점에는 이것은 다소 실험적이지만 ØMQ가 어떻게 새로운 문제를 해결하기 위해 계속 발전하고 있는지 보여줍니다. 아마도 다음 패치에서는 사용 가능할 것으로 예상됩니다.
 
-> [옮긴이] 현재(2020년 8월) ØMQ 4.3.2의 `zmq_setsockopt()`에서도 `ZMQ_ROUTER_RAW` 사용 가능합니다.
+* [옮긴이] 현재(2020년 8월) ØMQ 4.3.2의 `zmq_setsockopt()`에서도 `ZMQ_ROUTER_RAW` 사용 가능합니다.
 
-### I/O 스레드들(I/O Threads)
+### I/O 스레드들
 ;We said that ØMQ does I/O in a background thread. One I/O thread (for all sockets) is sufficient for all but the most extreme applications. When you create a new context, it starts with one I/O thread. The general rule of thumb is to allow one I/O thread per gigabyte of data in or out per second. To raise the number of I/O threads, use the zmq_ctx_set() call before creating any sockets:
 
 이전에 ØMQ는 백그라운드 스레드를 통하여 I/O을 수행한다고 하였으며, 하나의 I/O 스레드(모든 소켓들에 대하여)에서 메시지 처리가 가능합니다(일부 극단적으로 대량의 I/O를 처리하는 응용프로그램의 경우 I/O 스레드 개수를 조정 가능함). 새로운 컨텍스트를 만들 때, 하나의 I/O 스레드가 시작되며, 일반적으로 하나의 I/O 스레드는 초당 1 기가바이트의 데이트를 입/출력할 수 있습니다. I/O 스레드의 개수를 늘리기 위해서는 소켓을 생성하기 전에 `zmq_ctx_set()` 함수를 사용할 수 있습니다.
@@ -233,13 +235,13 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 
 하나의 소켓에서 한 번에 수십 개 혹은 수천 개의 연결을 처리할 수 있으며 이것이 ØMQ 기반 응용프로그램 작성에 근본적인 영향을 줍니다. 기존의 네트워크 응용프로그램에서는 원격 연결당 하나의 프로세스 혹은 하나의 스레드가 필요하였으며, 해당 프로세스 혹은 스레드에서 하나의 소켓으로 처리하였습니다. ØMQ를 사용하면 전체 구조를 단일 프로세스로 축소하고 필요에 따라 확장할 수 있습니다.
 
-> [옮긴이] ØMQ 응용프로그램 작성 시 클라이언트/서버를 각각의 스레드로 작성하여 inproc를 통하여 테스트를 수행하고, 정상적인 경우 각 스레드는 프로세스로 분리하여 IPC나 TCP로 연결할 수 있습니다.
+* [옮긴이] ØMQ 응용프로그램 작성 시 클라이언트/서버를 각각의 스레드로 작성하여 inproc를 통하여 테스트를 수행하고, 정상적인 경우 각 스레드는 프로세스로 분리하여 IPC나 TCP로 연결할 수 있습니다.
 
 ;If you are using ØMQ for inter-thread communications only (i.e., a multithreaded application that does no external socket I/O) you can set the I/O threads to zero. It's not a significant optimization though, more of a curiosity.
 
 ØMQ를 스레드 간 통신(inproc)에 사용할 경우(예를 들어 멀티스레드 응용프로그램에서 외부 소켓 I/O가 없을 경우)에 한하여 I/O 스레드의 개수를 0으로 설정할 수 있습니다. 흥미롭지만 중요한 최적화는 아닙니다.
 
-## 메시징 패턴(Messaging Patterns)
+## 메시징 패턴
 ;Underneath the brown paper wrapping of ØMQ's socket API lies the world of messaging patterns. If you have a background in enterprise messaging, or know UDP well, these will be vaguely familiar. But to most ØMQ newcomers, they are a surprise. We're so used to the TCP paradigm where a socket maps one-to-one to another node.
 
 ØMQ 소켓 API를 감싸고 있는 갈색 포장지를 걷어내면 메시징 패턴의 세계가 놓여 있습니다. 만약 기업 메시징 시스템에 대한 배경이 있거나 UDP을 아신다면 다소 막연하지만 익숙할 것입니다. 그러나 ØMQ를 새로 접하시는 분에게는 놀라울 것입니다. 우리는 TCP 패러디엄을 사용하여 다른 노드와 1:1 매핑을 하였습니다.
@@ -256,7 +258,7 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 * 모든 I/O 처리를 백그라운드 스레드가 처리합니다(기본 1개이며, 수량 조정 가능).
 * ØMQ는 노드 간의 통신에 잠금 없는 기술을 사용하여 잠금, 대기, 세마포어, 교착이 발생하지 않습니다.
 
-> [옮긴이] 대기열에 설정한 HMW(최고수위 표시)를 초과할 경우 디스크에 저장하기 위해서는 `zmq_setsockopt()`에서 `ZMQ_SWAP`설정을 통해 수행합니다.
+* [옮긴이] 대기열에 설정한 HMW(최고수위 표시)를 초과할 경우 디스크에 저장하기 위해서는 `zmq_setsockopt()`에서 `ZMQ_SWAP`설정을 통해 수행합니다.
 
 ;But cutting through that, it routes and queues messages according to precise recipes called patterns. It is these patterns that provide ØMQ's intelligence. They encapsulate our hard-earned experience of the best ways to distribute data and work. ØMQ's patterns are hard-coded but future versions may allow user-definable patterns.
 
@@ -302,8 +304,8 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 
 * PUB와 SUB
 * REQ와 REP
-* REQ와 ROUTER(주의 필요, REQ는 추가로 1개의 널(\0) 프레임을 넣는다.)
-* DEALER와 REP(주의 필요, REP는 1개의 널(\0) 프레임으로 가정한다.)
+* REQ와 ROUTER(주의 필요, REQ는 추가로 1개의 널(NULL(0)) 프레임을 넣는다.)
+* DEALER와 REP(주의 필요, REP는 1개의 널(NULL(0)) 프레임으로 가정한다.)
 * DEALER와 ROUTER
 * DEALER와 DEALER
 * ROUTER와 ROUTER
@@ -314,12 +316,12 @@ assert (zmq_ctx_get (context, ZMQ_IO_THREADS) == io_threads);
 
 XPUB와 XSUB 소켓도 있으며, 다음장에서 다루도록 하겠습니다(PUB와 SUB의 원시(raw) 버전과 유사). 다른 소켓 조합들은 신뢰할 수 없는 결과를 낳을 수 있으며, 미래의 ØMQ에서는 오류를 생성하게 할 예정입니다. 물론 코드상에서 다른 소켓 유형을 연결할 수 있습니다(즉, 한 소켓 유형에서 읽고 다른 소켓 유형에 쓰기).
 
-### 고수준의 메시지 패턴들(High Level Messaging Patterns)
+### 고수준의 메시지 패턴들
 ;These four core patterns are cooked into ØMQ. They are part of the ØMQ API, implemented in the core C++ library, and are guaranteed to be available in all fine retail stores.
 
 ØMQ 에는 내장된 4개의 핵심 패턴이 있으며, 그들은 ØMQ API의 일부이며 C++ 라이브러리로 구현되어 있으며 모든 용도에 적절하게 동작함을 보장합니다.
 
-> [옮긴이] 핵심 패턴들은 ØMQ RFC사이트(https://rfc.zeromq.org)에서 정의되어 있습니다.
+* [옮긴이] 핵심 패턴들은 ØMQ RFC사이트(https://rfc.zeromq.org)에서 정의되어 있습니다.
 - MDP(Majordome Protocol), TSP(Titanic Service Protocol), FLP(Freelance Protocol), CHP(Clustered Hashmap Protocol) 등이 있습니다.
 
 ;On top of those, we add high-level messaging patterns. We build these high-level patterns on top of ØMQ and implement them in whatever language we're using for our application. They are not part of the core library, do not come with the ØMQ package, and exist in their own space as part of the ØMQ community. For example the Majordomo pattern, which we explore in Chapter 4 - Reliable Request-Reply Patterns, sits in the GitHub Majordomo project in the ØMQ organization.
@@ -331,7 +333,7 @@ XPUB와 XSUB 소켓도 있으며, 다음장에서 다루도록 하겠습니다(P
 
 이 책에서 우리가 제공하고자 하는 일련의 고수준 패턴들은 작을 수도 있고(정상적으로 메시지 처리하는 방법) 거대(신뢰할 수 있는 PUB-SUB 아키텍처를 만드는 방법)할 수도 있습니다.
 
-### 메시지와 작업하기(Working with Messages)
+### 메시지와 작업하기
 ;The libzmq core library has in fact two APIs to send and receive messages. The zmq_send() and zmq_recv() methods that we've already seen and used are simple one-liners. We will use these often, but zmq_recv() is bad at dealing with arbitrary message sizes: it truncates messages to whatever buffer size you provide. So there's a second API that works with zmq_msg_t structures, with a richer but more difficult API:
 
 libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 API를 가지고 있습니다. `zmq_send()`와 `zmq_recv()` 함수이며, 이미 한줄짜리 코드로 보았습니다. `zmq_recv()`는 임의의 메시지 크기를 가지는 데이터를 처리하는 데는 좋지 않습니다. `zmq_recv()`는 응용프로그램의 코드 내에서 정의한 버퍼의 크기를 넘을 경우 크기 이상 메시지 데이터는 버리게 됩니다. 그래서 `zmq_msg_t` 구조체를 다룰 수 있도록 추가적인 API로 작업해야 합니다.
@@ -430,7 +432,7 @@ libzmq 핵심 라이브러리는 사실 메시지를 송/수신하는 2개의 AP
 * 하나의 메시지(1개 혹은  멀티파트)는 반드시 메모리 크기에 맞아야 하며 파일이나 임의의 크기를 전송하려면 하나의 파트의 메시지로 쪼개어서 각 조각을 전송해야 합니다. 멀티파트 데이터를 사용하여 메모리 사용을 줄일 수는 없습니다.
 * 메시지 수신이 끝나면 `zmq_msg_close()`을 반드시 호출하여야 하며, 일부 개발 언어에서는 변수의 사용 범위를 벋어나도 자동으로 삭제하지 않습니다. 메시지를 전송할 때는 `zmq_msg_close()`을 호출하지 마시기 바랍니다.
 
-> [옮긴이]  zhelpers.h에 정의된 s_dump() 함수를 통하여 멀티파트 메시지(multipart message) 출력이 가능하게 합니다.
+* [옮긴이]  zhelpers.h에 정의된 s_dump() 함수를 통하여 멀티파트 메시지(multipart message) 출력이 가능하게 합니다.
 
 ```cpp
 s_dump (void *socket)
@@ -483,7 +485,7 @@ s_dump (void *socket)
 
 많은 API는 작업하기 피곤하며 각종 함수들을 성능을 위해 최적화하는 것도 단순하지 않습니다. [ØMQ 매뉴얼](http://api.ØMQ.org/)에 익숙하기 전에 API를 잘못 사용하는 경우 오류가 발생할 수 있습니다. 특정 개발 언어에 대한 바인딩을 통하여 API를 쉽게 사용하는 것도 하나의 방법입니다.
 
-### 다중 소켓 다루기(Handling Multiple Sockets)
+### 다중 소켓 다루기
 ;In all the examples so far, the main loop of most examples has been:
 
 지금까지의 예제들은 아래 항목의 루프를 수행하였습니다.
@@ -500,13 +502,13 @@ s_dump (void *socket)
 
 만약 다중 단말로부터 동시에 메시지를 받아 처리해야 한다면 하나의 소켓에 모든 단말들을 연결하여 ØMQ가 팬아웃 형태로 처리하는 것이 간단한 방법이며, 원격 단말들에도 동일한 패턴을 적용할 수 있습니다. 하지만 패턴이 다른 경우 즉 PULL 소켓을 PUB 단말에 연결하는 것은 잘못된 방법이다.
 
-> [옮긴이] 가능한 패턴 : PUB/SUB, REQ/REP, REQ/ROUTER, DEALER/REP, DEALER/ROUTER, DEALER/DEALER, ROUTER/ROUTER, PUSH/PULL, PAIR/PAIR
+* [옮긴이] 가능한 패턴 : PUB/SUB, REQ/REP, REQ/ROUTER, DEALER/REP, DEALER/ROUTER, DEALER/DEALER, ROUTER/ROUTER, PUSH/PULL, PAIR/PAIR
 
 ;To actually read from multiple sockets all at once, use zmq_poll(). An even better way might be to wrap zmq_poll() in a framework that turns it into a nice event-driven reactor, but it's significantly more work than we want to cover here.
 
 실제로 한 번에 여러 소켓에서 읽으려면 `zmq_poll()`을 사용해야 합니다. 더 좋은 방법은 `zmq_poll()`을 프레임워크로 감싸서 이벤트 중심으로 반응하도록 변형하는 것이지만, 여기서 다루고 싶은 것보다 훨씬 더 많은 작업이 필요합니다.
 
-> [옮긴이] zloop 리엑터(reactor)를 통하여 이벤트 중심으로 반응하도록 zmq_poll() 대체 가능합니다.
+* [옮긴이] zloop 리엑터(reactor)를 통하여 이벤트 중심으로 반응하도록 zmq_poll() 대체 가능합니다.
 
 ;Let's start with a dirty hack, partly for the fun of not doing it right, but mainly because it lets me show you how to do nonblocking socket reads. Here is a simple example of reading from two sockets using nonblocking reads. This rather confused program acts both as a subscriber to weather updates, and a worker for parallel tasks:
 
@@ -569,7 +571,7 @@ int main (void)
 
 이런 접근에 대한 비용은 첫 번째 메시지에 대한 추가적인 지연이 발생합니다(메시지 처리하기에도 바쁜데 루푸의 마지막에 `sleep()`). 이러한 접근은 고속 처리가 필요한 응용프로그램에서 치명적인 지연을 발생합니다. `nanosleep()`를 사용할 경우 바쁘게 반복(busy-loop)되지 않는지 확인해야 합니다.
 
-> [옮긴이] msreader.c에서 사용된 s_sleep()는 zhelpers.h에 정의되어 있음
+* [옮긴이] msreader.c에서 사용된 s_sleep()는 zhelpers.h에 정의되어 있음
 
 ```cpp
 //  Sleep for a number of milliseconds
@@ -643,7 +645,7 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] "zmq_poll (items, 2, -1)"에서 3번째 인수가 "-1"일 경우, 이벤트가 발생할때까지 기다리게 됩니다.
+* [옮긴이] "zmq_poll (items, 2, -1)"에서 3번째 인수가 "-1"일 경우, 이벤트가 발생할때까지 기다리게 됩니다.
 
 ;The items structure has these four members:
 
@@ -663,7 +665,7 @@ typedef struct zmq_pollitem_t
 } zmq_pollitem_t;
 ```
 
-> [옮긴이] msreader와 mspoller 테스트를 위해서는 taskvent(호흡기 서버)와 wuserver(기상 정보 변경 서버) 수행이 필요함
+* [옮긴이] msreader와 mspoller 테스트를 위해서는 taskvent(호흡기 서버)와 wuserver(기상 정보 변경 서버) 수행이 필요함
 
 taskvent.c : 호흡기 서버 프로그램
 
@@ -717,6 +719,7 @@ int main (void)
 }
 ```
 wuserver.c : 기상 정보 변경 서버
+
 ```cpp
 //  Weather update server
 //  Binds PUB socket to tcp://*:5556
@@ -752,29 +755,35 @@ int main (void)
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc mspoller.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc msreader.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc taskvent.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc wuserver.c libzmq.lib
+ cl -EHsc mspoller.c libzmq.lib
+ cl -EHsc msreader.c libzmq.lib
+ cl -EHsc taskvent.c libzmq.lib
+ cl -EHsc wuserver.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./taskvent
+ ./taskvent
 Press Enter when the workers are ready:
 Sending tasks to workers...
 Total expected cost: 4856 msec
 
-PS D:\git_store\zguide-kr\examples\C> ./wuserver
+ ./wuserver
 
-PS D:\git_store\zguide-kr\examples\C> ./mspoller
-SSSSSSSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+ ./mspoller
+SSSSSSSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSSSSSSSSSSSS
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+SSSSSSSSSSS
 
-PS D:\git_store\zguide-kr\examples\C> ./msreader
-SSSSSSSSSSSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+ ./msreader
+SSSSSSSSSSSSSSSSSSSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSSSSSSSSSSS
+SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+SSSSSSSS
 ~~~
 
-### 멀티파트 메시지들(Multipart Messages)
+### 멀티파트 메시지들
 ;ØMQ lets us compose a message out of several frames, giving us a "multipart message". Realistic applications use multipart messages heavily, both for wrapping messages with address information and for simple serialization. We'll look at reply envelopes later.
 
 ØMQ는 여러 개의 프레임들로 하나의 메시지를 구성하게 하며 멀티파트 메시지를 제공합니다. 현실에서는 응용프로그램은 멀티파트 메시지를 많이 사용하며 IP 주소 정보를 메시지에 내포하여 직열화 용도로 사용합니다. 우리는 이것을 응답 봉투에서 나중에 다루겠습니다.
@@ -835,7 +844,7 @@ while (1) {
 * 데이터 전송 시, ØMQ는 메시지 대기열에 마지막 프레임이 올 때까지 쌓이게 하여, 마지막 프레임이 도착하면 대기열의 모든 프레임들을 전송합니다.
 * 소켓을 닫는 경우를 제외하고는 메시지 전송 시 프레임들을 부분적으로 취소할 방법은 없습니다.
 
-> [옮긴이] mbroker.c : zmq_poll()을 통한 송/수신 브로커에서 `zmq_msg_t`을 통해 메시지를 정의하고 멀티파트 메시지를 처리합니다.
+* [옮긴이] mbroker.c : zmq_poll()을 통한 송/수신 브로커에서 `zmq_msg_t`을 통해 메시지를 정의하고 멀티파트 메시지를 처리합니다.
 
 ```cpp
 //  Simple request-reply broker
@@ -893,7 +902,7 @@ int main (void)
 }
 ```
 
-### 중개자와 프록시(Intermediaryies and Proxies)
+### 중개자와 프록시
 ;ØMQ aims for decentralized intelligence, but that doesn't mean your network is empty space in the middle. It's filled with message-aware infrastructure and quite often, we build that infrastructure with ØMQ. The ØMQ plumbing can range from tiny pipes to full-blown service-oriented brokers. The messaging industry calls this intermediation, meaning that the stuff in the middle deals with either side. In ØMQ, we call these proxies, queues, forwarders, device, or brokers, depending on the context.
 
 ØMQ는 지능의 탈중앙화를 목표로 만들었지만 네트워크상에서 중간이 텅 비었다는 것은 아니며, ØMQ를 통해 메시지 인식 가능한 인프라구조를 만들었습니다.
@@ -904,12 +913,12 @@ int main (void)
 
 이러한 패턴은 현실세계에서 일반적이지만 왜 우리의 사회와 경제에서 실제 아무 기능도 없는 중개자로 채워져 있는 것은 거대한 네트워크 상에서 복잡성을 줄이고 비용을 낮추기 위함입니다. 현실세계에서 중계자는 보통 도매상, 판매 대리점, 관리자 등으로 불립니다.
 
-### 동적 발견 문제(The Dynamic Discovery Problem)
+### 동적 발견 문제
 ;One of the problems you will hit as you design larger distributed architectures is discovery. That is, how do pieces know about each other? It's especially difficult if pieces come and go, so we call this the "dynamic discovery problem".
 
 거대한 분산 아키텍처를 설계할 때 골 때리는 문제 중에 하나가 상대방을 찾는 것입니다. 어떻게 각 노드들이 상호 간을 인식할 수 있을지, 이것은 노드들이 네트워크상에서 들어오고 나가고를 반복하면서 특히 어렵게 되며 이러한 문제를 "동적 발견 문제"로 부르기로 하겠습니다.
 
-> [옮긴이] 클라이언트에서 서비스(서버) 제공자를 찾기 위한 방법이 분산 시스템 구성에서 주요한 화두이며, 일부 상용 제품에서는 디렉터리 서비스(Directory Service)를 통해 문제를 해결합니다. 대표적인 제품으로 Apache LDAP이 있으며, NASA의 GMSEC의 경우 LDAP을 사용합니다.
+* [옮긴이] 클라이언트에서 서비스(서버) 제공자를 찾기 위한 방법이 분산 시스템 구성에서 주요한 화두이며, 일부 상용 제품에서는 디렉터리 서비스(Directory Service)를 통해 문제를 해결합니다. 대표적인 제품으로 Apache LDAP이 있으며, NASA의 GMSEC의 경우 LDAP을 사용합니다.
 
 ;There are several solutions to dynamic discovery. The simplest is to entirely avoid it by hard-coding (or configuring) the network architecture so discovery is done by hand. That is, when you add a new piece, you reconfigure the network to know about it.
 
@@ -917,7 +926,7 @@ int main (void)
 
 그림 12 - 소규모 Pub-Sub 네트워크
 
-![Small-Scale Pub-Sub Network](images/fig12.svg)
+![Small-Scale Pub-Sub Network](images/fig12.png)
 
 ;In practice, this leads to increasingly fragile and unwieldy architectures. Let's say you have one publisher and a hundred subscribers. You connect each subscriber to the publisher by configuring a publisher endpoint in each subscriber. That's easy. Subscribers are dynamic; the publisher is static. Now say you add more publishers. Suddenly, it's not so easy any more. If you continue to connect each subscriber to each publisher, the cost of avoiding dynamic discovery gets higher and higher.
 
@@ -926,7 +935,7 @@ int main (void)
 
 그림 13 - 프록시를 통한 발행-구독 네트워크
 
-![Pub-Sub Network with a Proxy](images/fig14.svg)
+![Pub-Sub Network with a Proxy](images/fig14.png)
 
 ;There are quite a few answers to this, but the very simplest answer is to add an intermediary; that is, a static point in the network to which all other nodes connect. In classic messaging, this is the job of the message broker. ØMQ doesn't come with a message broker as such, but it lets us build intermediaries quite easily.
 
@@ -944,17 +953,18 @@ PUB-SUB 프록시를 추가하여 우리의 예제에서 동적 발견 문제를
 
 그림 14 - 확장된 발행-구독
 
-![Extended Pub-Sub](images/fig13.svg)
+![Extended Pub-Sub](images/fig13.png)
 
 ;We need XPUB and XSUB sockets because ØMQ does subscription forwarding from subscribers to publishers. XSUB and XPUB are exactly like SUB and PUB except they expose subscriptions as special messages. The proxy has to forward these subscription messages from subscriber side to publisher side, by reading them from the XSUB socket and writing them to the XPUB socket. This is the main use case for XSUB and XPUB.
 
 ØMQ가 구독 정보를 구독자들로부터 발행자들로 전달할 수 있는 XSUB과 XPUB 소켓에 대하여 살펴보도록 하겠습니다. XSUB와 XPUB은 특별한 메시지들에 대한 구독 정보를 공개하는 것 외에는 SUB와 PUB과 정확히 일치합니다. 프록시는 구독된 메시지들을 발행자들로부터 구독자들로 전달하며, XSUB 소켓으로 읽어서 XPUB 소켓에 쓰도록 합니다. 이것이 XSUB와 XPUB의 주요 사용법입니다.
 
-> [옮긴이] XSUB는 eXtended subscriber, XPUB은 eXtended publisher이며, 다수의 발행자들과 구독자들을 연결하는 프록시(`zmq_proxy()`)를 통해 브로커 역할을 수행합니다.
+* [옮긴이] XSUB는 eXtended subscriber, XPUB은 eXtended publisher이며, 다수의 발행자들과 구독자들을 연결하는 프록시(`zmq_proxy()`)를 통해 브로커 역할을 수행합니다.
 
-> [옮긴이] XSUB와 XPUB을 테스트하기 위하여 기상 변경 정보를 전달하는 `wuserver`의 `bind()`를 `connect()`로 변경하여 테스트를 하겠습니다.
+* [옮긴이] XSUB와 XPUB을 테스트하기 위하여 기상 변경 정보를 전달하는 `wuserver`의 `bind()`를 `connect()`로 변경하여 테스트를 하겠습니다.
 
 wuserver.c : 기상 변경 정보 발행
+
 ```cpp
 //  Weather update server
 //  Binds PUB socket to tcp://*:5556
@@ -990,6 +1000,7 @@ int main (void)
 }
 ```
 wuclient.c : 기상 변경 정보 구독
+
 ```cpp
 //  Weather update client
 //  Connects SUB socket to tcp://localhost:5556
@@ -1033,6 +1044,7 @@ int main (int argc, char *argv [])
 }
 ```
 wuproxy.c : XSUB와 XPUB를 사용하여 중개자 역할 수행
+
 ```cpp
 //  Weather proxy device
 
@@ -1059,21 +1071,21 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc wuserver.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc wuclient.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc wuproxy.c libzmq.lib
+ cl -EHsc wuserver.c libzmq.lib
+ cl -EHsc wuclient.c libzmq.lib
+ cl -EHsc wuproxy.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./wuserver
+ ./wuserver
 
-PS D:\git_store\zguide-kr\examples\C> ./wuproxy
+ ./wuproxy
 
-PS D:\git_store\zguide-kr\examples\C> ./wuclient
+ ./wuclient
 Collecting updates from weather server...
 Average temperature for zipcode '10000' was 18F
-PS D:\git_store\zguide-kr\examples\C> ./wuclient
+ ./wuclient
 Collecting updates from weather server...
 Average temperature for zipcode '10000' was 36F
 ~~~
@@ -1085,15 +1097,17 @@ Hello World 클라이언트/서버 응용프로그램에서, 하나의 클라이
 
 그림 15 - 요청 분배
 
-![Request Distribution](images/fig15.svg)
+![Request Distribution](images/fig15.png)
 
 ;There are two ways to connect multiple clients to multiple servers. The brute force way is to connect each client socket to multiple service endpoints. One client socket can connect to multiple service sockets, and the REQ socket will then distribute requests among these services. Let's say you connect a client socket to three service endpoints; A, B, and C. The client makes requests R1, R2, R3, R4. R1 and R4 go to service A, R2 goes to B, and R3 goes to service C.
 
 다수의 클라이언트들을 다수의 서버에 연결하는 방법에는 두 가지가 있습니다. 가장 강력한 방법은 각 클라이언트 소켓을 여러 서비스 단말에 연결하는 것입니다. 하나의 클라이언트 소켓은 여러 서비스 소켓에 연결할 수 있으며, REQ 소켓은 이러한 서비스들 간의 요청을 분배합니다. 다시 말해 하나의 클라이언트 소켓을 세 개의 서비스 단말에 연결한다고 하면 : 서비스 단말들(A, B 및 C)에 대하여 클라이언트는 R1, R2, R3, R4를 요청합니다. R1 및 R4는 서비스 A로 이동하고 R2는 B로 이동하고 R3은 서비스 C로 이동합니다.
 
-> [옮긴이] 서버에서 서비스를 제공하기 때문에, 서버란 용어 대신 서비스로 대체하여 사용하기도 합니다.
-> [옮긴이] 클라이언트가 REQ 소켓을 일련의 서버들의 REP 소켓에 연결하기 위한 예제는 다음과 같습니다.
+* [옮긴이] 서버에서 서비스를 제공하기 때문에, 서버란 용어 대신 서비스로 대체하여 사용하기도 합니다.
+* [옮긴이] 클라이언트가 REQ 소켓을 일련의 서버들의 REP 소켓에 연결하기 위한 예제는 다음과 같습니다.
+
 hwclient_mc.c : REQ 소켓에 일련의 서버를 연결
+
 ```cpp
 //  Hello World client
 #include <zmq.h>
@@ -1130,6 +1144,7 @@ int main (void)
 ```
 
 hwserver_argv.c : 명령어 창에서 바인딩 주소를 받아 실행하는 서버
+
 ```cpp
 //  Hello World server
 
@@ -1162,11 +1177,12 @@ int main (int argc, char *argv [])
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
+
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc hwserver_argv.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc hwclient_mc.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> ./hwclient_mc
+ cl -EHsc hwserver_argv.c libzmq.lib
+ cl -EHsc hwclient_mc.c libzmq.lib
+ ./hwclient_mc
 Connecting to hello world server...
 Sending Hello 0...
 Received World 0
@@ -1188,20 +1204,19 @@ Sending Hello 8...
 Received World 8
 Sending Hello 9...
 Received World 9
-PS D:\git_store\zguide-kr\examples\C> ./hwserver_argv tcp://*:5555
+ ./hwserver_argv tcp://*:5555
 Received Hello
 Received Hello
 Received Hello
 Received Hello
-PS D:\git_store\zguide-kr\examples\C> ./hwserver_argv tcp://*:5556
+ ./hwserver_argv tcp://*:5556
 Received Hello
 Received Hello
 Received Hello
-PS D:\git_store\zguide-kr\examples\C> ./hwserver_argv tcp://*:5557
+ ./hwserver_argv tcp://*:5557
 Received Hello
 Received Hello
 Received Hello
-
 ~~~
 
 ;This design lets you add more clients cheaply. You can also add more services. Each client will distribute its requests to the services. But each client has to know the service topology. If you have 100 clients and then you decide to add three more services, you need to reconfigure and restart 100 clients in order for the clients to know about the three new services.
@@ -1226,7 +1241,7 @@ REQ를 사용하여 REP와 통신할 때 엄격한 동기식 요청-응답가 �
 
 그림 16 - 확장된 요청-응답
 
-![Extended Request-Reply](images/fig16.svg)
+![Extended Request-Reply](images/fig16.png)
 
 ;Luckily, there are two sockets called DEALER and ROUTER that let you do nonblocking request-response. You'll see in Chapter 3 - Advanced Request-Reply Patterns how DEALER and ROUTER sockets let you build all kinds of asynchronous request-reply flows. For now, we're just going to see how DEALER and ROUTER let us extend REQ-REP across an intermediary, that is, our little broker.
 
@@ -1373,22 +1388,22 @@ int main (void)
 ```
 그림 17 - 요청-응답 브로커
 
-![Request-Reply Broker](images/fig17.svg)
+![Request-Reply Broker](images/fig17.png)
 
 ;Using a request-reply broker makes your client/server architectures easier to scale because clients don't see workers, and workers don't see clients. The only static node is the broker in the middle.
 
 요청-응답 브로커를 사용하면 클라이언트는 작업자를 보지 못하고 작업자는 클라이언트를 보지 않기 때문에 클라이언트/서버 아키텍처를 쉽게 확장할 수 있습니다. 유일한 정적 노드는 중간에 있는 브로커입니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc rrclient.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc rrworker.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc rrproxy.c libzmq.lib
+ cl -EHsc rrclient.c libzmq.lib
+ cl -EHsc rrworker.c libzmq.lib
+ cl -EHsc rrproxy.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./rrbroker
+ ./rrbroker
 
-PS D:\git_store\zguide-kr\examples\C> ./rrworker
+ ./rrworker
 Received request: [Hello]
 Received request: [Hello]
 Received request: [Hello]
@@ -1396,7 +1411,7 @@ Received request: [Hello]
 Received request: [Hello]
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./rrclient
+ ./rrclient
 Received reply 0 [World]
 Received reply 1 [World]
 Received reply 2 [World]
@@ -1405,7 +1420,7 @@ Received reply 4 [World]
 ...
 ~~~
 
-> [옮긴이] 이런 구조에서는 작업자에서 제공하는 서비스를 구분해야 할 경우(설비 연계 서비스, 사용자 연계 서비스, 트랜젝션 처리 서비스 등) 개별 서비스에 대하여 요청/응답 브로커에서 분배합니다. 클라이언트에서 각 서비스를 제공하는 작업자들의 정보를 등록하여 찾아가게 하거나, 브로커에 서비스 추가/삭제하여 클라이언트가 브로커에 서비스를 요청하고 제공받게 할 수 있습니다.
+* [옮긴이] 이런 구조에서는 작업자에서 제공하는 서비스를 구분해야 할 경우(설비 연계 서비스, 사용자 연계 서비스, 트랜젝션 처리 서비스 등) 개별 서비스에 대하여 요청/응답 브로커에서 분배합니다. 클라이언트에서 각 서비스를 제공하는 작업자들의 정보를 등록하여 찾아가게 하거나, 브로커에 서비스 추가/삭제하여 클라이언트가 브로커에 서비스를 요청하고 제공받게 할 수 있습니다.
 작업자의 서비스들을 클라이언트에 정적으로 보관하거나, 브로커에서 서비스 관리하지 않기 위해서는 클라이언트에서 필요한 서비스를 찾을 수 있도록 서비스를 식별하기 위한 중앙의 저장소를 두어 운영할 수도 있습니다.
 
 ### ØMQ의 내장된 프록시 함수
@@ -1417,7 +1432,7 @@ Received reply 4 [World]
 zmq_proxy (frontend, backend, capture);
 ```
 
-> [옮긴이] 아래의 코드를 zmq_proxy() 함수에서 대응할 수 있습니다.
+* [옮긴이] 아래의 코드를 zmq_proxy() 함수에서 대응할 수 있습니다.
 
 ```cpp
     //  Initialize poll set
@@ -1492,14 +1507,14 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~ {.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc msgqueue.c libzmq.lib
+ cl -EHsc msgqueue.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./msgqueue
+ ./msgqueue
 
-PS D:\git_store\zguide-kr\examples\C> ./rrworker
+ ./rrworker
 Received request: [Hello]
 Received request: [Hello]
 Received request: [Hello]
@@ -1507,7 +1522,7 @@ Received request: [Hello]
 Received request: [Hello]
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./rrclient
+ ./rrclient
 Received reply 0 [World]
 Received reply 1 [World]
 Received reply 2 [World]
@@ -1520,14 +1535,14 @@ Received reply 4 [World]
 
 대부분의 ØMQ 사용자의 경우, 이 단계에서 "임의의 소켓 유형을 프록시에 넣으면 어떤 일이 일어날까?" 생각합니다. 짧게 대답하면 : 그것을 시도하고 무슨 일이 일어나는지 보아야 합니다. 실제로는 보통 ROUTER/DEALER, XSUB/XPUB 또는 PULL/PUSH을 사용합니다.
 
-### 전송계층 간의 연결(Transport Bridging)
+### 전송계층 간의 연결
 ;A frequent request from ØMQ users is, "How do I connect my ØMQ network with technology X?" where X is some other networking or messaging technology.
 
 ØMQ 사용자의 계속되는 요청은 "기술 X와 ØMQ 네트워크를 어떻게 연결합니까?"입니다. 여기서 X는 다른 네트워킹 또는 메시징 기술입니다.
 
 그림 18 - Pub-Sub 포워드 프록시(Forwarder Proxy)
 
-![Pub-Sub Forwarder Proxy](images/fig18.svg)
+![Pub-Sub Forwarder Proxy](images/fig18.png)
 
 ;The simple answer is to build a bridge. A bridge is a small application that speaks one protocol at one socket, and converts to/from a second protocol at another socket. A protocol interpreter, if you like. A common bridging problem in ØMQ is to bridge two transports or networks.
 
@@ -1565,7 +1580,7 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] wuserver와 wuclient간에 wuproxy를 넣어서 테스트 가능합니다.
+* [옮긴이] wuserver와 wuclient간에 wuproxy를 넣어서 테스트 가능합니다.
 
 ;It looks very similar to the earlier proxy example, but the key part is that the frontend and backend sockets are on two different networks. We can use this model for example to connect a multicast network (pgm transport) to a tcp publisher.
 
@@ -1580,7 +1595,7 @@ int main (void)
 
 어설션(assertion)은 ØMQ의 안정적인 코드에 필수적인 조미료입니다. 그들은 세포막에 있어야 하며 그런 막을 통하여 결함이 내부 또는 외부인지 구분하고, 불확실한 경우 설계 결함으로 수정해야 합니다.. C/C++에서 어설션은 오류 발생 시 응용프로그램을 즉시 중지합니다. 다른 언어에서는 예외 혹은 중지가 발생할 수 있습니다.
 
-> [옮긴이] 어설션(assertion) 사용 사례(msgqueue.c에서 발취), assert()는 조건식이 거짓(false) 일 때 프로그램을 중단하며 참(true) 일 때는 프로그램이 계속 실행합니다.
+* [옮긴이] 어설션(assertion) 사용 사례(msgqueue.c에서 발취), assert()는 조건식이 거짓(false) 일 때 프로그램을 중단하며 참(true) 일 때는 프로그램이 계속 실행합니다.
 
 ```cpp
     ...
@@ -1629,9 +1644,10 @@ if (rc == -1) {
     return -1;
 }
 ```
-> [옮긴이] hwserver.c를 수정(hwserver1.c)하여 "strerror(errno)" 확인하겠습니다.
+* [옮긴이] hwserver.c를 수정(hwserver1.c)하여 "strerror(errno)" 확인하겠습니다.
 
 hwserver1.c : Hellow World 서버 수정본
+
 ```cpp
 //  Hello World server
 
@@ -1667,10 +1683,10 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc hwserver1.c libzmq.lib
+ cl -EHsc hwserver1.c libzmq.lib
 Microsoft (R) C/C++ 최적화 컴파일러 버전 19.16.27035(x64)
 Copyright (c) Microsoft Corporation. All rights reserved.
 hwserver1.c
@@ -1680,9 +1696,9 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 hwserver1.obj
 libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./hwserver1
+ ./hwserver1
 
-PS D:\git_store\zguide-kr\examples\C> ./hwserver1
+ ./hwserver1
 E: bind failed: Address in use
 ~~~
 
@@ -1701,11 +1717,11 @@ E: bind failed: Address in use
 C/C ++의 `assert()`는 최적화에 의해 완전히 제거되므로 `assert()`내에서 ØMQ API를 호출해서는 안됩니다.
 최적화를 통해 모든`assert()`는 제거된 응용프로그램에서 개발자의 의도에 따라 ØMQ API 호출을 작성하여 오류가 발생할 경우 중단하게 해야 합니다.
 
-> [옮긴이] assert() 매크로는 assert.h 헤더 파일에 정의되어 있으며, 원도우 VC 2017에서 디버그 모드에서만 동작하며 최적화된 릴리즈 모드에서는 제외됩니다.
+* [옮긴이] assert() 매크로는 assert.h 헤더 파일에 정의되어 있으며, 원도우 VC 2017에서 디버그 모드에서만 동작하며 최적화된 릴리즈 모드에서는 제외됩니다.
 
 그림 19 - 강제 종료 신호를 가진 병렬 파이프라인(Pipeline)
 
-![Parallel Pipeline with Kill Signaling](images/fig19.svg)
+![Parallel Pipeline with Kill Signaling](images/fig19.png)
 
 ;Let's see how to shut down a process cleanly. We'll take the parallel pipeline example from the previous section. If we've started a whole lot of workers in the background, we now want to kill them when the batch is finished. Let's do this by sending a kill message to the workers. The best place to do this is the sink because it really knows when the batch is done.
 
@@ -1797,6 +1813,7 @@ int main (void)
 수정된 수집기 응용프로그램에서는 결과 수집이 완료되면 모든 작업자들에게 종료 메시지를 전송합니다.
 
 tasksink2.c: 강제 종료(kill) 신호를 가진 병렬 작업 수집기(sink)
+
 ```cpp
 //  Task sink - design 2
 //  Adds pub-sub flow to send kill signal to workers
@@ -1845,25 +1862,29 @@ int main (void)
 }
 ```
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc taskwork2.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc tasksink2.c libzmq.lib
+ cl -EHsc taskwork2.c libzmq.lib
+ cl -EHsc tasksink2.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./taskvent
+ ./taskvent
 Press Enter when the workers are ready:
 Sending tasks to workers...
 Total expected cost: 5086 msec
-PS D:\git_store\zguide-kr\examples\C>
 
-PS D:\git_store\zguide-kr\examples\C> ./taskwork2
-13.22.47.94.99.65.5.88.38.22.36.27.3.47.98.36.66.43.82.93.5.91.41.87.43.7.43.41.94.48.43.43.74.66.53.7.46.16.21.94.59.10.88.12.59.40.27.43.26.44.51.3.4.59.85.81.96.16.72.71.86.26.46.37.45.20.8.27.15.83.51.80.86.51.71.36.96.4.8.93.58.32.56.22.27.100.81.98.38.96.91.27.9.82.94.57.52.33.92.39.
-PS D:\git_store\zguide-kr\examples\C>
 
-PS D:\git_store\zguide-kr\examples\C> ./tasksink2
-:.........:.........:.........:.........:.........:.........:.........:.........:.........:.........Total elapsed time: 5184 msec
-PS D:\git_store\zguide-kr\examples\C>
+ ./taskwork2
+13.22.47.94.99.65.5.88.38.22.36.27.3.47.98.36.66.43.82.93.5.91.41.
+87.43.7.43.41.94.48.43.43.74.66.53.7.46.16.21.94.59.10.88.12.59.
+40.27.43.26.44.51.3.4.59.85.81.96.16.72.71.86.26.46.37.45.20.8.27.
+15.83.51.80.86.51.71.36.96.4.8.93.58.32.56.22.27.100.81.98.38.96.
+91.27.9.82.94.57.52.33.92.39.
+
+
+ ./tasksink2
+:.........:.........:.........:.........:.........:.........:...
+......:.........:.........:.........Total elapsed time: 5184 msec
 ~~~
 
 ## 인터럽트 신호 처리
@@ -1875,9 +1896,10 @@ PS D:\git_store\zguide-kr\examples\C>
 
 다양한 개발 언어에서 신호를 처리하는 방법을 보겠습니다.
 
-> [옮긴이] 신호 처리를 위한 예제는 리눅스/유닉스에서 실행 필요합니다.
+* [옮긴이] 신호 처리를 위한 예제는 리눅스/유닉스에서 실행 필요합니다.
 
 interrupt.c: Ctrl-C를 제대로 처리하는 방법
+
 ```cpp
 //  Shows how to handle Ctrl-C
 
@@ -1995,8 +2017,8 @@ int main (void)
     return 0;
 }
 ```
-> 
-> [옮긴이] 빌드 및 테스트(CentOS 7에서 수행함)
+
+* [옮긴이] 빌드 및 테스트(CentOS 7에서 수행함)
 
 ~~~{.bash}
 [gmsec@felix C]$ gcc -o interrupt interrupt.c -lzmq
@@ -2063,7 +2085,7 @@ zmq_close (client);
 sudo apt-get install valgrind
 ~~~
 
-> [옮긴이] CentOS의 경우 아래와 같이 설치를 진행합니다.
+* [옮긴이] CentOS의 경우 아래와 같이 설치를 진행합니다.
 
 ~~~ {.bash}
 [root@felix C]# yum install valgrind
@@ -2133,14 +2155,15 @@ valgrind --tool=memcheck --leak-check=full --suppressions=vg.supp someprog
 ~~~
 ==30536== ERROR SUMMARY: 0 errors from 0 contexts...
 ~~~
-> [옮긴이] CentOS의 경우 아래와 테스트를 수행합니다.
+* [옮긴이] CentOS의 경우 아래와 테스트를 수행합니다.
 
 ~~~ {.bash}
 [zedo@sook C]$ ./interrupt
 ^CW: interrupt received, killing server...
 W: cleaning up
 
-[zedo@sook C]$ valgrind --tool=memcheck --leak-check=full --suppressions=vg.supp ./interrupt
+[zedo@sook C]$ valgrind --tool=memcheck --leak-check=full --suppressions=vg.supp
+ ./interrupt
 ==5157== Memcheck, a memory error detector
 ==5157== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==5157== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
@@ -2159,7 +2182,7 @@ W: cleaning up
 ==5157== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ~~~ 
 
-## ØMQ에서 멀티스레드(Multithread)
+## ØMQ에서 멀티스레드
 ;ØMQ is perhaps the nicest way ever to write multithreaded (MT) applications. Whereas ØMQ sockets require some readjustment if you are used to traditional sockets, ØMQ multithreading will take everything you know about writing MT applications, throw it into a heap in the garden, pour gasoline over it, and set it alight. It's a rare book that deserves burning, but most books on concurrent programming do.
 
 ØMQ는 멀티스레드 응용프로그램의 작성에 최적화되어 있습니다. 전통적인 소켓을 사용하셨다면, ØMQ 소켓 사용 시 약간의 재조정이 필요하지만, ØMQ 멀티스레딩은 기존에 알고 계셨던 멀티스레드 응용프로그램 작성 경험이 거의 필요하지 않습니다. 기존의 지식을 정원에 던져버리고 기름을 부어 태워 버리십시오. 책(지식)을 불태우는 경우는 드물지만, 동시성 프로그래밍의 경우 필요합니다.
@@ -2168,7 +2191,7 @@ W: cleaning up
 
 ØMQ에서는 완벽한 멀티스레드 응용프로그램을 만들기 위해(그리고 문자 그대로), 뮤텍스, 잠금이 불필요하며 ØMQ 소켓을 통해 전송되는 메시지를 제외하고는 어떤 다른 형태의 스레드 간 통신이 필요하지 않습니다.
 
-> [옮긴이] 전통적인 멀티스레드 응용프로그램에서는 스레드 간의 동기화를 위해 뮤텍스, 잠금, 세마포어를 사용하여 교착을 회피합니다.
+* [옮긴이] 전통적인 멀티스레드 응용프로그램에서는 스레드 간의 동기화를 위해 뮤텍스, 잠금, 세마포어를 사용하여 교착을 회피합니다.
 
 ;By "perfect MT programs", I mean code that's easy to write and understand, that works with the same design approach in any programming language, and on any operating system, and that scales across any number of CPUs with zero wait states and no point of diminishing returns.
 
@@ -2182,7 +2205,7 @@ W: cleaning up
 
 고전적인 공유 상태 멀티스레드 코드를 작성할 때 싸워야 할 일련의 이상한 문제들은 스트레스와 위험으로 직결되지 않는다면 재미있을 수도 있지만, 이러한 코드는 정상적으로 동작하는 것처럼 보여도 갑자기 중단될 수 있습니다. 세계 최고의 경험을 가진 대기업(Microsoft)에서 "멀티스레드 코드에서 발생 가능한 11 개의 문제" 목록을 발표하였으며,  잊어버린 동기화(forgotten synchronization), 부적절한 세분화(incorrect granularity), 읽기 및 쓰기 분열(read and write tearing), 잠금 없는 순서 변경(lock-free reordering), 잠금 호송(lock convoys), 2단계 댄스(two-step dance) 및 우선순위 반전(priority inversion)을 다루고 있습니다.
 
-> [옮긴이] 잠금 호송(lock convoys)은 잠금(Lock)을 소유한 스레드가 스케줄링에서 제외되어 지연됨으로써 그 잠금(Lock) 해제를 기다리는 다른 스레드(Thread)들도 함께 지연되는 현상입니다.
+* [옮긴이] 잠금 호송(lock convoys)은 잠금(Lock)을 소유한 스레드가 스케줄링에서 제외되어 지연됨으로써 그 잠금(Lock) 해제를 기다리는 다른 스레드(Thread)들도 함께 지연되는 현상입니다.
 
 ;Yeah, we counted seven problems, not eleven. That's not the point though. The point is, do you really want that code running the power grid or stock market to start getting two-step lock convoys at 3 p.m. on a busy Thursday? Who cares what the terms actually mean? This is not what turned us on to programming, fighting ever more complex side effects with ever more complex hacks.
 
@@ -2212,7 +2235,7 @@ W: cleaning up
 * 모든 스레드들 간의 정보 교환은 ØMQ 메시지로 이루어지며, 어느 정도 공식적으로 정의할 수 있습니다.
 * 스레드들 간에 ØMQ 소켓을 공유하지 말아야 하며, ØMQ 소켓은 스레드 안전하지 않습니다. 소켓을 다른 스레드로 전환하는 것은 기술적으로는 가능하지만 숙련된 기술이 필요합니다. 여러 스레드에서 하나의 소켓을 취급하는 유일한 방법은 마법 같은 가비지 수집을 가진 언어 바인딩 정도입니다.
 
-> [옮긴이] 스레드 안전은 스레드를 통한 동시성 프로그래밍 수행 시, 교착, 경쟁조건을 감지하여 회피할 수 있게 합니다.
+* [옮긴이] 스레드 안전은 스레드를 통한 동시성 프로그래밍 수행 시, 교착, 경쟁조건을 감지하여 회피할 수 있게 합니다.
 
 ;If you need to start more than one proxy in an application, for example, you will want to run each in their own thread. It is easy to make the error of creating the proxy frontend and backend sockets in one thread, and then passing the sockets to the proxy in another thread. This may appear to work at first but will fail randomly in real use. Remember: Do not use or close sockets except in the thread that created them.
 
@@ -2300,9 +2323,9 @@ int main (void)
 
 그림 20 - 멀티스레드 서비스
 
-![멀티스레드 서비스](images/fig20.svg)
+![멀티스레드 서비스](images/fig20.png)
 
-> [옮긴이] 원도우 운영체제에서 POSIX 스레드(pthread) 사용하기 위해서는 [pthreads Win32](http://www.sourceware.org/pthreads-win32/)를 사용합니다.
+* [옮긴이] 원도우 운영체제에서 POSIX 스레드(pthread) 사용하기 위해서는 [pthreads Win32](http://www.sourceware.org/pthreads-win32/)를 사용합니다.
 응용프로그램 빌드 시 timespec 관련 오류(Error C2011 'timespec': 'struct' type redefinition) 발생할 경우 `pthread.h" 파일에 
 `#define HAVE_STRUCT_TIMESPEC` 추가합니다.
 사이트(ftp://sourceware.org/pub/pthreads-win32/dll-latest)에서 최신 파일(pthreadVC2.dll, pthreadVC2.lib, pthread.h, sched.h, semaphore.h)을 받아 설치합니다.
@@ -2321,10 +2344,10 @@ int main (void)
 * 서버는 작업자들과 통신하기 위해 DEALER 소켓을 생성하고 내부 인터페이스 (inproc 통해)에 바인딩(bind)합니다.
 * 서버는 두 소켓(ROUTER-DEALER)을 연결하는 프록시(`zmq_proxy()`)를 시작합니다. 프록시는 모든 클라이언트에서 들어오는 요청을 작업자들에게 배포하며 작업자들의 응답을 클라이언트에 전달합니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc mtserver.c libzmq.lib pthreadVC2.lib
+ cl -EHsc mtserver.c libzmq.lib pthreadVC2.lib
 Microsoft (R) C/C++ 최적화 컴파일러 버전 19.16.27035(x64)
 Copyright (c) Microsoft Corporation. All rights reserved.
 mtserver.c
@@ -2335,20 +2358,20 @@ mtserver.obj
 libzmq.lib
 pthreadVC2.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./mtserver
+ ./mtserver
 Received request: [Hello]
 Received request: [Hello]
 Received request: [Hello]
 Received request: [Hello]
 
-PS D:\git_store\zguide-kr\examples\C> ./hwclient
+ ./hwclient
 Connecting to hello world server...
 Sending Hello 0...
 Received World 0
 Sending Hello 1...
 Received World 1
 
-PS D:\git_store\zguide-kr\examples\C> ./hwclient
+ ./hwclient
 Connecting to hello world server...
 Sending Hello 0...
 Received World 0
@@ -2443,7 +2466,7 @@ int main (void)
 ```
 그림 21 - 릴레이(Relay)
 
-![Relay](images/fig21.svg)
+![Relay](images/fig21.png)
 
 ;This is a classic pattern for multithreading with ØMQ:
 
@@ -2474,21 +2497,21 @@ PAIR 소켓을 사용한 예제를 처음으로 보여 주었습니다. PAIR를 
 그러나 실제 데이터를 전송하기로 결정하면 ROUTER가 갑자기 잘못된 메시지를 제공하는 것을 알게 됩니다. 또한 DEALER는 ROUTER에서 전달된 메시지를 배포하여 PUSH와 동일한 위험(실수로 2개의 수신자를 시작)이 있습니다.
 * 송신자에 PUB를 사용하고 수신자에 SUB를 사용할 수 있습니다. 그러면 메시지를 보낸 그대로 정확하게 전달할 수 있으며 PUB는 PUSH 또는 DEALER처럼 배포하지 않습니다. 그러나 빈 구독으로 구독자로 설정해야 하나 귀찮은 일입니다.
 
-> [옮긴이] 빈 구독(empty subscrition)은 구독자가 발행자가 전송하는 모든 메시지를 수신 가능하도록 필터를 두지 않도록 설정합니다.
+* [옮긴이] 빈 구독(empty subscrition)은 구독자가 발행자가 전송하는 모든 메시지를 수신 가능하도록 필터를 두지 않도록 설정합니다.
 - 설정 예시 : `zmq_setsockopt (subscriber, ZMQ_SUBSCRIBE, "", 0);`
 
 ;For these reasons, PAIR makes the best choice for coordination between pairs of threads.
 
 이러한 이유로 PAIR 패턴은 스레드들 간의 협업을 위한 최상의 선택입니다.
 
-## 노드 간의 협업(Node Coordination)
+## 노드 간의 협업
 ;When you want to coordinate a set of nodes on a network, PAIR sockets won't work well any more. This is one of the few areas where the strategies for threads and nodes are different. Principally, nodes come and go whereas threads are usually static. PAIR sockets do not automatically reconnect if the remote node goes away and comes back.
 
 네트워크상에서 노드들 간의 협업하려 하면, PAIR 소켓을 적용할 수 없습니다.  이것은 스레드들과 노드들 간에 전략이 다른 몇 가지 영역 중 하나입니다. 주로 노드들은 왔다 갔다 하고 스레드들은 보통 정적입니다. PAIR 소켓은 원격 노드가 가고 다시 돌아오면 자동으로 재연결하지 않습니다.
 
 그림 22 - 발행-구독 동기화
 
-![Pub-Sub Synchronization](images/fig22.svg)
+![Pub-Sub Synchronization](images/fig22.png)
 
 ;The second significant difference between threads and nodes is that you typically have a fixed number of threads but a more variable number of nodes. Let's take one of our earlier scenarios (the weather server and clients) and use node coordination to ensure that subscribers don't lose data when starting up.
 
@@ -2506,7 +2529,7 @@ PAIR 소켓을 사용한 예제를 처음으로 보여 주었습니다. PAIR를 
 * 발행자가 시작하면서 모든 구독자들이 연결될 때까지 기다립니다. 이것이 노드 협업 부분입니다. 각 구독자들이 구독하기 시작하면 다른 소켓으로 발행자에게 준비가 되었음을 알립니다.
 * 발행자는 모든 구독자들이 연결되면 데이터 전송을 시작됩니다.
 
-> [옮긴이] 마법 숫자(magic number)는 이름 없는 숫자 상수(unnamed numerical constants)로 상황에 따라 상수값이 변경(예 : 하드웨어 아키텍처에 따란 INT는 16 비트 혹은 32 비트로 표현)될 수 있을 때 지정합니다. 현실에서는 구독자들의 숫자가 실제 얼마인지 정확히 알기 어렵기 때문에 예제에서는 정해진 구독자의 숫자를 마법 숫자(magic number)로 지칭합니다.
+* [옮긴이] 마법 숫자(magic number)는 이름 없는 숫자 상수(unnamed numerical constants)로 상황에 따라 상수값이 변경(예 : 하드웨어 아키텍처에 따란 INT는 16 비트 혹은 32 비트로 표현)될 수 있을 때 지정합니다. 현실에서는 구독자들의 숫자가 실제 얼마인지 정확히 알기 어렵기 때문에 예제에서는 정해진 구독자의 숫자를 마법 숫자(magic number)로 지칭합니다.
 
 
 ;In this case, we'll use a REQ-REP socket flow to synchronize subscribers and publisher. Here is the publisher:
@@ -2515,7 +2538,7 @@ PAIR 소켓을 사용한 예제를 처음으로 보여 주었습니다. PAIR를 
 
 syncpub.c: 동기화된 발행자
 
-> [옮긴이] 원도우 환경에서 테스트 위해 `SUBSCRIBERS_EXPECTED`을 10에서 2로 변경
+* [옮긴이] 원도우 환경에서 테스트 위해 `SUBSCRIBERS_EXPECTED`을 10에서 2로 변경
 
 ```cpp
 //  Synchronized publisher
@@ -2649,22 +2672,23 @@ Received 1000000 updates
 Received 1000000 updates
 ~~~
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc syncpub.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc syncsub.c libzmq.lib
+ cl -EHsc syncpub.c libzmq.lib
+ cl -EHsc syncsub.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./syncpub
+ ./syncpub
 Waiting for subscribers
 Broadcasting messages
 
-PS D:\git_store\zguide-kr\examples\C> ./syncsub
+ ./syncsub
 Received 1000000 updates
 
-PS D:\git_store\zguide-kr\examples\C> ./syncsub
+ ./syncsub
 Received 1000000 updates
 ~~~
+
 ;We can't assume that the SUB connect will be finished by the time the REQ/REP dialog is complete. There are no guarantees that outbound connects will finish in any order whatsoever, if you're using any transport except inproc. So, the example does a brute force sleep of one second between subscribing, and sending the REQ/REP synchronization.
 
 'syncsub'에서 REQ/REP 통신가 완료될 때까지 SUB 연결이 완료되지 않는다고 하면 inproc 이외의 전송을 사용하는 경우 아웃바운드 연결이 어떤 순서로든 완료된다는 보장은 없습니다. 따라서 예제에서는 `syncsub'에서 SUB 소켓 연결하고 REQ/REP 동기화 전송 사이에 1초의 대기를 수행하였습니다.
@@ -2681,7 +2705,7 @@ Received 1000000 updates
 * 구독자는 SUB 소켓을 연결하고 `Hello` 메시지를 받으면 REQ/REP 소켓 쌍을 통해 발행자에게 알려줍니다.
 * 발행자가 모든 필요한 확인 완료하며, 실제 데이터를 보내기 시작합니다.
 
-## 제로 복사(Zero-Copy)
+## 제로 복사
 ;ØMQ's message API lets you can send and receive messages directly from and to application buffers without copying data. We call this zero-copy, and it can improve performance in some applications.
 
 ØMQ 메시지 API는 응용프로그램 버퍼의 데이터를 복사하지 않고 직접 메시지를 송/수신하게 합니다. 우리는 이것을 제로 복사라고 부르며 일부 응용프로그램의 성능을 향상할 수 있습니다.
@@ -2716,9 +2740,9 @@ zmq_msg_send (&message, socket, 0);
 
 데이터를 쓸 때, ØMQ의 멀티파트 메시지는 제로 복사와 함께 잘 작동합니다. 전통적인 메시징에서는 전송할 하나의 버퍼와 함께 다른 버퍼 마살링해야 합니다. 이것은 데이터 복사를 의미합니다. ØMQ에서는 서로 다른 소스에서 여러 개의 버퍼를 개별 메시지 프레임으로 보낼 수 있습니다. 각 필드를 길이가 구분된 프레임으로 보냅니다. 응용프로그램에서는 일련의 송/수신 호출처럼 보입니다. 그러나 내부적으로 다중 프레임이 네트워크에 쓰이고 단일 시스템 호출로 다시 읽히므로 매우 효율적입니다.
 
-> [옮긴이] 마살링(marshalling or marshaling)은 객체의 메모리상 표현을 다른 데이터 형태로 변경하는 절차입니다. 컴퓨터상에서 응용프로그램들 간의 데이터 통신 수행시 서로 다른 포맷에 대하여 전환하는 작업이 필요하며, 직렬화(Serialization)와 유사합니다.
+* [옮긴이] 마살링(marshalling or marshaling)은 객체의 메모리상 표현을 다른 데이터 형태로 변경하는 절차입니다. 컴퓨터상에서 응용프로그램들 간의 데이터 통신 수행시 서로 다른 포맷에 대하여 전환하는 작업이 필요하며, 직렬화(Serialization)와 유사합니다.
 
-## 발행-구독 메시지 봉투(Message Envelope)
+## 발행-구독 메시지 봉투
 ;In the pub-sub pattern, we can split the key into a separate message frame that we call an envelope. If you want to use pub-sub envelopes, make them yourself. It's optional, and in previous pub-sub examples we didn't do this. Using a pub-sub envelope is a little more work for simple cases, but it's cleaner especially for real cases, where the key and the data are naturally separate things.
 
 발행-구독 패턴에서, 키를 개별 메시지 프레임으로 분할하고 봉투라고 했습니다. 발행-구독 봉투를 사용하기 위해서는 직접 만들어야 합니다. 선택 사항으로 이전 발행-구독 예제에서는 이런 작업을 수행하지 않았습니다. 
@@ -2727,7 +2751,7 @@ zmq_msg_send (&message, socket, 0);
 
 그림 23 - 개별 키를 가진 발행-구독 봉투 
 
-![Pub-Sub Envelope with Separate Key](images/fig23.svg)
+![Pub-Sub Envelope with Separate Key](images/fig23.png)
 
 ;Recall that subscriptions do a prefix match. That is, they look for "all messages starting with XYZ". The obvious question is: how to delimit keys from data so that the prefix match doesn't accidentally match data. The best answer is to use an envelope because the match won't cross a frame boundary. Here is a minimalist example of how pub-sub envelopes look in code. This publisher sends messages of two types, A and B.
 
@@ -2809,6 +2833,7 @@ int main (void)
 ;When you run the two programs, the subscriber should show you this:
 
 2개의 프로그램을 실행하면 구독자(subscriber)는 아래와 같이 보입니다.
+
 ~~~
 [B] We would like to see this
 [B] We would like to see this
@@ -2816,22 +2841,22 @@ int main (void)
 ...
 ~~~
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc psenvpub.c libzmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc psenvsub.c libzmq.lib
+ cl -EHsc psenvpub.c libzmq.lib
+ cl -EHsc psenvsub.c libzmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./psenvpub
+ ./psenvpub
 
-PS D:\git_store\zguide-kr\examples\C> ./psenvsub
+ ./psenvsub
 [B] We would like to see this
 [B] We would like to see this
 [B] We would like to see this
 ...
 ~~~
 
-> [옮긴이] 다중 필터(multiple filters)를 아래와 같이 수행하면 "A', "B" 2개 중에 한 개만 있어도 수신 가능함.
+* [옮긴이] 다중 필터(multiple filters)를 아래와 같이 수행하면 "A', "B" 2개 중에 한 개만 있어도 수신 가능함.
 
 ```cpp
     zmq_setsockopt (subscriber, ZMQ_SUBSCRIBE, "B", 1);
@@ -2844,9 +2869,9 @@ PS D:\git_store\zguide-kr\examples\C> ./psenvsub
 
 그림 24 -  서버 주소(Address) 가진 발행-구독 봉투
 
-![Pub-Sub Envelope with Sender Address](images/fig24.svg)
+![Pub-Sub Envelope with Sender Address](images/fig24.png)
 
-## 최고수위 표시(High-Water Marks)
+## 최고수위 표시
 ;When you can send messages rapidly from process to process, you soon discover that memory is a precious resource, and one that can be trivially filled up. A few seconds of delay somewhere in a process can turn into a backlog that blows up a server unless you understand the problem and take precautions.
 
 프로세스에서 프로세스로 메시지를 빠르게 보낼 때에 곧 메모리가 쉽게 채워질 수 있다는 것을 알게 됩니다. 프로그램 상의 문제에 대하여 이해하고 예방 조치를 하지 않아 메세지 수신 프로세스의 어딘가에서 몇 초의 지연이 발생하면 메시지 데이터는 메모리 상의 백로그 전환되어 서버의 자원을 고갈시킬 수 있습니다.
@@ -2897,7 +2922,7 @@ PS D:\git_store\zguide-kr\examples\C> ./psenvsub
 
 그림 25 - 메시지 분실 문제 해결 방법
 
-![Missing Message Problem Solver](images/fig25.svg)
+![Missing Message Problem Solver](images/fig25.png)
 
 ;Here's a summary of what the graphic says:
 
@@ -2921,4 +2946,4 @@ PS D:\git_store\zguide-kr\examples\C> ./psenvsub
 * inproc을 사용하는 경우 두 소켓이 동일한 컨텍스트에 있는지 확인하십시오. 그렇지 않으면 연결 측이 실제로 실패합니다. 또한 먼저 바인딩한 다음 연결하십시오. inproc은 tcp와 같은 연결이 끊긴 전송방식이 아닙니다.
 * ROUTER 소켓을 사용하는 경우, 우연히 잘못된 인식자(ID) 프레임을 보내어(또는 인식자(ID) 프레임을 보내지 않음) 메시지를 잃어버리기가 쉽습니다. 일반적으로 ROUTER 소켓에서 `ZMQ_ROUTER_MANDATORY` 옵션을 설정하는 것이 좋지만 모든 송신 호출에서 반환값을 확인해야 합니다.
 * 마지막으로, 무엇이 잘못되었는지 알 수 없다면 문제를 재현하는 최소한의 테스트 사례를 만들어 문제가 발생하는지 테스트 수행하시기 바라며 ØMQ 커뮤니티에 도움을 요청하십시오.
-> [옮긴이] `zmq_setsockopt (subscriber, ZMQ_SUBSCRIBE, "", 0)` 설정 시 모든 메시지 구독합니다.
+* [옮긴이] `zmq_setsockopt (subscriber, ZMQ_SUBSCRIBE, "", 0)` 설정 시 모든 메시지 구독합니다.

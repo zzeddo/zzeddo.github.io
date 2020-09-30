@@ -1,8 +1,7 @@
-;# Chapter 5 - Advanced Pub-Sub Patterns
 
-# 5장 - 고급 발행-구독 패턴(Advanced Pub Sub Patterns)
+# 5장 - 고급 발행-구독 패턴 {-}
 
-;In Chapter 3 - Advanced Request-Reply Patterns and Chapter 4 - Reliable Request-Reply Patterns we looked at advanced use of ØMQ's request-reply pattern. If you managed to digest all that, congratulations. In this chapter we'll focus on publish-subscribe and extend ØMQ's core pub-sub pattern with higher-level patterns for performance, reliability, state distribution, and monitoring.
+; In Chapter 3 - Advanced Request-Reply Patterns and Chapter 4 - Reliable Request-Reply Patterns we looked at advanced use of ØMQ's request-reply pattern. If you managed to digest all that, congratulations. In this chapter we'll focus on publish-subscribe and extend ØMQ's core pub-sub pattern with higher-level patterns for performance, reliability, state distribution, and monitoring.
 
 "3장 - 고급 요청-응답 패턴" 및 "4장 - 신뢰할 수 있는 요청-응답 패턴"에서 ØMQ의 요청-응답 패턴의 고급 사용을 보았습니다. 
 그 모든 것을 이해하셨다면 축하드리며, 
@@ -34,11 +33,11 @@
 
 ;ØMQ's low-level patterns have their different characters. Pub-sub addresses an old messaging problem, which is multicast or group messaging. It has that unique mix of meticulous simplicity and brutal indifference that characterizes ØMQ. It's worth understanding the trade-offs that pub-sub makes, how these benefit us, and how we can work around them if needed.
 
-ØMQ의 저수준 패턴은 서로 다른 특성을 가지고 있습니다. 발행-구독은 멀티캐스트 혹은 그룹 메시징과 같은 오래된 메시징 문제를 해결합니다. 그것은 ØMQ를 특징짓는 꼼꼼한 단순성과 잔인한 무관심의 고유한 혼합을 가지고 있습니다. 발행-구독이 만드는 장단점이 어떻게 도움이 되는지, 필요한 경우 어떻게 사용할지 이해할 가치가 있습니다.
+ØMQ의 저수준 패턴은 서로 다른 특성을 가지고 있습니다. 발행-구독은 멀티캐스트 혹은 그룹 메시징과 같은 오래된 메시징 문제를 해결합니다. 그것은 ØMQ를 특징짓는 꼼꼼한 단순성과 잔인한 무관심의 고유한 혼합을 가지고 있습니다. 발행-구독이 만드는 장단점이 어떻게 도움이 되는지, 필요한 경우 어떻게 사용해야 할지 이해할 가치가 있습니다.
 
 ;First, PUB sends each message to "all of many", whereas PUSH and DEALER rotate messages to "one of many". You cannot simply replace PUSH with PUB or vice versa and hope that things will work. This bears repeating because people seem to quite often suggest doing this.
 
-첫째, PUB 소켓은 각 메시지를 "all of many"로 보내는 반면 PUSH 및 DEALER 소켓은 메시지를 "one of many"로 수신자들에게 순차적으로 전달합니다. 단순히 PUSH를 PUB로 바꾸거나 역으로 하더라도 모든 것이 동작하기를 바랄 수는 없습니다. 사람들이 바꾸어 사용(PUSH, PUB)하는 것을 자주 제안하기 때문에 문제는 반복됩니다.
+첫째, PUB 소켓은 각 메시지를 "all of many"로 보내는 반면 PUSH 및 DEALER 소켓은 메시지를 "one of many"로 수신자들에게 순차적으로 전달합니다. 단순히 PUSH를 PUB로 바꾸거나 역으로 하더라도 모든 것이 똑같이 동작하기를 바랄 수는 없습니다. 사람들이 바꾸어 사용(PUSH, PUB)하는 것을 자주 제안하기 때문에 문제는 반복됩니다.
 
 ;More profoundly, pub-sub is aimed at scalability. This means large volumes of data, sent rapidly to many recipients. If you need millions of messages per second sent to thousands of points, you'll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients.
 
@@ -70,7 +69,7 @@
 ;The downside is that we actually need all of these if we want to do reliable multicast. The ØMQ pub-sub pattern will lose messages arbitrarily when a subscriber is connecting, when a network failure occurs, or just if the subscriber or network can't keep up with the publisher.
 
 위의 단점은 안정적인 멀티캐스트를 수행하기 위해 해결이 필요합니다. 
-ØMQ 발행-구독 패턴은 구독자가 연결 중이거나 네트워크 장애가 발생하거나 구독자나 네트워크가 발행자의 송신하는 많은 메시지를 처리할 수 없는 경우 메시지가 유실됩니다.
+ØMQ 발행-구독 패턴은 구독자가 연결 중이거나, 네트워크 장애가 발생하거나, 발행자의 송신하는 많은 메시지를 구독자 또는 네트워크가 처리할 수 없는 경우 메시지가 유실됩니다.
 
 ;The upside is that there are many use cases where almost reliable multicast is just fine. When we need this back-chatter, we can either switch to using ROUTER-DEALER (which I tend to do for most normal volume cases), or we can add a separate channel for synchronization (we'll see an example of this later in this chapter).
 
@@ -94,17 +93,19 @@
 ;* Networks can become too slow, so publisher-side queues overflow and publishers crash.
 
 * 구독자가 늦게 가입하여 발행자가 이미 보낸 메시지들을 유실합니다.
-* 구독자는 메시지들를 너무 느리게 처리하여, 대기열이 가득 차면 유실됩니다.
-* 구독자는 자리를 비운 동안 메시지들를 유실할 수 있습니다.
+* 구독자가 메시지들를 너무 느리게 처리하여, 대기열이 가득 차면 유실됩니다.
+* 구독자가 자리를 비운 동안 메시지들를 유실할 수 있습니다.
 * 구독자가 장애 후 재시작되면 이미 받은 데이터들을 유실할 수 있습니다.
-* 네트워크는 과부하가 되어 데이터들을 유실할 수 있습니다(특히 PGM 통신의 경우).
+* 네트워크가 과부하가 되어 데이터들을 유실할 수 있습니다(특히 PGM 통신의 경우).
 * 네트워크의 처리 속도가 너무 느려 발행자의 대기열이 가득 차고 발행자에게 장애가 발생할 수 있습니다(ØMQ v3.2 이전).
 
 ;A lot more can go wrong but these are the typical failures we see in a realistic system. Since v3.x, ØMQ forces default limits on its internal buffers (the so-called high-water mark or HWM), so publisher crashes are rarer unless you deliberately set the HWM to infinite.
 
 더 많은 것이 잘못될 수 있지만 이것들은 우리가 현실적인 시스템에서 보는 전형적인 장애입니다. 
 ØMQ v3.x부터 ØMQ 대기열의 내부 버퍼(소위 HWM(high-water mark))에 대한 기본적인 제한을 적용하므로 의도적으로 HWM을 무한으로 설정하지 않으면 발행자의 대기열이 가득 차는 장애는 발생하지 않습니다.
-> [옮긴이] HWM은 `zmq_setsockopt()`에서 송신의 경우 `ZMQ_SNDHWM`, 수신의 경우 `ZMQ_RCVHWM`으로 설정합니다.
+
+* [옮긴이] HWM은 `zmq_setsockopt()`에서 송신의 경우 `ZMQ_SNDHWM`, 수신의 경우 `ZMQ_RCVHWM`으로 설정합니다.
+
 - PUB, PUSH : 송신 버퍼 존재
 - SUB, PULL, REQ, REP : 수신 버퍼 존재
 - DEALER/ROUTER/PAIR : 송신 및 수신 버퍼 존재
@@ -122,13 +123,15 @@
 
 발행-구독 네트워크를 추적하는 방법을 보면서 이장을 시작하겠습니다. "2장 - 소켓 및 패턴"에서 전송 계층 간의 다리 역할을 수행하는 간단한 프록시를 보았습니다.
 `zmq_proxy()` 메서드에는 3개 인수는 소켓들로 전송 계층 간 연결할 프론트앤드 소켓과 백엔드 소켓, 모든 메시지를 송신할 캡처 소켓입니다.
-> [옮긴이] int zmq_proxy (void *frontend_, void *backend_, void *capture_)
+
+* [옮긴이] int zmq_proxy (void *frontend_, void *backend_, void *capture_)
 
 ;The code is deceptively simple:
 
 다음 코드는 매우 단순합니다.
 
 espresso.c: 에스프레소 패턴
+
 ```cpp
 //  Espresso Pattern
 //  This shows how to capture data using a pub-sub proxy
@@ -218,10 +221,10 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./espresso
+ ./espresso
 D: 20-08-26 13:43:30 [002] 0141
 D: 20-08-26 13:43:31 [002] 0142
 D: 20-08-26 13:43:31 [007] A-30398
@@ -237,7 +240,8 @@ D: 20-08-26 13:43:33 [002] 0042
 
 에스프레소는 생성한 리스너 스레드는 PAIR 소켓을 읽고 출력을 합니다. PAIR 소켓은 파이프(pipe)의 한쪽 끝이며 다른 쪽 끝(추가 PAIR)은 `zmq_proxy()`에 전달하는 소켓입니다. 
 실제로 관심 있는 메시지를 필터링하여 추적하려는 대상(에스프레소 패턴의 이름처럼)의 본질을 얻습니다.
-> [옮긴이] 에스프레소(Espresso)는 곱게 갈아 압축한 원두가루에 뜨거운 물을 고압으로 통과시켜 뽑아낸 이탈리안 정통 커피로 아주 진한 향과 맛이 특징이다.
+
+* [옮긴이] 에스프레소(Espresso)는 곱게 갈아 압축한 원두가루에 뜨거운 물을 고압으로 통과시켜 뽑아낸 이탈리안 정통 커피로 아주 진한 향과 맛이 특징이다.
 
 ;The subscriber thread subscribes to "A" and "B", receives five messages, and then destroys its socket. When you run the example, the listener prints two subscription messages, five data messages, two unsubscribe messages, and then silence:
 
@@ -260,7 +264,7 @@ D: 20-08-26 13:43:33 [002] 0042
 이것은 발행자 소켓이 구독자가 없을 때 데이터 전송을 중지하는 방법을 깔끔하게 보여줍니다. 
 발행자 스레드가 여전히 메시지를 보내고 있지만 소켓은 조용히 그들을 버립니다.
 
-> [옮긴이] 구독자는 발행자에게 구독 시와 구독 취소 시 이벤트(event)를 보내며 보내는 메시지는 바이트(byte) 형태로 첫 번째 바이트(HEX 코드)는 "00"은 구독, "01"은 구독 취소이며 나머지 바이트들은 토픽(sizeof(event)-1)으로 구성됩니다.
+* [옮긴이] 구독자는 발행자에게 구독 시와 구독 취소 시 이벤트(event)를 보내며 보내는 메시지는 바이트(byte) 형태로 첫 번째 바이트(HEX 코드)는 "00"은 구독, "01"은 구독 취소이며 나머지 바이트들은 토픽(sizeof(event)-1)으로 구성됩니다.
 
 ~~~{.bash}
 [002] 0141       --> "01" 구독, 토픽 : "41" A
@@ -281,7 +285,8 @@ D: 20-08-26 13:43:33 [002] 0042
 ;If you've used commercial pub-sub systems, you may be used to some features that are missing in the fast and cheerful ØMQ pub-sub model. One of these is last value caching (LVC). This solves the problem of how a new subscriber catches up when it joins the network. The theory is that publishers get notified when a new subscriber joins and subscribes to some specific topics. The publisher can then rebroadcast the last message for those topics.
 
 상용 발행-구독 시스템을 사용했다면 빠르고 즐거운 ØMQ 발행-구독 모델에서 누락된 일부 익숙한 기능들을 알 수 있습니다. 이 중 하나는 마지막 값 캐싱(LVC : Last Value Caching)입니다. 이것은 새로운 구독자가 네트워크에 참여할 때 누락한 메시지 받을 수 있는 방식으로 문제를 해결합니다. 이론은 발행자들에게 새로운 구독자가 참여했고 특정 토픽에 구독하려는 시점을 알려주면, 발행자는 해당 토픽에 대한 마지막 메시지를 재송신할 수 있습니다.
-> [옮긴이] TIB/RV(TIBCO Rendezvous)는 TIBCO사에서 개발한 상용 메시지 소프트웨어로 요청/응답(Request/reply), 브로드케스팅(Broadcasting), 신뢰성 메시징(reliable messaging), 메시지 전달 보장(Certified Messaging), 분산 메시지(Distributed Message), 원격 통신(Remote communication)등의 기능을 제공합니다.
+
+* [옮긴이] TIB/RV(TIBCO Rendezvous)는 TIBCO사에서 개발한 상용 메시지 소프트웨어로 요청/응답(Request/reply), 브로드케스팅(Broadcasting), 신뢰성 메시징(reliable messaging), 메시지 전달 보장(Certified Messaging), 분산 메시지(Distributed Message), 원격 통신(Remote communication)등의 기능을 제공합니다.
 
 ;I've already explained why publishers don't get notified when there are new subscribers, because in large pub-sub systems, the volumes of data make it pretty much impossible. To make really large-scale pub-sub networks, you need a protocol like PGM that exploits an upscale Ethernet switch's ability to multicast data to thousands of subscribers. Trying to do a TCP unicast from the publisher to each of thousands of subscribers just doesn't scale. You get weird spikes, unfair distribution (some subscribers getting the message before others), network congestion, and general unhappiness.
 
@@ -311,6 +316,7 @@ TV 드라마에서 그레고르라는 탈옥한 죄수가 8.3분 내에 구독�
 다음은 발행자 코드입니다. 일부 주소에 연결하는 명령 줄 옵션이 없으면 단말에 바인딩되며, 나중에 마지막 값 캐시(LVC)에 연결에 사용합니다.
 
 pathopub.c : 병리학적인 발행자
+
 ```cpp
 //  Pathological publisher
 //  Sends out 1,000 topics and then one random update per second
@@ -353,6 +359,7 @@ int main (int argc, char *argv [])
 구독자 코드는 다음과 같습니다.
 
 pathosub.c : 병리학적인 구독자
+
 ```cpp
 //  Pathological subscriber
 //  Subscribes to one random topic and prints received messages
@@ -391,21 +398,22 @@ int main (int argc, char *argv [])
 ;Try building and running these: first the subscriber, then the publisher. You'll see the subscriber reports getting "Save Roger" as you'd expect:
 
 먼저 구독자를 실행하고 다음 발행자를 실행하면 구독자가 기대한 대로 "Save Roger"를 출력합니다.
+
 ~~~{.bash}
 ./pathosub &
 ./pathopub
 ~~~
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
  - "pathsub" 실행하면 생성된 토픽에 해당되는 "Sava Roger"을 수신하고 임의의 긴 시간(1초~16.7분) 후에 "Off with his head!"을 수신하게 됩니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc pathopub.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc pathosub.c libzmq.lib czmq.lib
+ cl -EHsc pathopub.c libzmq.lib czmq.lib
+ cl -EHsc pathosub.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./pathopub
+ ./pathopub
 
-PS D:\git_store\zguide-kr\examples\C> ./pathosub
+ ./pathosub
 Save Roger
 Off with his head!
 ~~~
@@ -415,6 +423,7 @@ Off with his head!
 두 번째 구독자를 실행하면 Roger의 곤경("Save Roger"을 수신하지 못하고 오랜 시간 후에 "Off with his head!" 수신)을 알게 되며 데이터 수신하기까지 오랜 시간을 기다려야 합니다. 여기에 마지막 값 캐시(LVC)가 있습니다. 프록시가 2개의 소켓에 바인딩하고 양쪽의 메시지를 처리합니다.
 
 lvcach.c : 마지막 값 저장 프록시
+
 ```cpp
 //  Last value cache
 //  Uses XPUB subscription messages to re-send data
@@ -507,18 +516,21 @@ int main (void)
 ~~~{.bash}
 ./pathosub tcp://localhost:5558
 ~~~
-> [옮긴이] 빌드 및 테스트
+
+* [옮긴이] 빌드 및 테스트
  - "lvcahe.c" 소스코드의 이상과 pathopub 인수가 잘못되어 정상 동작하지 않습니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./lvcache
+ ./lvcache
 Sending cached topic 000
 
-PS D:\git_store\zguide-kr\examples\C> ./pathopub tcp://localhost:5557
+ ./pathopub tcp://localhost:5557
 
-PS D:\git_store\zguide-kr\examples\C> ./pathosub tcp://localhost:5558
+ ./pathosub tcp://localhost:5558
 ~~~
+
 "lvcahe.c"에서 프론트엔드 소켓에 접속하기 위한 부분이 잘못되었기 때문입니다.
+
 ```cpp
 // 수정전
     zsocket_connect (frontend, "tcp://*:5557");
@@ -526,14 +538,15 @@ PS D:\git_store\zguide-kr\examples\C> ./pathosub tcp://localhost:5558
     zsocket_connect (frontend, "tcp://localhost:5557");
 ```
 pathopub 수행 시 인수도 수정 필요합니다.
+
 ~~~{.bash}
 // 수정전
-PS D:\git_store\zguide-kr\examples\C> ./pathopub tcp://localhost:5557
+ ./pathopub tcp://localhost:5557
 // 수정후
-PS D:\git_store\zguide-kr\examples\C> ./pathopub tcp://*:5557
+ ./pathopub tcp://*:5557
 ~~~
 
-> [옮긴이] 수정된 마지막 값 캐싱(lvcache.c)
+* [옮긴이] 수정된 마지막 값 캐싱(lvcache.c)
 
 ```cpp
 //  Last value cache
@@ -610,18 +623,19 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] pathopub 인수 변경 후 테스트
+
+* [옮긴이] pathopub 인수 변경 후 테스트
 
 ~~~{.bash} 
-PS D:\git_store\zguide-kr\examples\C> ./lvcache
+ ./lvcache
 Sending cached topic 045
 
-PS D:\git_store\zguide-kr\examples\C> ./pathopub tcp://*:5557
+ ./pathopub tcp://*:5557
 
-PS D:\git_store\zguide-kr\examples\C> ./pathosub tcp://localhost:5558
+ ./pathosub tcp://localhost:5558
 Save Roger
 
-PS D:\git_store\zguide-kr\examples\C> ./pathosub tcp://localhost:5558
+ ./pathosub tcp://localhost:5558
 Off with his head!
 ~~~
 
@@ -640,7 +654,8 @@ Off with his head!
 ;A common problem you will hit when using the pub-sub pattern in real life is the slow subscriber. In an ideal world, we stream data at full speed from publishers to subscribers. In reality, subscriber applications are often written in interpreted languages, or just do a lot of work, or are just badly written, to the extent that they can't keep up with publishers.
 
 실제 생활에서 발행-구독 패턴을 사용할 때 발생하는 일반적인 문제는 느린 구독자입니다. 이상적인 세상에서 우리는 발행자에서 구독자로 데이터를 전속력으로 전송합니다. 실제로 구독자 응용프로그램은 종종 인터프리터 개발 언어로 작성되었거나 혹은 많은 작업을 처리하거나 잘못된 코드로 인한 오류로 발행자가 전송하는 데이터를 처리하지 못하는 상황이 발생할 수 있습니다.
-> [옮긴이] 인터프리터(interpreter) 개발 언어는 단말기를 통하여 컴퓨터와 대화하면서 작성할 수 있는 프로그래밍 언어로 PYTHON, BASIC, Prolog. LISP, LOGO, R 등이 있습니다.
+
+* [옮긴이] 인터프리터(interpreter) 개발 언어는 단말기를 통하여 컴퓨터와 대화하면서 작성할 수 있는 프로그래밍 언어로 PYTHON, BASIC, Prolog. LISP, LOGO, R 등이 있습니다.
 
 ;How do we handle a slow subscriber? The ideal fix is to make the subscriber faster, but that might take work and time. Some of the classic strategies for handling a slow subscriber are:
 
@@ -653,14 +668,14 @@ Off with his head!
 ;* Punish slow subscribers with disconnect. This is what Hotmail (remember that?) did when I didn't log in for two weeks, which is why I was on my fifteenth Hotmail account when it hit me that there was perhaps a better way. It's a nice brutal strategy that forces subscribers to sit up and pay attention and would be ideal, but ØMQ doesn't do this, and there's no way to layer it on top because subscribers are invisible to publisher applications.
 
 * 발행자의 메시지 대기열에 보관 
-몇 시간 동안 이메일을 읽지 않을 때 Gmail이 하는 일입니다. 그러나 대용량 메시징에서 구독자가 많고 성능상의 이유로 발행자 대기열을 디스크의 데이터를 저장할 수 없는 경우 발행자의 메모리 부족과 충돌이 발생할 수 있습니다. 
+- 몇 시간 동안 이메일을 읽지 않을 때 Gmail이 하는 일입니다. 그러나 대용량 메시징에서 구독자가 많고 성능상의 이유로 발행자 대기열을 디스크의 데이터를 저장할 수 없는 경우 발행자의 메모리 부족과 충돌이 발생할 수 있습니다. 
 * 구독자의 메시지 대기열에 보관
-이것은 훨씬 낫고, 네트워크의 대역폭이 가능하다면 ØMQ가 기본적으로 하는 일입니다. 누군가 메모리가 부족하고 충돌이 발생하면 발행자가 아닌 구독자가 될 것입니다. 
-이것은 "피크(Peaky)" 스트림에 적합하며 메시징이 많아 구독자가 한동안 처리할 수 없지만 메시징이 적어지면 처리 가능합니다. 그러나 일반적으로 너무 느린 구독자에게는 해결책이 아닙니다.
+- 이것은 훨씬 낫고, 네트워크의 대역폭이 가능하다면 ØMQ가 기본적으로 하는 일입니다. 누군가 메모리가 부족하고 충돌이 발생하면 발행자가 아닌 구독자가 될 것입니다. 
+- 이것은 "피크(Peaky)" 스트림에 적합하며 메시징이 많아 구독자가 한동안 처리할 수 없지만 메시징이 적어지면 처리 가능합니다. 그러나 일반적으로 너무 느린 구독자에게는 해결책이 아닙니다.
 * 잠시 동안 신규 메시지를 수신 중단. 
-수신 편지함의 저장 공간을 초과하는 경우 Gmail에서 수행하는 작업입니다.  신규 메시지는 거부되거나 삭제됩니다. 이것은 발행자의 관점에서는 훌륭한 전략이며, ØMQ에서 발행자가 HWM(High Water Mark)을 설정 시 적용됩니다. 그러나 여전히 느린 구독자를 개선하지는 못합니다. 단지 메시지 전송을 하지 못한 간격(GAP)을 가지게 됩니다.
+- 수신 편지함의 저장 공간을 초과하는 경우 Gmail에서 수행하는 작업입니다.  신규 메시지는 거부되거나 삭제됩니다. 이것은 발행자의 관점에서는 훌륭한 전략이며, ØMQ에서 발행자가 HWM(High Water Mark)을 설정 시 적용됩니다. 그러나 여전히 느린 구독자를 개선하지는 못합니다. 단지 메시지 전송을 하지 못한 간격(GAP)을 가지게 됩니다.
 * 느린 구독자를 연결을 끊어 처벌하기. 
-Hotmail에 2주 동안  로그인하지 않았을 때 수행하는 것이며, 내가 15번째 Hotmail 계정을 사용한 이유입니다.
+- Hotmail에 2주 동안  로그인하지 않았을 때 수행하는 것이며, 내가 15번째 Hotmail 계정을 사용한 이유입니다.
 이것은 잔인한 전략으로 구독자가 앉아서 주의를 기울이게 하며, 이상적이지만 ØMQ는 이를 수행하지 않는 이유는 발행자 응용프로그램에는 구독자가 보이지 않기 때문입니다.
 
 ;None of these classic strategies fit, so we need to get creative. Rather than disconnect the publisher, let's convince the subscriber to kill itself. This is the Suicidal Snail pattern. When a subscriber detects that it's running too slowly (where "too slowly" is presumably a configured option that really means "so slowly that if you ever get here, shout really loudly because I need to know, so I can fix this!"), it croaks and dies.
@@ -685,13 +700,15 @@ Hotmail에 2주 동안  로그인하지 않았을 때 수행하는 것이며, �
 ;The Suicide Snail pattern works especially when subscribers have their own clients and service-level agreements and need to guarantee certain maximum latencies. Aborting a subscriber may not seem like a constructive way to guarantee a maximum latency, but it's the assertion model. Abort today, and the problem will be fixed. Allow late data to flow downstream, and the problem may cause wider damage and take longer to appear on the radar.
 
 자살하는 달팽이 패턴은 특히 구독자가 자신의 클라이언트들과 서비스 수준 계약(SLA, Service Level Agreements)을 맺고 있고 특정 최대 지연 시간을 보장해야 하는 경우에 효과적입니다. 최대 지연 시간을 보장하기 위해 구독자를 중단하는 것은 건설적인 방법은 아니지만, 가정 설정문(assertion) 모델입니다. 오늘 중단하면 문제는 해결되지만 지연되는 데이터가 하류(구독자들)로 흐르도록 허용하면 문제가 더 넓게 퍼져 많은 손상을 발생하지만 레이더(문제를 감지하는 수단)로 감지하는데 오래 걸릴 수 있습니다.
-> [옮긴이] 가정 설정문(Assertions)은 프로그램상에서 실수는 일어난다고 가정하고 이에 대비하여 방지하기 위해 가정 설정문(Assertion)의 조건을 설정하고 참(TRUE)이면 아무것도 하지 않지만, 거짓(FALSE)이면 즉시 프로그램을 정지시키는 방어적 프로그래밍(defensive programming)의 수단입니다.
+
+* [옮긴이] 가정 설정문(Assertions)은 프로그램상에서 실수는 일어난다고 가정하고 이에 대비하여 방지하기 위해 가정 설정문(Assertion)의 조건을 설정하고 참(TRUE)이면 아무것도 하지 않지만, 거짓(FALSE)이면 즉시 프로그램을 정지시키는 방어적 프로그래밍(defensive programming)의 수단입니다.
 
 ;Here is a minimal example of a Suicidal Snail:
 
 자살하는 달팽이에 대한 작은 예제입니다.
 
 suisnail.c: 자살하는 달팽이
+
 ```cpp
 //  Suicidal Snail
 
@@ -773,12 +790,13 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc suisnail.c libzmq.lib czmq.lib
+ cl -EHsc suisnail.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./suisnail
+ ./suisnail
 13242959186075
 13242959186077
 13242959186079
@@ -811,7 +829,7 @@ E: subscriber cannot keep up, aborting
 
 그림 56 - 단순 블랙박스 패턴
 
-![The Simple Black Box Pattern](images/fig56.svg)
+![The Simple Black Box Pattern](images/fig56.png)
 
 ;Let's imagine our feed has an average of 100,000 100-byte messages a second. That's a typical rate, after filtering market data we don't need to send on to subscribers. Now we decide to record a day's data (maybe 250GB in 8 hours), and then replay it to a simulation network, i.e., a small group of subscribers. While 100K messages a second is easy for a ØMQ application, we want to replay it much faster.
 
@@ -850,7 +868,7 @@ E: subscriber cannot keep up, aborting
 
 그림 57 - 미친 블랙박스 패턴
 
-![Mad Black Box Pattern](images/fig57.svg)
+![Mad Black Box Pattern](images/fig57.png)
 
 ;Now to break that ceiling. The subscriber thread hits 100% of CPU and because it is one thread, it cannot use more than one core. A single thread will always hit a ceiling, be it at 2M, 6M, or more messages per second. We want to split the work across multiple threads that can run in parallel.
 
@@ -863,7 +881,8 @@ E: subscriber cannot keep up, aborting
 이러한 접근은 많은 고성능 메시지 처리 제품에서 사용되고 있으며 샤딩(sharding)이라 합니다. 샤딩을 사용하여 작업을 병렬 및 독립 스트림으로 분할합니다(한 스트림에서 토픽 키의 절반, 다른 스트림에서 토픽 키의 절반).
 많은 스트림을 사용할 수 있지만 유휴 CPU 코어가 없으면 성능이 확장되지 않습니다. 
 이제 하나의 메시지 스트림을 2개의 메시지 스트림으로 분할하는 방법을 보겠습니다.
-> [옮긴이] 병렬 샤딩(Parallel Sharding)은  데이터가 서로 공유되지 않도록 완전히 분리하여 독립적으로 동작하는 샤딩(Sharding)을 여러 개로 묶어서 병렬 처리를 통해 성능 및 확장성을 확보하는 방식입니다.
+
+* [옮긴이] 병렬 샤딩(Parallel Sharding)은  데이터가 서로 공유되지 않도록 완전히 분리하여 독립적으로 동작하는 샤딩(Sharding)을 여러 개로 묶어서 병렬 처리를 통해 성능 및 확장성을 확보하는 방식입니다.
 
 ;With two streams, working at full speed, we would configure ØMQ as follows:
 
@@ -889,9 +908,10 @@ E: subscriber cannot keep up, aborting
 
 이상적으로는 아키텍처에서 완전히 부하 처리가 가능한 스레드 수를 코어 수와 일치시키려고 했습니다. 스레드가 코어 및 CPU 주기를 놓고 싸우기(Time sharing) 시작하면 스레드를 추가하는 비용이 메시지 처리량보다 큽니다(더 많은 메시지 처리하기 위해 더 많은 CPU 코어 구매). 더 많은 I/O 스레드를 생성하는 것에는 이점이 없습니다.
 
-> [옮긴이] 고속 구독자에 대한 테스트를 위한 예제입니다.
+* [옮긴이] 고속 구독자에 대한 테스트를 위한 예제입니다.
 
 hssub.c : 고속 구독자
+
 ```cpp
 // high speed subscriber
 
@@ -974,13 +994,14 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+
+* [옮긴이] 빌드 및 테스트
  - 3개의 작업자들에게 라운드로빈 형태로 메시지가 전달되는 것을 확인 가능합니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc hssub.c libzmq.lib czmq.lib
+ cl -EHsc hssub.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./hssub
+ ./hssub
 [W0]Receive: [13242984839620]
 [W1]Receive: [13242984839622]
 [W2]Receive: [13242984839624]
@@ -1070,6 +1091,7 @@ PS D:\git_store\zguide-kr\examples\C> ./hssub
 다음은 서버 코드입니다.
 
 clonesrv1.c: 복제 서버, 모델 1
+
 ```cpp
 //  Clone server Model One
 
@@ -1107,6 +1129,7 @@ int main (void)
 다음은 클라이언트 코드입니다.
 
 clonecli1.c: 복제 클라이언트, 모델 1
+
 ```cpp
 //  Clone client Model One
 
@@ -1136,27 +1159,28 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] clonecli.c에서 `while(true)`에 대하여 사용자 인터럽트를 받을 수 있도록 
+
+* [옮긴이] clonecli.c에서 `while(true)`에 대하여 사용자 인터럽트를 받을 수 있도록 
 `while (!zctx_interrupted)`로 변경하였습니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv1.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli1.c libzmq.lib czmq.lib
+ cl -EHsc clonesrv1.c libzmq.lib czmq.lib
+ cl -EHsc clonecli1.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv1
+ ./clonesrv1
  Interrupted
 14938939 messages out
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli1
+ ./clonecli1
  Interrupted
 1119580 messages in
 ~~~
 
 Figure 58 - 상태 변경정보 발행
 
-![Publishing State Updates](images/fig58.svg)
+![Publishing State Updates](images/fig58.png)
 
 ;Here are some things to note about this first model:
 
@@ -1179,6 +1203,7 @@ Figure 58 - 상태 변경정보 발행
 다음은 현재 동작하는 가장 간단한 형식의 kvmsg 클래스입니다.
 
 kvsimple.c : 키-값 메시지 클래스
+
 ```cpp
 //  kvsimple class - key-value message class for example applications
 
@@ -1544,7 +1569,8 @@ kvmsg_test (int verbose)
     return 0;
 }
 ```
-> [옮긴이] "kvsimpler.c"의 `kvmsg_test()`에서 ipc를 사용하고 있으나 원도우 환경에서는 동작할 수 없어 inproc로 변경하여 테스트를 수행합니다.(inproc는 원도우 및 Linux에서 동작 가능)
+
+* [옮긴이] "kvsimpler.c"의 `kvmsg_test()`에서 ipc를 사용하고 있으나 원도우 환경에서는 동작할 수 없어 inproc로 변경하여 테스트를 수행합니다.(inproc는 원도우 및 Linux에서 동작 가능)
 
 ```cpp
 // 변경전
@@ -1558,7 +1584,8 @@ kvmsg_test (int verbose)
     void *input = zsocket_new (ctx, ZMQ_DEALER);
     rc = zmq_connect (input, "inproc://kvmsg_selftest");
 ```
-> [옮긴이] "kvsimpler"에 대한 테스트를 수행하기 위한 "kvsimtest.c"는 다음과 같습니다.
+
+* [옮긴이] "kvsimpler"에 대한 테스트를 수행하기 위한 "kvsimtest.c"는 다음과 같습니다.
 
 ```cpp
 #include "kvsimple.c"
@@ -1568,12 +1595,13 @@ void main()
     kvmsg_test(1);
 }
 ```
-> [옮긴이] 빌드 및 테스트
+
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc kvsimtest.c libzmq.lib czmq.lib
+ cl -EHsc kvsimtest.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./kvsimtest
+ ./kvsimtest
  * kvmsg: [seq:1][key:key][size:4] 626F6479
 [seq:1][key:key][size:4] 626F6479
 OK
@@ -1608,7 +1636,7 @@ OK
 
 그림 59 - 상태 복제
 
-![State Replication](images/fig59.svg)
+![State Replication](images/fig59.png)
 
 ;So we will do the synchronization in the client, as follows:
 
@@ -1630,6 +1658,7 @@ OK
 다음의 서버 예제는 ØMQ의 자체 내부 대기열을 이용하는 단순한 모델입니다. 
 
 clonesrv2.c : 복제 서버, 모델 2
+
 ```cpp
 //  Clone server - Model Two
 
@@ -1755,6 +1784,7 @@ state_manager (void *args, zctx_t *ctx, void *pipe)
 ;And here is the client:
 
 clonecli2.c : 복제 클라이언트, 모델 2
+
 ```cpp
 //  Clone client - Model Two
 
@@ -1805,21 +1835,21 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] clonecli2에서 "ICANHAZ?" 메시지를 clonesrv2로 보내면 서버는 해시 테이블에 저장한 변경정보들을 `s_send_single()`통하여 모두 전송하고 "KTHXBAI" 메시지를 전송합니다.
+* [옮긴이] clonecli2에서 "ICANHAZ?" 메시지를 clonesrv2로 보내면 서버는 해시 테이블에 저장한 변경정보들을 `s_send_single()`통하여 모두 전송하고 "KTHXBAI" 메시지를 전송합니다.
 clonecli2에서 "KTHXBAI"을 받으면 해당 sequence를 기준으로 clonesrv2에서 발행된 변경정보의 sequence와 비교하여 이후의 것들만 받아 해시 테이블에 보관합니다.(이전 정보는 폐기)
 
-> [옮긴이] "ICANHAZ?"는 "I Can has?"(가져도 될까요?)이며 "KTHXBAI"는 "Ok, Thank you, goodbye"(예, 고마워요, 잘 있어요)를 의미합니다.
+* [옮긴이] "ICANHAZ?"는 "I Can has?"(가져도 될까요?)이며 "KTHXBAI"는 "Ok, Thank you, goodbye"(예, 고마워요, 잘 있어요)를 의미합니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv2.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli2.c libzmq.lib czmq.lib
+ cl -EHsc clonesrv2.c libzmq.lib czmq.lib
+ cl -EHsc clonecli2.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv2
+ ./clonesrv2
 Sending state shapshot=1401876
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli2
+ ./clonecli2
 Received snapshot=1401876
 ~~~
 
@@ -1872,7 +1902,7 @@ Received snapshot=1401876
 
 그림 60 - 변경정보 재발행
 
-![Republishing Updates](images/fig60.svg)
+![Republishing Updates](images/fig60.png)
 
 ;By mediating all changes, the server can also add a unique sequence number to all updates. With unique sequencing, clients can detect the nastier failures, including network congestion and queue overflow. If a client discovers that its incoming message stream has a hole, it can take action. It seems sensible that the client contact the server and ask for the missing messages, but in practice that isn't useful. If there are holes, they're caused by network stress, and adding more stress to the network will make things worse. All the client can do is warn its users that it is "unable to continue", stop, and not restart until someone has manually checked the cause of the problem.
 
@@ -1884,6 +1914,7 @@ Received snapshot=1401876
 다음은 서버의 코드입니다.
 
 clonesrv3.c : 복제 서버, 모델 3
+
 ```cpp
 //  Clone server - Model Three
 
@@ -1988,6 +2019,7 @@ int main (void)
 다음은 클라이언트의 코드입니다.
 
 clonecli3: Clone client, Model Three in C
+
 ```cpp
 //  Clone client - Model Three
 
@@ -2069,15 +2101,15 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] clonecli3에서 1초마다 보내는 변경정보를 clonesrv3은 클라이언트들에 발행하며 clonecli3 중지하면 clonesrv3도 더 이상 변경정보를 발행하지 않습니다.
+* [옮긴이] clonecli3에서 1초마다 보내는 변경정보를 clonesrv3은 클라이언트들에 발행하며 clonecli3 중지하면 clonesrv3도 더 이상 변경정보를 발행하지 않습니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv3.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli3.c libzmq.lib czmq.lib
+ cl -EHsc clonesrv3.c libzmq.lib czmq.lib
+ cl -EHsc clonecli3.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv3
+ ./clonesrv3
 I: sending shapshot=0
 I: publishing update     1
 I: publishing update     2
@@ -2087,7 +2119,7 @@ I: publishing update     4
 I: publishing update     5
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli3
+ ./clonecli3
 I: received snapshot=0
 I: received update=1
 I: received update=2
@@ -2096,12 +2128,13 @@ I: received update=4
 I: received update=5
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli3
+ ./clonecli3
 I: received snapshot=3
 I: received update=4
 I: received update=5
 ...
 ~~~
+
 ;Here are some things to note about this third design:
 
 세 번째 설계에서 몇 가지 주목할 점은 다음과 같습니다.
@@ -2143,6 +2176,7 @@ I: received update=5
 다음은 모델 3의 작은 변형으로 하위트리를 구현하는 서버의 코드입니다.
 
 clonesrv4.c : 복제 서버, 모델 4
+
 ```cpp
 //  Clone server - Model Four
 
@@ -2262,6 +2296,7 @@ int main (void)
 하위트리의 저장소의 내용을 구독하는 클라이언트의 코드입니다.
 
 clonecli4.c : 복제 클라이언트, 모델 4
+
 ```cpp
 //  Clone client - Model Four
 
@@ -2353,14 +2388,14 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 - clonecli4에서 필터링을 통해 "SUBTREE"가 포함되어 발행(publish)된 kvmsg 객체를 받아 해시 테이블에 저정하며, 1초 간격으로 상태 요청에 사용될 kvmsg의 key에 "SUBTREE"을 포함하여 보냅니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv4.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli4.c libzmq.lib czmq.lib
+ cl -EHsc clonesrv4.c libzmq.lib czmq.lib
+ cl -EHsc clonecli4.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv4
+ ./clonesrv4
 I: sending shapshot=0
 I: publishing update     1
 I: publishing update     2
@@ -2368,7 +2403,7 @@ I: publishing update     3
 I: publishing update     4
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli4
+ ./clonecli4
 I: received snapshot=0
 I: received update=1
 I: received update=2
@@ -2376,10 +2411,11 @@ I: received update=3
 I: received update=4
 ...
 ~~~
-> [옮긴이] `kvm_dump()`을 통하여 메시지 내용을 확인하면 다음과 같습니다.
+
+* [옮긴이] `kvm_dump()`을 통하여 메시지 내용을 확인하면 다음과 같습니다.
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv4
+ ./clonesrv4
 I: sending shapshot=0
 [seq:1][key:/client/5174][size:6] 393939323337
 I: publishing update     1
@@ -2391,7 +2427,7 @@ I: publishing update     3
 I: publishing update     4
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli4
+ ./clonecli4
 I: received snapshot=0
 [seq:1][key:/client/5174][size:6] 393939323337
 I: received update=1
@@ -2436,6 +2472,7 @@ I: received update=4
 다음은 기존 `kvsimple` 보다 좀 더 완벽한 버전의 `kvmsg` 클래스이며, 속성들 프레임(나중에 필요할 UUID 프레임을 추가)을 구현하였습니다. 또한 필요한 경우 해시 테이블에서 키(key)를 삭제함으로 빈 값(empty value)을 처리합니다.
 
 kvmsg.c : 키-값 메시지 클래스
+
 ```cpp
 //  kvmsg class - key-value message class for example applications
 
@@ -3044,7 +3081,8 @@ kvmsg_test (int verbose)
 }
 //  .until
 ```
-> [옮긴이] "kvmsg.c"는 원도우에서 실행되지 않아 수정이 필요합니다.
+
+* [옮긴이] "kvmsg.c"는 원도우에서 실행되지 않아 수정이 필요합니다.
 1. ipc 전송 방법을 inproc로 변경합니다.
   - 변경전 : "ipc://kvmsg_selftest.ipc"
   - 변경후 : "inproc://kvmsg_selftest"
@@ -3090,7 +3128,7 @@ kvmsg_set_uuid (kvmsg_t *self)
 #endif
 ```
 
-> [옮긴이] 테스트를 위하여 "kvmsgtest.c" 코드는 다음과 같습니다.
+* [옮긴이] 테스트를 위하여 "kvmsgtest.c" 코드는 다음과 같습니다.
 
 ```cpp
 #include "kvmsg.c"
@@ -3100,12 +3138,13 @@ void main()
     kvmsg_test(1);
 }
 ```
-> [옮긴이] 빌드 및 테스트 
+
+* [옮긴이] 빌드 및 테스트 
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc kvmsgtest.c libzmq.lib czmq.lib
+ cl -EHsc kvmsgtest.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./kvmsgtest
+ ./kvmsgtest
  * kvmsg: [seq:1][key:key][size:4] 626F6479
 [seq:1][key:key][size:4] 626F6479
 [seq:2][key:key][size:4] [prop1=value1;prop2=value2;]626F6479
@@ -3146,6 +3185,7 @@ kvmsg_set_prop (kvmsg, "ttl", "%d", randof (30));
 * 하나는 TTL이 경과된 임시값을 만료 처리(값을 공백으로 처리)합니다.
 
 clonesrv5.c : 복제 서버, 모델 5
+
 ```cpp
 //  Clone server - Model Five
 
@@ -3333,6 +3373,7 @@ s_flush_ttl (zloop_t *loop, int timer_id, void *args)
 kvmsg클래스에 TTL 속성을 부가한 클라이언트 소스는 다음과 같습니다.
 
 clonecli5.c : 복제 클라이언트, 모델 5
+
 ```cpp
 //  Clone client - Model Five
 
@@ -3413,13 +3454,14 @@ int main (void)
     return 0;
 }
 ```
-> [옮긴이] 빌드 및 테스트
+
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv5.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli5.c libzmq.lib czmq.lib
+ cl -EHsc clonesrv5.c libzmq.lib czmq.lib
+ cl -EHsc clonecli5.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv5
+ ./clonesrv5
 20-08-29 07:27:56 I: sending shapshot=0
 20-08-29 07:27:57 I: publishing update=1
 20-08-29 07:27:58 I: publishing update=2
@@ -3433,7 +3475,7 @@ PS D:\git_store\zguide-kr\examples\C> ./clonesrv5
 20-08-29 07:28:12 I: publishing delete=18
 ...
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli5
+ ./clonecli5
 I: received snapshot=0
 I: received update=1
 I: received update=2
@@ -3496,12 +3538,13 @@ I: received update=4
 
 그림 61 - 복제 클라이언트 유한 상태 머신
 
-![Clone Client Finite State Machine](images/fig61.svg)
+![Clone Client Finite State Machine](images/fig61.png)
 
 ;It's useful to design the client logic as a finite state machine. The client cycles through three states:
 
 클라이언트 로직을 유한 상태 머신으로 설계하는 것이 유용합니다. 클라이언트는 다음 3가지 상태(INITIAL, SYNCING, ACTIVE)를 순환합니다.
-> [옮긴이] 기존 클라이언트 예제에서도 클라이언트가 시작되면 서버에 상태 요청(ICANHAZ)하여 snapshot 받아 오면, 클라이언트에 snapshot을 반영하고 서버에 완료(KTHXBAI)를 보낸 이후,  클라이언트에서 상태 변경정보를 보내면 서버가 각 클라이언트에서 변경정보를 전송하도록 하였습니다.
+
+* [옮긴이] 기존 클라이언트 예제에서도 클라이언트가 시작되면 서버에 상태 요청(ICANHAZ)하여 snapshot 받아 오면, 클라이언트에 snapshot을 반영하고 서버에 완료(KTHXBAI)를 보낸 이후,  클라이언트에서 상태 변경정보를 보내면 서버가 각 클라이언트에서 변경정보를 전송하도록 하였습니다.
 
 ;* The client opens and connects its sockets, and then requests a snapshot from the first server. To avoid request storms, it will ask any given server only twice. One request might get lost, which would be bad luck. Two getting lost would be carelessness.
 ;* The client waits for a reply (snapshot data) from the current server, and if it gets it, it stores it. If there is no reply within some timeout, it fails over to the next server.
@@ -3554,7 +3597,7 @@ I: received update=4
 
 그림 62 - 고가용성 복제 서버 쌍
 
-![High-availability Clone Server Pair](images/fig62.svg)
+![High-availability Clone Server Pair](images/fig62.png)
 
 ;Here is the sixth and last model of the Clone server:
 
@@ -3988,15 +4031,15 @@ s_subscriber (zloop_t *loop, zmq_pollitem_t *poller, void *args)
 테스트를 위해 항상 메모리 누수와 잘못된 메모리 참조를 잡기 위해 Valgrind를 사용하였습니다. 
 C 언어의 주요 관심사로 컴파일러에서 가비지(garbage) 수집을 하지 않아 코드상에서 명시적으로 메모리 해제를 않으면 메모리 누수가 발생할 수 있습니다. 이때 kvmsg 및 CZMQ와 같은 적절하고 일관된 추상화를 사용하면 엄청난 도움이 됩니다.
 
-> [옮긴이] "clonecli6.c" 상태(INITIAL, SYNCING, ACTIVE)를 PUSH-PULL을 PUB-SUB로 변경한 클라이언트의 마지막 모델(모델 6)로 다음 주제에서 설명합니다.
+* [옮긴이] "clonecli6.c" 상태(INITIAL, SYNCING, ACTIVE)를 PUSH-PULL을 PUB-SUB로 변경한 클라이언트의 마지막 모델(모델 6)로 다음 주제에서 설명합니다.
 
-> [옮긴이] 빌드 및 테스트
+* [옮긴이] 빌드 및 테스트
 
 ~~~{.bash}
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonesrv6.c libzmq.lib czmq.lib
-PS D:\git_store\zguide-kr\examples\C> cl -EHsc clonecli6.c libzmq.lib czmq.lib
+ cl -EHsc clonesrv6.c libzmq.lib czmq.lib
+ cl -EHsc clonecli6.c libzmq.lib czmq.lib
 
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv6 -p
+ ./clonesrv6 -p
 20-08-29 16:13:24 I: primary active, waiting for backup (passive)
 D: 20-08-29 16:13:24 zloop: register SUB poller (000001EEAEB11AC0, 0)
 D: 20-08-29 16:13:24 zloop: register timer id=2 delay=1000 times=0
@@ -4011,7 +4054,7 @@ D: 20-08-29 16:13:41 zloop: call timer handler id=1
 ...
 D: 20-08-29 16:14:03 zloop: interrupted
 
-PS D:\git_store\zguide-kr\examples\C> ./clonesrv6 -b
+ ./clonesrv6 -b
 20-08-29 16:13:40 I: backup passive, waiting for primary (active)
 D: 20-08-29 16:13:40 zloop: register SUB poller (000001F9CDC93690, 0)
 D: 20-08-29 16:13:40 zloop: register timer id=2 delay=1000 times=0
@@ -4025,7 +4068,7 @@ D: 20-08-29 16:13:41 zloop: call SUB socket handler (000001F9CD681270, 0)
 0-08-29 16:14:07 I: failover successful, ready as active
 D: 20-08-29 16:14:07 zloop: cancel SUB poller (000001F9CD694FA0, 0)
 
-PS D:\git_store\zguide-kr\examples\C> ./clonecli6
+ ./clonecli6
 20-08-29 16:13:51 I: adding server tcp://localhost:5556...
 20-08-29 16:13:51 I: waiting for server at tcp://localhost:5556...
 20-08-29 16:13:51 I: adding server tcp://localhost:5566...
@@ -4044,7 +4087,8 @@ PS D:\git_store\zguide-kr\examples\C> ./clonecli6
 ;While the server is pretty much a mashup of the previous model plus the Binary Star pattern, the client is quite a lot more complex. But before we get to that, let's look at the final protocol. I've written this up as a specification on the ØMQ RFC website as the Clustered Hashmap Protocol.
 
 모델 6 서버는 이전 모델(모델 5(임시값 + TTL))에 바이너리 스타 패턴을 매우 많이 혼합시켰지만, 모델 6 클라이언트는 좀 더 많이 복잡합니다. 클라이언트에 대해 알아보기 전에 최종 통신규약을 보면, 클러스터된 해시맵 통신규약으로 ØMQ RFC 사이트에 사양서로 작성해 두었습니다.
->[옮긴이] [클러스터된 해시 맵 통신규약](https://rfc.zeromq.org/spec/12/)은 일련의 클라이언트들 간에 공유하기 위한 클러스터 전반의 키-값 해시 맵과 메커니즘을 정의합니다.
+
+* [옮긴이] [클러스터된 해시 맵 통신규약](https://rfc.zeromq.org/spec/12/)은 일련의 클라이언트들 간에 공유하기 위한 클러스터 전반의 키-값 해시 맵과 메커니즘을 정의합니다.
 
 ;Roughly, there are two ways to design a complex protocol such as this one. One way is to separate each flow into its own set of sockets. This is the approach we used here. The advantage is that each flow is simple and clean. The disadvantage is that managing multiple socket flows at once can be quite complex. Using a reactor makes it simpler, but still, it makes a lot of moving pieces that have to fit together correctly.
 
@@ -4060,6 +4104,7 @@ PS D:\git_store\zguide-kr\examples\C> ./clonecli6
 [CHP](https://rfc.zeromq.org/spec/12/) 사양서를 살펴보겠습니다. "SHOULD", "MUST"및 "MAY"는 통신규약 사양서에서 요구 사항 수준을 나타내기 위해 사용되는 핵심 용어라는 점에 주의하십시오.
 
 ;#### Goals
+
 #### 목표
 
 ;CHP is meant to provide a basis for reliable pub-sub across a cluster of clients connected over a ØMQ network. It defines a "hashmap" abstraction consisting of key-value pairs. Any client can modify any key-value pair at any time, and changes are propagated to all clients. A client can join the network at any time.
@@ -4067,6 +4112,7 @@ PS D:\git_store\zguide-kr\examples\C> ./clonecli6
 CHP는 ØMQ 네트워크에 연결된 클라이언트들의 클러스터에서 신뢰할 수 있는 발행-구독에 대한 기반을 제공합니다. "해시 맵" 추상화를 키-값 쌍으로 구성하여 정의합니다. 모든 클라이언트들은 언제든지 키-값 쌍을 수정할 수 있으며, 변경 사항은 모든 클라이언트들에게 전파됩니다. 클라이언트는 언제든지 네트워크에 참여할 수 있습니다.
 
 ;#### Architecture
+
 #### 아키텍처
 
 ;CHP connects a set of client applications and a set of servers. Clients connect to the server. Clients do not see each other. Clients can come and go arbitrarily.
@@ -4074,6 +4120,7 @@ CHP는 ØMQ 네트워크에 연결된 클라이언트들의 클러스터에서 �
 CHP는 일련의 클라이언트와 서버 응용프로그램들을 연결합니다. 클라이언트들은 서버에 연결합니다. 클라이언트는 서로를 보지 못합니다. 클라이언트들은 언제든지 클러스터에 들어오고 나갈 수 있습니다.
 
 ;#### Ports and Connections
+
 #### 포트들과 접속들
 
 ;The server MUST open three ports as follows:
@@ -4185,7 +4232,8 @@ UUID는 선택 사항이며 "Frame 2"는 공백일 수 있습니다(크기 0). �
 ;In the absence of other updates the server SHOULD send a HUGZ command at regular intervals, e.g., once per second. The HUGZ command has this format:
 
 다른 변경정보들이 없는 경우 서버는 일정한 간격(예 : 1초당 한번)으로 HUGZ 명령을 발행자 소켓(PUB)으로 보내야 합니다. HUGZ 명령의 형식은 다음과 같습니다.
-> [옮긴이] HUGZ는 상대편 서버 및 클라이언트들에게 보냅니다.
+
+* [옮긴이] HUGZ는 상대편 서버 및 클라이언트들에게 보냅니다.
 
 ~~~{.bash}
 [서버] HUGZ 명령
@@ -4202,6 +4250,7 @@ Frame 4: <공백>
 클라이언트는 일정한 간격으로 HUGZ 메시지가 없을 경우, 서버에 장애가 발생했다는 표시로 사용됩니다(아래 안정성 참조).
 
 ;#### Client-to-Server Updates
+
 #### 클라이언트에서 서버로 전달되는 변경정보들
 
 ;When the client has an update for its hashmap, it MAY send this to the server via its publisher connection as a KVSET command. The KVSET command has this form:
@@ -4228,6 +4277,7 @@ The server SHOULD accept the following properties:
 * TTL(Time to Live) : 유효시간(초)을 지정합니다. KVSET 명령에 ttl 속성이 있는 경우, 서버는 키-값 쌍을 삭제하고 값이 비어있는 kvsmg를 KVPUB 명령을 통해 클라이언트들로 전송해야 하며, 클라이언트에서는 TTL이 만료되었을 때 삭제합니다.
 
 ;#### Reliability
+
 #### 안정성
 
 ;CHP may be used in a dual-server configuration where a backup server takes over if the primary server fails. CHP does not specify the mechanisms used for this failover but the Binary Star pattern may be helpful.
@@ -4245,6 +4295,7 @@ CHP는 기본 서버가 실패할 경우 백업 서버가 인계받는 이중 �
 * 백업 서버에 연결하고 상태 동기화(ICANHAZ~KTXBAI)를 다시 요청합니다.
 
 ;#### Scalability and Performance
+
 #### 확장성 및 성능
 
 ;CHP is designed to be scalable to large numbers (thousands) of clients, limited only by system resources on the broker. Because all updates pass through a single server, the overall throughput will be limited to some millions of updates per second at peak, and probably less.
@@ -4253,6 +4304,7 @@ CHP는 브로커의 많은 수(수천)의 클라이언트들로 확장 가능하
 모든 클라이언트들의 변경정보들이 단일 서버를 통과하기 때문에, 전체 처리량은 피크시 초당 수백만 개의 변경정보들로 제한될 수 있으며, 아마도 더 적을 수 있습니다.
 
 ;#### Security
+
 #### 보안
 
 ;CHP does not implement any authentication, access control, or encryption mechanisms and should not be used in any deployment where these are required.
@@ -4270,7 +4322,7 @@ CHP는 인증, 접근 제어 또는 암호화 메커니즘을 구현하지 않�
 
 그림 63 - 멀티스레드 API
 
-![Multithreaded API](images/fig63.svg)
+![Multithreaded API](images/fig63.png)
 
 ;If you make a nontrivial protocol and you expect applications to implement it properly, most developers will get it wrong most of the time. You're going to be left with a lot of unhappy people complaining that your protocol is too complex, too fragile, and too hard to use. Whereas if you give them a simple API to call, you have some chance of them buying in.
 
@@ -4281,7 +4333,7 @@ CHP는 인증, 접근 제어 또는 암호화 메커니즘을 구현하지 않�
 
 멜티스레드 API는 2개의 PAIR 소켓으로 연결된 프론트엔드 개체와 백그라운드 에이전트로 구성됩니다. 이와 같이 2개의 PAIR 소켓을 연결하는 것은 매우 유용하여 ØMQ의 C 개발 언어에서 제공하는 고수준의 바인딩인 CZMQ에서 수행합니다. 이것은 "신규 스레드를 생성 시에 메시지를 보내는 데 사용할 수 있는 파이프를 사용"하는 방법입니다.
 
-> [옮긴이] "clone.c"에서 아래와 같이 사용합니다.
+* [옮긴이] "clone.c"에서 아래와 같이 사용합니다.
  - self->pipe = zthread_fork (self->ctx, clone_agent, NULL);
 
 ;The multithreaded APIs that we see in this book all take the same form:
@@ -4324,6 +4376,7 @@ clone_connect (clone_t *self, char *address, char *service)
 ;The actual API methods for the clone class are quite simple:
 
 `clone` 클래스의 실제 API 메서드는 매우 간단합니다.
+
 ```cpp
 //  Create a new clone class instance
 clone_t *
@@ -4355,6 +4408,7 @@ char *
 복제 클라이언트의 모델 6 코드가 있으며 `clone` 클래스를 사용하여 얇은 껍질에 불과하게 되었습니다.
 
 clonecli6.c : 복제 클라이언트, 모델 6
+
 ```cpp
 //  Clone client Model Six
 
@@ -4432,6 +4486,7 @@ int main (void)
 아래는 실제 `clone` 클래스가 구현된 코드입니다.
 
 clone.c: 복제 클래스
+
 ```cpp
 //  clone class - Clone client API stack (multithreaded)
 
@@ -4837,3 +4892,5 @@ clone_agent (void *args, zctx_t *ctx, void *pipe)
     agent_destroy (&self);
 }
 ```
+
+복제 클라이언트의 모델 6 까지 구현하였으며, 이장을 마지막으로 기본적인 구현 방법 마무리 하였습니다. 
